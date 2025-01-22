@@ -28,7 +28,7 @@ run: install_deps
       uv \
       --directory $(current_dir) \
       run \
-      oxylabs_mcp
+      oxylabs-mcp
 
 $(virtualenv_dir):
 	$(python) -m venv $@ --symlinks

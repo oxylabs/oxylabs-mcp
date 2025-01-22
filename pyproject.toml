@@ -1,5 +1,5 @@
 [project]
-name = "oxylabs_mcp"
+name = "oxylabs-mcp"
 version = "0.1.0"
 description = "Oxylabs MCP server"
 authors = [
@@ -35,4 +35,4 @@ build-backend = "hatchling.build"
 mcp = { git = "https://github.com/txbm/python-sdk", rev = "19185626d57fdd670219784d10859c7d0a302c2e" }
 
 [project.scripts]
-oxylabs_mcp = "oxylabs_mcp:main"
+oxylabs-mcp = "oxylabs_mcp:main"
