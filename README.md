@@ -1,4 +1,5 @@
 # MCP Server for Oxylabs Scraper
+[![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
 
 The scraper tool is an asynchronous utility that leverages the Oxylabs Web Scraper API to fetch and process content from a given URL. This tool is designed to handle various scraping scenarios efficiently, with flexible options for parsing and rendering web pages.
 
@@ -26,6 +27,15 @@ https://docs.astral.sh/uv/getting-started/installation/#installation-methods
 
 ## Setup Intructions
 
+### Installing via Smithery
+
+To install Oxylabs MCP server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@oxylabs/oxylabs-mcp):
+
+```bash
+npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client claude
+```
+
+
 ### Setup with Claude Desktop
 ```json
 # claude_desktop_config.json
@@ -33,7 +43,7 @@ https://docs.astral.sh/uv/getting-started/installation/#installation-methods
 # Claude -> Settings -> Developer -> Edit Config
 {
   "mcpServers": {
-    "oxylabs_mcp": {
+    "oxylabs_scraper": {
       "command": "uvx",
       "args": ["oxylabs-mcp"],
       "env": {
@@ -70,13 +80,13 @@ uv sync
 # Claude -> Settings -> Developer -> Edit Config
 {
   "mcpServers": {
-    "oxylabs_mcp": {
+    "oxylabs_scraper": {
       "command": "uv",
       "args": [
         "--directory",
         "/<Absolute-path-to-folder>/oxylabs-mcp",
         "run",
-        "oxylabs_mcp"
+        "oxylabs-mcp"
       ],
       "env": {
         "OXYLABS_USERNAME": "YOUR_USERNAME_HERE",
