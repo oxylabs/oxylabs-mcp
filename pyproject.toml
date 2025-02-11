@@ -7,6 +7,17 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Development Status :: 4 - Beta",
+    "Operating System :: OS Independent",
+]
+
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
 dependencies = [
     "httpx>=0.28.1",
     "lxml>=5.3.0",
@@ -36,3 +47,7 @@ mcp = { git = "https://github.com/txbm/python-sdk", rev = "19185626d57fdd6702197
 
 [project.scripts]
 oxylabs-mcp = "oxylabs_mcp:main"
+
+[project.urls]
+Homepage = "https://github.com/oxylabs/oxylabs-mcp"
+Repository = "https://github.com/oxylabs/oxylabs-mcp"

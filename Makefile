@@ -24,7 +24,7 @@ test: install_deps
 
 .PHONY: run
 run: install_deps
-	npx @modelcontextprotocol/inspector \
+	npx @modelcontextprotocol/inspector@0.3.0 \
       uv \
       --directory $(current_dir) \
       run \

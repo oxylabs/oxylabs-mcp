@@ -75,7 +75,7 @@ class TestMcpServer:
         ]
     )
     @pytest.mark.asyncio
-    async def test_server_arguments(
+    async def test_oxylabs_scraper_arguments(
         self,
         mcp: FastMCP,
         request_data: Request,
@@ -100,7 +100,68 @@ class TestMcpServer:
             )
         ):
             result = await mcp.call_tool("oxylabs_scraper", arguments=arguments)
-            assert result[0] == TextContent(type="text", text=expected_result)
+            assert result == [TextContent(type="text", text=expected_result)]
+
+    @pytest.mark.parametrize(
+        "arguments, expectation, expected_result",
+        [
+            pytest.param(
+                {"url": "test_url"},
+                does_not_raise(),
+                "Mocked content",
+                id="url-only-args"
+            ),
+            pytest.param(
+                {"url": "test_url", "render": "html"},
+                does_not_raise(),
+                "Mocked content",
+                id="render-enabled-args"
+            ),
+            pytest.param(
+                {"url": "test_url", "render": "None"},
+                does_not_raise(),
+                "Mocked content",
+                id="render-disabled-args"
+            ),
+            pytest.param(
+                {"url": "test_url", "render": "png"},
+                pytest.raises(ToolError),
+                None,
+                id="invalid-render-option-args"
+            ),
+            pytest.param(
+                {},
+                pytest.raises(ToolError),
+                None,
+                id="no-url-args"
+            ),
+        ]
+    )
+    @pytest.mark.asyncio
+    async def test_oxylabs_web_unblocker_arguments(
+        self,
+        mcp: FastMCP,
+        request_data: Request,
+        arguments: dict,
+        expectation,
+        expected_result: str
+    ):
+        mock_response_data = "<html><body>Mocked content</body></html>"
+        mock_response = Response(
+            200,
+            text=mock_response_data,
+            request=request_data)
+
+        with (
+            expectation,
+            patch("os.environ", new=ENV_VARIABLES),
+            patch(
+                "httpx.AsyncClient.get",
+                new=AsyncMock(return_value=mock_response)
+            )
+        ):
+            result = await mcp.call_tool("oxylabs_web_unblocker", arguments=arguments)
+            assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.parametrize(
         "arguments, response, expected_result",
@@ -154,7 +215,7 @@ class TestMcpServer:
         ]
     )
     @pytest.mark.asyncio
-    async def test_server_results(
+    async def test_oxylabs_scraper_results(
         self,
         mcp: FastMCP,
         request_data: Request,
@@ -171,4 +232,48 @@ class TestMcpServer:
             )
         ):
             result = await mcp.call_tool("oxylabs_scraper", arguments=arguments)
-            assert result[0] == TextContent(type="text", text=expected_result)
+            assert result == [TextContent(type="text", text=expected_result)]
+
+
+    @pytest.mark.parametrize(
+        "arguments, response, expected_result",
+        [
+            pytest.param(
+                {"url": "test_url"},
+                Response(
+                    200,
+                    text="<html><body>Mocked content</body></html>"
+                ),
+                "Mocked content",
+                id="url-only-result"
+            ),
+            pytest.param(
+                {"url": "test_url", "render": "html"},
+                Response(
+                    200,
+                    text="<html><body>Mocked content</body></html>",
+                ),
+                "Mocked content",
+                id="parse-disabled-result"
+            )
+        ]
+    )
+    @pytest.mark.asyncio
+    async def test_oxylabs_web_unblocker_results(
+        self,
+        mcp: FastMCP,
+        request_data: Request,
+        arguments: dict,
+        response: Response,
+        expected_result: str
+    ):
+        response.request = request_data
+        with (
+            patch("os.environ", new=ENV_VARIABLES),
+            patch(
+                "httpx.AsyncClient.get",
+                new=AsyncMock(return_value=response)
+            )
+        ):
+            result = await mcp.call_tool("oxylabs_web_unblocker", arguments=arguments)
+            assert result == [TextContent(type="text", text=expected_result)]

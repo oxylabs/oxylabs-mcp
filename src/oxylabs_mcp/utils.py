@@ -1,12 +1,11 @@
 import os
-from httpx import BasicAuth
 from lxml.html.clean import Cleaner
 from lxml.html import defs, fromstring, tostring
 import re
 from markdownify import markdownify as md
 
 
-def get_auth_from_env() -> BasicAuth:
+def get_auth_from_env() -> tuple[str, str]:
     """Gets Username and password from enviroment variables"""
     USERNAME = os.getenv('OXYLABS_USERNAME')
     PASSWORD = os.getenv('OXYLABS_PASSWORD')
@@ -16,7 +15,7 @@ def get_auth_from_env() -> BasicAuth:
             "OXYLABS_USERNAME and OXYLABS_PASSWORD "
             "must be set in the environment variables."
         )
-    return BasicAuth(username=str(USERNAME), password=str(PASSWORD))
+    return USERNAME, PASSWORD
 
 
 def clean_html(html: str):
