@@ -1,5 +1,5 @@
 from typing import Annotated, Any, Literal
-from httpx import AsyncClient, Timeout, HTTPStatusError, RequestError
+from httpx import AsyncClient, BasicAuth, Timeout, HTTPStatusError, RequestError
 from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
 from pydantic import Field
@@ -36,8 +36,10 @@ async def scrape_url(
     ] = None
 ) -> str:
     """Scrape Url using Oxylabs scraper api"""
+    username, password = get_auth_from_env()
+
     async with AsyncClient(
-        auth=get_auth_from_env(),
+        auth=BasicAuth(username=username, password=password),
         timeout=Timeout(REQUEST_TIMEOUT)
     ) as client:
         try:
@@ -59,6 +61,58 @@ async def scrape_url(
                 )
                 return convert_html_to_md(striped_html)
             return str(response.json()["results"][0]["content"])
+        except HTTPStatusError as e:
+            return (
+                "HTTP error during POST request: "
+                f"{e.response.status_code} - {e.response.text}"
+            )
+        except RequestError as e:
+            return f"Request error during POST request: {e}"
+        except Exception as e:
+            return f"Error: {str(e) or repr(e)}"
+
+
+@mcp.tool(
+    name="oxylabs_web_unblocker",
+    description="Scrape url using Oxylabs Web Unblocker",
+)
+async def scrape_with_web_unblocker(
+    url: Annotated[str, Field(description="Url to scrape with web unblocker")],
+    render: Annotated[
+        Literal["html", "None"] | None,
+        Field(
+            description="Whether a headless browser should be used "
+            "to render the page. See: "
+            "https://developers.oxylabs.io/advanced-proxy-solutions/web-unblocker/headless-browser/javascript-rendering "
+            "`html` will return rendered html page "
+            "`None` will not use render for scraping."
+        )
+    ] = None
+) -> str:
+    """Web Unblocker is an AI-powered proxy solution.
+
+    This tool manages the unblocking process to extract public data
+    even from the most difficult websites.
+    """
+    username, password = get_auth_from_env()
+
+    proxy = f"http://{username}:{password}@unblock.oxylabs.io:60000"
+
+    headers: dict[str, Any] = {}
+    if render and render != "None":
+        headers["X-Oxylabs-Render"] = render
+
+    async with AsyncClient(
+        timeout=Timeout(REQUEST_TIMEOUT),
+        verify=False,
+        proxy=proxy,
+        headers=headers
+    ) as client:
+        try:
+            response = await client.get(url)
+            response.raise_for_status()
+            striped_html = strip_html(response.text)
+            return convert_html_to_md(striped_html)
         except HTTPStatusError as e:
             return (
                 "HTTP error during POST request: "

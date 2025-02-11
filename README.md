@@ -20,6 +20,7 @@ The scraper tool is an asynchronous utility that leverages the Oxylabs Web Scrap
 - Could you scrape https://oxylabs.io page?
 - Scrape https://www.amazon.de/-/en/Smartphone-Contract-Function-Manufacturer-Exclusive/dp/B0CNKD651V with parse enabled.
 - Scrape https://www.amazon.de/-/en/gp/bestsellers/beauty/ref=zg_bs_nav_beauty_0 with parse and render enabled.
+- Use web unblocker with render to scrape https://oxylabs.io/
 
 ## Prerequisites
 ### Install uv first.
@@ -48,7 +49,7 @@ npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client claude
       "args": ["oxylabs-mcp"],
       "env": {
         "OXYLABS_USERNAME": "YOUR_USERNAME_HERE",
-        "OXYLABS_PASSWORD": "YOUR_PASSWORD_HERE",
+        "OXYLABS_PASSWORD": "YOUR_PASSWORD_HERE"
       }
     }
   }
@@ -110,3 +111,15 @@ Then access MCP Inspector at `http://localhost:5173`. You may need to add your u
 Usage with the MCP inspector is affected by an ongoing issue with the Python SDK for MCP, see: https://github.com/modelcontextprotocol/python-sdk/pull/85. For Claude, a forked version of the SDK is used as a temporary fix.
 
 ---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## About Oxylabs
+
+Established in 2015, Oxylabs are a market-leading web intelligence collection
+platform, driven by the highest business, ethics, and compliance standards,
+enabling companies worldwide to unlock data-driven insights.
+
+[![image](https://oxylabs.io/images/og-image.png)](https://oxylabs.io/)
