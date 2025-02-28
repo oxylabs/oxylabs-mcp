@@ -5,16 +5,21 @@ The scraper tool is an asynchronous utility that leverages the Oxylabs Web Scrap
 
 ## Key Features
 
-1. **URL Scraping**
-    - Fetches the content of a specified URL using Oxylabs' API.
-
-2. **HTML Parsing**
-    - If parsing is enabled, the content is returned in a processed format, suitable for handling by downstream systems like language models (LLMs).
-    - If parsing is disabled, the tool strips unnecessary HTML tags and converts the cleaned content into a Markdown file for easier readability and compatibility.
-
-3. **JavaScript Rendering**
-    - Offers an option to render pages using a headless browser, which ensures dynamic content (e.g., JavaScript-rendered pages) is included in the output.
-    - Supports the html rendering option or skipping rendering entirely.
+- Web scraping with advanced HTML parsing and conversion
+- JavaScript rendering with headless browser support
+- Dynamic content extraction from JS-heavy websites
+- URL-specific content targeting and extraction
+- Automated HTML cleaning and markdown conversion
+- Smart content parsing for LLM compatibility
+- Flexible rendering options (full JS, HTML-only, or none)
+- Mobile/Desktop viewport emulation
+- High success rate on complex and protected websites
+- Proxy rotation and IP geolocation capabilities
+- Comprehensive error handling and reporting
+- Cross-platform compatibility with customizable options
+- Support for batch processing of multiple URLs
+- Intelligent rate limiting and request management
+- Seamless integration with AI models and analytics tools
 
 ## Examples on how to query Claude or other LLM
 - Could you scrape https://oxylabs.io page?
