@@ -54,7 +54,7 @@ To configure Oxylabs in Cursor:
 4. Enter the following:
    - Name: "oxylabs" (or your preferred name)
    - Type: "command"
-   - Command: `env OXYLABS_USERNAME=your-username OXYLABS_PASSWORD=your-password npx -y oxylabs-mcp`
+   - Command: `npx -y @smithery/cli@latest run @oxylabs/oxylabs-mcp --config "{\"oxylabsUsername\":\"YOUR_USERNAME\",\"oxylabsPassword\":\"YOUR_PASSWORD\"}"`
 
 > If you are using Windows and are running into issues, try `cmd /c "set OXYLABS_USERNAME=your-username && set OXYLABS_PASSWORD=your-password && npx -y oxylabs-mcp"`
 
