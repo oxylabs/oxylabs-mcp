@@ -36,6 +36,27 @@ To install Oxylabs MCP server for Claude Desktop automatically via [Smithery](ht
 npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client claude
 ```
 
+### Running on Cursor
+
+Configuring Cursor 🖥️
+Note: Requires Cursor version 0.45.6+
+
+To configure Oxylabs in Cursor:
+
+1. Open Cursor Settings
+2. Go to Features > MCP Servers 
+3. Click "+ Add New MCP Server"
+4. Enter the following:
+   - Name: "oxylabs" (or your preferred name)
+   - Type: "command"
+   - Command: `env OXYLABS_USERNAME=your-username OXYLABS_PASSWORD=your-password npx -y oxylabs-mcp`
+
+> If you are using Windows and are running into issues, try `cmd /c "set OXYLABS_USERNAME=your-username && set OXYLABS_PASSWORD=your-password && npx -y oxylabs-mcp"`
+
+Replace `your-username` and `your-password` with your Oxylabs credentials.
+
+After adding, refresh the MCP server list to see the new tools. The Composer Agent will automatically use Oxylabs when appropriate, but you can explicitly request it by describing your web scraping needs. Access the Composer via Command+L (Mac), select "Agent" next to the submit button, and enter your query.
+
 
 ### Setup with Claude Desktop
 ```json
