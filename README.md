@@ -3,6 +3,10 @@
 
 A Model Context Protocol (MCP) server that enables AI assistants like Claude to seamlessly access web data through Oxylabs' powerful web scraping technology.
 
+<a href="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp/badge" alt="Oxylabs Server MCP server" />
+</a>
+
 ## 📖 Overview
 
 The Oxylabs MCP server provides a bridge between AI models and the web. It enables them to scrape any URL, render JavaScript-heavy pages, extract and format content for AI use, bypass anti-scraping measures, and access geo-restricted data from 195+ countries.
@@ -64,8 +68,6 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 
 </details>
 
-
-
 ## 💡 Example Queries
 
 When you've set up the MCP server with Claude or another AI assistant, you can make requests like:
@@ -77,7 +79,6 @@ When you've set up the MCP server with Claude or another AI assistant, you can m
 <pre>Scrape <i>https://www.amazon.de/-/en/gp/bestsellers/beauty/ref=zg_bs_nav_beauty_0</i> with parse and render enabled.</pre>
 
 <pre>Use web unblocker with render to scrape <i>https://www.bestbuy.com/site/top-deals/all-electronics-on-sale/pcmcat1674241939957.c</i></pre>
-
 
 ## ✅ Prerequisites
 
@@ -92,7 +93,6 @@ Before you begin, make sure you have:
 ### Local/Dev Setup
 - **Python 3.12+**
 - `uv` package manager – install it using [this guide](https://docs.astral.sh/uv/getting-started/installation/)
-
 
 ## ⚙️ Basic Setup Instructions
 
@@ -206,7 +206,6 @@ make run
 ```
 Then access MCP Inspector at `http://localhost:5173`. You may need to add your username and password as environment variables in the inspector under `OXYLABS_USERNAME` and `OXYLABS_PASSWORD`.
 
-
 ## 🧩 API Parameters
 
 The Oxylabs MCP server supports these parameters:
@@ -216,7 +215,6 @@ The Oxylabs MCP server supports these parameters:
 | `url` | The URL to scrape | Any valid URL |
 | `parse` | Enable structured data extraction | `True` or `False` |
 | `render` | Use headless browser rendering | `html` or `None` |
-
 
 ## 🛠️ Technical Details
 
@@ -231,7 +229,6 @@ This server provides two main tools:
 
 > [!WARNING]
 > Usage with the MCP Inspector is affected by an ongoing issue with the Python SDK for MCP, see: https://github.com/modelcontextprotocol/python-sdk/pull/85. For Claude, a forked version of the SDK is used as a temporary fix.
-
 
 ## License
 
