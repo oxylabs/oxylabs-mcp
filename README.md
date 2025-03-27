@@ -17,7 +17,6 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 
 - Extract data from any URL, including complex single-page applications
 - Fully render dynamic websites using headless browser support
-- Handle JavaScript-heavy and client-rendered content
 - Choose full JavaScript rendering, HTML-only, or none
 - Emulate Mobile and Desktop viewports for realistic rendering
 
@@ -28,8 +27,7 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 <br>
 
 - Automatically clean and convert HTML to Markdown for improved readability
-- Use dedicated parsers extract structured data from popular targets like Google, Amazon, and etc.
-- Define your custom parsing logic for any target
+- Use automated parsers for popular targets like Google, Amazon, and etc.
 
 </details>
 
@@ -39,28 +37,26 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 
 - Bypass sophisticated bot protection systems with high success rate
 - Reliably scrape even the most complex websites
-- Access geo-specific content from 195+ countries
-- Automatically rotate IPs and target specific regions
+- Get automatically rotating IPs from a proxy pool covering 195+ countries
 
 </details>
 
 <details>
-<summary><strong> Flexible setup, batch scraping & cross-platform support</strong></summary>
+<summary><strong> Flexible setup & cross-platform support</strong></summary>
 <br>
 
-- Customize rendering and parsing options per request
-- Handle multiple URLs in a single job using Batch requests
+- Set rendering and parsing options if needed
 - Feed data directly into AI models or analytics tools
 - Works on macOS, Windows, and Linux
 
 </details>
 
 <details>
-<summary><strong> Built-in error handling and smart request management</strong></summary>
+<summary><strong> Built-in error handling and request management</strong></summary>
 <br>
 
 - Comprehensive error handling and reporting
-- Intelligent rate limiting and request management
+- Smart rate limiting and request management
 
 </details>
 
