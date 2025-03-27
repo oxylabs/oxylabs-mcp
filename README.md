@@ -5,7 +5,7 @@ A Model Context Protocol (MCP) server that enables AI assistants like Claude to 
 
 ## 📖 Overview
 
-The Oxylabs MCP server provides a bridge between AI models and the web. It enables them to scrape any URL, render JavaScript-heavy pages, extract and format content for AI use, bypass anti-scraping measures, and access geo-restricted data from 195+ countries.
+The Oxylabs MCP server provides a bridge between AI models and the web. It enables them to scrape any URL, render JavaScript-heavy pages, extract and format content for AI use, bypass anti-scraping measures, and access geo-restricted web data from 195+ countries.
 
 This implementation leverages the Model Context Protocol (MCP) to create a secure, standardized way for AI assistants to interact with web content.
 
