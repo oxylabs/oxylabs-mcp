@@ -61,20 +61,6 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 </details>
 
 
-
-## 💡 Example Queries
-
-When you've set up the MCP server with Claude or another AI assistant, you can make requests like:
-
-<pre>Could you scrape <i>https://www.google.com/search?q=ai</i> page?</pre>
-
-<pre>Scrape <i>https://www.amazon.de/-/en/Smartphone-Contract-Function-Manufacturer-Exclusive/dp/B0CNKD651V</i> with parse enabled.</pre>
-
-<pre>Scrape <i>https://www.amazon.de/-/en/gp/bestsellers/beauty/ref=zg_bs_nav_beauty_0</i> with parse and render enabled.</pre>
-
-<pre>Use web unblocker with render to scrape <i>https://www.bestbuy.com/site/top-deals/all-electronics-on-sale/pcmcat1674241939957.c</i></pre>
-
-
 ## ✅ Prerequisites
 
 Before you begin, make sure you have:
@@ -89,6 +75,15 @@ Before you begin, make sure you have:
 - **Python 3.12+**
 - `uv` package manager – install it using [this guide](https://docs.astral.sh/uv/getting-started/installation/)
 
+## 🧩 API Parameters
+
+The Oxylabs MCP server supports these parameters:
+
+| Parameter | Description | Values |
+|-----------|-------------|--------|
+| `url` | The URL to scrape | Any valid URL |
+| `parse` | Enable structured data extraction | `True` or `False` |
+| `render` | Use headless browser rendering | `html` or `None` |
 
 ## ⚙️ Basic Setup Instructions
 
@@ -201,17 +196,6 @@ Enable **Developer Mode** and then navigate to **Claude → Settings → Develop
 make run
 ```
 Then access MCP Inspector at `http://localhost:5173`. You may need to add your username and password as environment variables in the inspector under `OXYLABS_USERNAME` and `OXYLABS_PASSWORD`.
-
-
-## 🧩 API Parameters
-
-The Oxylabs MCP server supports these parameters:
-
-| Parameter | Description | Values |
-|-----------|-------------|--------|
-| `url` | The URL to scrape | Any valid URL |
-| `parse` | Enable structured data extraction | `True` or `False` |
-| `render` | Use headless browser rendering | `html` or `None` |
 
 
 ## 🛠️ Technical Details
