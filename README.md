@@ -61,13 +61,22 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 </details>
 
 
+## 💡 Example Queries
+When you've set up the MCP server with **Claude**, you can make requests like:
+
+<pre>Could you scrape <i>https://www.google.com/search?q=ai</i> page?</pre>
+<pre>Scrape <i>https://www.amazon.de/-/en/Smartphone-Contract-Function-Manufacturer-Exclusive/dp/B0CNKD651V</i> with <ins>parse</ins> enabled</pre>
+<pre>Scrape <i>https://www.amazon.de/-/en/gp/bestsellers/beauty/ref=zg_bs_nav_beauty_0</i> with <ins>parse</ins> and <ins>render</ins> enabled</pre>
+<pre>Use web unblocker with <ins>render</ins> to scrape <i>https://www.bestbuy.com/site/top-deals/all-electronics-on-sale/pcmcat1674241939957.c</i></pre>
+
+
 ## ✅ Prerequisites
 
 Before you begin, make sure you have:
 
 - **Oxylabs Account**: Obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available)
 
-### Basic Usage (via Smithery CLI or Cursor)
+### Basic Usage (via Smithery CLI)
 - **Node.js** (v16+)
 - `npx` command-line tool
 
@@ -87,7 +96,7 @@ The Oxylabs MCP server supports these parameters:
 
 ## ⚙️ Basic Setup Instructions
 
-### Install via Smithery (Recommended)
+### Install via Smithery
 
 Automatically install Oxylabs MCP server for Claude Desktop via [Smithery](https://smithery.ai/server/@oxylabs/oxylabs-mcp):
 
