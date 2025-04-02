@@ -64,10 +64,10 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 ## 💡 Example Queries
 When you've set up the MCP server with **Claude**, you can make requests like:
 
-<pre>Could you scrape <i>https://www.google.com/search?q=ai</i> page?</pre>
-<pre>Scrape <i>https://www.amazon.de/-/en/Smartphone-Contract-Function-Manufacturer-Exclusive/dp/B0CNKD651V</i> with <ins>parse</ins> enabled</pre>
-<pre>Scrape <i>https://www.amazon.de/-/en/gp/bestsellers/beauty/ref=zg_bs_nav_beauty_0</i> with <ins>parse</ins> and <ins>render</ins> enabled</pre>
-<pre>Use web unblocker with <ins>render</ins> to scrape <i>https://www.bestbuy.com/site/top-deals/all-electronics-on-sale/pcmcat1674241939957.c</i></pre>
+- Could you scrape `https://www.google.com/search?q=ai` page?
+- Scrape `https://www.amazon.de/-/en/Smartphone-Contract-Function-Manufacturer-Exclusive/dp/B0CNKD651V` with **parse** enabled
+- Scrape `https://www.amazon.de/-/en/gp/bestsellers/beauty/ref=zg_bs_nav_beauty_0` with **parse** and **render** enabled
+- Use web unblocker with **render** to scrape `https://www.bestbuy.com/site/top-deals/all-electronics-on-sale/pcmcat1674241939957.c`
 
 
 ## ✅ Prerequisites
@@ -76,9 +76,13 @@ Before you begin, make sure you have:
 
 - **Oxylabs Account**: Obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available)
 
-### Basic Usage (via Smithery CLI)
+### Basic Usage
+Via Smithery CLI:
 - **Node.js** (v16+)
 - `npx` command-line tool
+
+Via uv:
+- `uv` package manager – install it using [this guide](https://docs.astral.sh/uv/getting-started/installation/)
 
 ### Local/Dev Setup
 - **Python 3.12+**
@@ -103,35 +107,11 @@ Automatically install Oxylabs MCP server for Claude Desktop via [Smithery](https
 ```bash
 npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client claude
 ```
----
-### Run on Cursor
-
-> [!IMPORTANT]
-> Requires Cursor version `0.45.6+`
-
-To configure Oxylabs in Cursor:
-
-1. Open Cursor **Settings**
-2. Go to **Features > MCP Servers** 
-3. Click "**+ Add New MCP Server**"
-4. Enter the following:
-   - **Name**: `oxylabs` (or your preferred name)
-   - **Type**: `command`
-   - **Command**:`npx -y @smithery/cli@latest run @oxylabs/oxylabs-mcp --config "{\"oxylabsUsername\":\"YOUR_USERNAME\",\"oxylabsPassword\":\"YOUR_PASSWORD\"}"`
-  
-Replace `your-username` and `your-password` with your Oxylabs credentials.
-
-> [!TIP]
-> If you're using Windows and run into issues, try this:
-> 
-> `cmd /c "set OXYLABS_USERNAME=your-username && set OXYLABS_PASSWORD=your-password && npx -y oxylabs-mcp"`
-
-After that, refresh the MCP server list to see the new tools. The Composer Agent will automatically use Oxylabs when appropriate, but you can explicitly request it by describing your web scraping needs. Access the Composer via `Command+L` (Mac), select "Agent" next to the submit button, and enter your query.
 
 ---
-### Set up with Claude Desktop
+### Install using uv in Claude Desktop
 
-Enable **Developer Mode** and then navigate to **Claude → Settings → Developer → Edit Config** and edit your `claude_desktop_config.json` file as follows:
+With `uv` installed, this method will automatically set up the Oxylabs MCP server in Claude Desktop. Navigate to **Claude → Settings → Developer → Edit Config** and edit your `claude_desktop_config.json` file as follows:
 
 ```json
 {
@@ -147,6 +127,9 @@ Enable **Developer Mode** and then navigate to **Claude → Settings → Develop
   }
 }
 ```
+> [!TIP]
+> If you run into errors, try using the full path to `uvx` in the `command` field. For example, `/Users/my-user/.local/bin/uvx`.
+
 ---
 
 ## 💻 Local/Dev Setup Instructions
@@ -177,7 +160,7 @@ uv sync
 
 ### Setup with Claude Desktop
 
-Enable **Developer Mode** and then navigate to **Claude → Settings → Developer → Edit Config** and edit your `claude_desktop_config.json` file as follows:
+Navigate to **Claude → Settings → Developer → Edit Config** and edit your `claude_desktop_config.json` file as follows:
 
 ```json
 {
