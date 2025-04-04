@@ -102,33 +102,92 @@ The Oxylabs MCP server supports these parameters:
 
 ### Install via Smithery
 
-Automatically install Oxylabs MCP server for Claude Desktop via [Smithery](https://smithery.ai/server/@oxylabs/oxylabs-mcp):
+Automatically install Oxylabs MCP server via [Smithery](https://smithery.ai/server/@oxylabs/oxylabs-mcp):
 
 ```bash
-npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client claude
+npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client <client>
 ```
 
----
-### Install using uv in Claude Desktop
+List of clients supported by Oxylabs at the moment:
+  - claude
+  - cursor
 
-With `uv` installed, this method will automatically set up the Oxylabs MCP server in Claude Desktop. Navigate to **Claude → Settings → Developer → Edit Config** and edit your `claude_desktop_config.json` file as follows:
+### Manual MCP configuration options
 
-```json
-{
-  "mcpServers": {
-    "oxylabs_scraper": {
-      "command": "uvx",
-      "args": ["oxylabs-mcp"],
-      "env": {
-        "OXYLABS_USERNAME": "YOUR_USERNAME_HERE",
-        "OXYLABS_PASSWORD": "YOUR_PASSWORD_HERE"
+1. Config with `npx`. 
+    ```json
+    {
+      "mcpServers": {
+        "oxylabs-mcp": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@smithery/cli@latest",
+            "run",
+            "@oxylabs/oxylabs-mcp",
+            "--config",
+            "\"{\\\"oxylabsUsername\\\":\\\"OXYLABS_USERNAME\\\",\\\"oxylabsPassword\\\":\\\"OXYLABS_PASSWORD\\\"}\""
+          ]
+        }
       }
     }
-  }
-}
-```
+    ```
+
+2. Config with `uvx`.
+    ```json
+    {
+      "mcpServers": {
+        "oxylabs_scraper_uvx": {
+          "command": "uvx",
+          "args": [
+            "oxylabs-mcp"
+          ],
+          "env": {
+            "OXYLABS_USERNAME": "OXYLABS_USERNAME",
+            "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
+          }
+        }
+      }
+    }
+    ```
+
+3. Config with `uv`. For the local development.
+    ```json
+    {
+      "mcpServers": {
+        "oxylabs_scraper": {
+          "command": "uv",
+          "args": [
+            "--directory",
+            "/<Absolute-path-to-folder>/oxylabs-mcp",
+            "run",
+            "oxylabs-mcp"
+          ],
+          "env": {
+            "OXYLABS_USERNAME": "OXYLABS_USERNAME",
+            "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
+          }
+        }
+      }
+    }
+    ```
+
+> [!WARNING]
+> MCP host, client and server instrumentation is under a constant improvement and may not be very stable. 
+> The most stable configuration option at the moment of writing is `uvx`.
+
 > [!TIP]
-> If you run into errors, try using the full path to `uvx` in the `command` field. For example, `/Users/my-user/.local/bin/uvx`.
+> If you run into errors with `uvx`, try using the full path to `uvx` in the `command` field. For example, `/Users/my-user/.local/bin/uvx`.
+> If you are using Windows and experiencing issues with Cursor, refer to the guidelines described [here](https://smithery.ai/docs/faq/users).
+
+
+### Manual Setup with Claude Desktop
+
+Navigate to **Claude → Settings → Developer → Edit Config** and add one of the configurations above to the `claude_desktop_config.json` file.
+
+### Manual Setup with Cursor AI
+
+Navigate to **Cursor → Settings → Cursor Settings → MCP**. Click **Add new global MCP server** and add one of the configurations above.
 
 ---
 
@@ -158,29 +217,6 @@ source .venv/bin/activate # MacOS/Linux
 uv sync
 ```
 
-### Setup with Claude Desktop
-
-Navigate to **Claude → Settings → Developer → Edit Config** and edit your `claude_desktop_config.json` file as follows:
-
-```json
-{
-  "mcpServers": {
-    "oxylabs_scraper": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/<Absolute-path-to-folder>/oxylabs-mcp",
-        "run",
-        "oxylabs-mcp"
-      ],
-      "env": {
-        "OXYLABS_USERNAME": "YOUR_USERNAME_HERE",
-        "OXYLABS_PASSWORD": "YOUR_PASSWORD_HERE"
-      }
-    }
-  }
-}
-```
 ---
 ### 🐞 Debugging
 
@@ -200,10 +236,6 @@ This server provides two main tools:
 [Web Scraper API](https://oxylabs.io/products/scraper-api/web) supports JavaScript rendering, parsed structured data, and cleaned HTML in Markdown format. [Web Unblocker](https://oxylabs.io/products/web-unblocker) offers JavaScript rendering and cleaned HTML, but doesn’t return parsed data.
 
 ---
-
-> [!WARNING]
-> Usage with the MCP Inspector is affected by an ongoing issue with the Python SDK for MCP, see: https://github.com/modelcontextprotocol/python-sdk/pull/85. For Claude, a forked version of the SDK is used as a temporary fix.
-
 
 ## License
 
