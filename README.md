@@ -114,7 +114,25 @@ List of clients supported by Oxylabs at the moment:
 
 ### Manual MCP configuration options
 
-1. Config with `npx`. 
+1. Config with `uvx`. Will install the CLI client and Oxylabs MCP server that performs calls directly to the Oxylabs API. Recommended and the most stable option at the moment.
+    ```json
+    {
+      "mcpServers": {
+        "oxylabs_scraper_uvx": {
+          "command": "uvx",
+          "args": [
+            "oxylabs-mcp"
+          ],
+          "env": {
+            "OXYLABS_USERNAME": "OXYLABS_USERNAME",
+            "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
+          }
+        }
+      }
+    }
+    ```
+
+2. Config with `npx`. Will install the Smithery CLI client that performs calls to the Oxylabs MCP server hosted in Smithery.
     ```json
     {
       "mcpServers": {
@@ -133,25 +151,7 @@ List of clients supported by Oxylabs at the moment:
     }
     ```
 
-2. Config with `uvx`.
-    ```json
-    {
-      "mcpServers": {
-        "oxylabs_scraper_uvx": {
-          "command": "uvx",
-          "args": [
-            "oxylabs-mcp"
-          ],
-          "env": {
-            "OXYLABS_USERNAME": "OXYLABS_USERNAME",
-            "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
-          }
-        }
-      }
-    }
-    ```
-
-3. Config with `uv`. For the local development.
+3. Config with `uv`. Will install CLI client and Oxylabs MCP server that references the local code. For the local development.
     ```json
     {
       "mcpServers": {
@@ -172,9 +172,8 @@ List of clients supported by Oxylabs at the moment:
     }
     ```
 
-> [!WARNING]
-> MCP host, client and server instrumentation is under a constant improvement and may not be very stable. 
-> The most stable configuration option at the moment of writing is `uvx`.
+> [!NOTE]
+> If you don't have `uvx` utility you need to install it first with `brew install uv`
 
 > [!TIP]
 > If you run into errors with `uvx`, try using the full path to `uvx` in the `command` field. For example, `/Users/my-user/.local/bin/uvx`.
