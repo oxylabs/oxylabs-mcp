@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Oxylabs MCP server"
 authors = [
     {name="Augis Braziunas", email="augis.braziunas@oxylabs.io"},
+    {name="Rostyslav Borovyk", email="rostyslav.borovyk@oxylabs.io"},
 ]
 readme = "README.md"
 requires-python = ">=3.12"
@@ -23,7 +24,7 @@ dependencies = [
     "lxml>=5.3.0",
     "lxml-html-clean>=0.4.1",
     "markdownify>=0.14.1",
-    "mcp[cli]>=1.2.0",
+    "mcp[cli]>=1.6.0",
     "pydantic>=2.10.5",
 ]
 
@@ -39,11 +40,6 @@ dev = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-# Fork with minimal fix for Claude disconnection errors
-# When https://github.com/modelcontextprotocol/python-sdk/pull/85 merged, change back to official lib.
-[tool.uv.sources]
-mcp = { git = "https://github.com/txbm/python-sdk", rev = "19185626d57fdd670219784d10859c7d0a302c2e" }
 
 [project.scripts]
 oxylabs-mcp = "oxylabs_mcp:main"
