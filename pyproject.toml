@@ -30,6 +30,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "lxml-stubs>=0.5.1",
     "mypy>=1.14.1",
     "pytest>=8.3.4",
     "pytest-asyncio>=0.25.2",
@@ -47,3 +48,40 @@ oxylabs-mcp = "oxylabs_mcp:main"
 [project.urls]
 Homepage = "https://github.com/oxylabs/oxylabs-mcp"
 Repository = "https://github.com/oxylabs/oxylabs-mcp"
+
+[[tool.mypy.overrides]]
+module = "markdownify.*"
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py312"
+lint.select = [
+  "E", # pycodestyle (E, W) - https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+  "F", # Pyflakes (F) - https://docs.astral.sh/ruff/rules/#pyflakes-f
+  "W", # pycodestyle (E, W) - https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+  "I", # isort (I) https://docs.astral.sh/ruff/rules/#isort-i
+  "D", # pydocstyle (D) https://docs.astral.sh/ruff/rules/#pydocstyle-d
+  "S", # bandit (S) https://docs.astral.sh/ruff/rules/#flake8-bandit-s
+  "ARG", # flake8-unused-arguments - https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
+  "B",   # flake8-bugbear - https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+  "C4",  # flake8-comprehensions - https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+  "ISC", # flake8-implicit-str-concat - https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
+  "FA",  # flake8-future-annotations - https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
+  "FBT", # flake8-boolean-trap - https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
+  "Q", # flake8-quotes (Q) https://docs.astral.sh/ruff/rules/#flake8-quotes-q
+]
+lint.ignore = [
+  "D213",  # Contradicts D212.
+  "D203",  # Contradicts D211.
+  "D104", # Allow no docstrings in packages
+  "D100", # Allow no docstrings in modules
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D101", "D102", "D103", "S101", "ARG001"]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 88
+
+[tool.ruff.lint.isort]
+known-first-party = ["src", "tests"]

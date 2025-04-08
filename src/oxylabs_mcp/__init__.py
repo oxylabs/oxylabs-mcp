@@ -2,7 +2,7 @@ from . import server
 
 
 def main():
-    """Main entry point for the package."""
+    """Start the MCP server."""
     server.main()
 
 

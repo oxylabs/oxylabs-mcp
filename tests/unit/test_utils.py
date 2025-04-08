@@ -1,7 +1,9 @@
-from unittest.mock import patch
-from oxylabs_mcp.utils import get_auth_from_env, strip_html
-import pytest
 from contextlib import nullcontext as does_not_raise
+from unittest.mock import patch
+
+import pytest
+
+from oxylabs_mcp.utils import get_auth_from_env, strip_html
 
 TEST_FIXTURES = "tests/fixtures/"
 
@@ -10,17 +12,17 @@ TEST_FIXTURES = "tests/fixtures/"
     "env_vars, expectation",
     [
         pytest.param(
-            {'OXYLABS_USERNAME': 'test_user', 'OXYLABS_PASSWORD': 'test_pass'},
+            {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"},
             does_not_raise(),
             id="valid-env"
         ),
         pytest.param(
-            {'OXYLABS_PASSWORD': 'test_pass'},
+            {"OXYLABS_PASSWORD": "test_pass"},
             pytest.raises(ValueError),
             id="no-username"
         ),
         pytest.param(
-            {'OXYLABS_USERNAME': 'test_user'},
+            {"OXYLABS_USERNAME": "test_user"},
             pytest.raises(ValueError),
             id="no-password"
         ),

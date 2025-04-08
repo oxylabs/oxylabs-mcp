@@ -1,7 +1,8 @@
 from typing import Annotated, Any, Literal
-from httpx import AsyncClient, BasicAuth, Timeout, HTTPStatusError, RequestError
-from mcp.server.fastmcp import FastMCP
+
 from dotenv import load_dotenv
+from httpx import AsyncClient, BasicAuth, HTTPStatusError, RequestError, Timeout
+from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 from oxylabs_mcp.utils import convert_html_to_md, get_auth_from_env, strip_html
@@ -13,9 +14,9 @@ mcp = FastMCP("oxylabs_mcp", dependencies=["mcp", "httpx"])
 load_dotenv()
 
 
-@mcp.tool(name="oxylabs_scraper", description="Scrape url using Oxylabs Web Api")
+@mcp.tool(name="oxylabs_scraper", description="Scrape url using Oxylabs Web API")
 async def scrape_url(
-    url: Annotated[str, Field(description="Url to scrape")],
+    url,
     parse: Annotated[
         bool | None,
         Field(
@@ -29,18 +30,19 @@ async def scrape_url(
         Field(
             description="Whether a headless browser should be used "
             "to render the page. See: "
-            "https://developers.oxylabs.io/scraper-apis/web-scraper-api/features/javascript-rendering "
+            "https://developers.oxylabs.io/scraper-apis"
+            "/web-scraper-api/features/javascript-rendering "
             "`html` will return rendered html page "
             "`None` will not use render for scraping."
-        )
-    ] = None
+        ),
+    ] = None,
 ) -> str:
-    """Scrape Url using Oxylabs scraper api"""
+    """Scrape Url using Oxylabs scraper API."""
     username, password = get_auth_from_env()
 
     async with AsyncClient(
         auth=BasicAuth(username=username, password=password),
-        timeout=Timeout(REQUEST_TIMEOUT)
+        timeout=Timeout(REQUEST_TIMEOUT),
     ) as client:
         try:
             json: dict[str, Any] = {"url": url}
@@ -56,9 +58,7 @@ async def scrape_url(
             response.raise_for_status()
 
             if not bool(parse):
-                striped_html = strip_html(
-                    str(response.json()["results"][0]["content"])
-                )
+                striped_html = strip_html(str(response.json()["results"][0]["content"]))
                 return convert_html_to_md(striped_html)
             return str(response.json()["results"][0]["content"])
         except HTTPStatusError as e:
@@ -83,11 +83,12 @@ async def scrape_with_web_unblocker(
         Field(
             description="Whether a headless browser should be used "
             "to render the page. See: "
-            "https://developers.oxylabs.io/advanced-proxy-solutions/web-unblocker/headless-browser/javascript-rendering "
+            "https://developers.oxylabs.io/advanced-proxy-solutions"
+            "/web-unblocker/headless-browser/javascript-rendering "
             "`html` will return rendered html page "
             "`None` will not use render for scraping."
-        )
-    ] = None
+        ),
+    ] = None,
 ) -> str:
     """Web Unblocker is an AI-powered proxy solution.
 
@@ -104,9 +105,9 @@ async def scrape_with_web_unblocker(
 
     async with AsyncClient(
         timeout=Timeout(REQUEST_TIMEOUT),
-        verify=False,
+        verify=False,  # noqa: S501
         proxy=proxy,
-        headers=headers
+        headers=headers,
     ) as client:
         try:
             response = await client.get(url)
@@ -125,6 +126,7 @@ async def scrape_with_web_unblocker(
 
 
 def main():
+    """Run the MCP server."""
     mcp.run()
 
 

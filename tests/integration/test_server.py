@@ -1,15 +1,16 @@
 import json
-from httpx import Request, Response
-import pytest
-from mcp.server.fastmcp import FastMCP
-from mcp.server.fastmcp.tools.base import ToolError
-from mcp.types import TextContent
-from oxylabs_mcp.server import mcp as mcp_server
 from contextlib import nullcontext as does_not_raise
 from unittest.mock import AsyncMock, patch
 
+import pytest
+from httpx import Request, Response
+from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.tools.base import ToolError
+from mcp.types import TextContent
 
-ENV_VARIABLES = {'OXYLABS_USERNAME': 'test_user', 'OXYLABS_PASSWORD': 'test_pass'}
+from oxylabs_mcp.server import mcp as mcp_server
+
+ENV_VARIABLES = {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"}
 
 
 class TestMcpServer:
