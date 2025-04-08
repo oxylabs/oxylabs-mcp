@@ -9,7 +9,7 @@ TEST_FIXTURES = "tests/fixtures/"
 
 
 @pytest.mark.parametrize(
-    "env_vars, expectation",
+    ("env_vars",  "expectation"),
     [
         pytest.param(
             {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"},
@@ -39,7 +39,7 @@ def test_get_auth_from_env(mocker, env_vars, expectation):
 
 
 @pytest.mark.parametrize(
-    "html_input, expected_output",
+    ("html_input", "expected_output"),
     [
         pytest.param(
             "before_strip.html",

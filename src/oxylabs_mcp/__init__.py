@@ -1,7 +1,7 @@
 from . import server
 
 
-def main():
+def main() -> None:
     """Start the MCP server."""
     server.main()
 

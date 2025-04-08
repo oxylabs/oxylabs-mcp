@@ -16,7 +16,7 @@ load_dotenv()
 
 @mcp.tool(name="oxylabs_scraper", description="Scrape url using Oxylabs Web API")
 async def scrape_url(
-    url,
+    url: Annotated[str, Field(description="Url to scrape with web scraper")],
     parse: Annotated[
         bool | None,
         Field(
@@ -125,7 +125,7 @@ async def scrape_with_web_unblocker(
             return f"Error: {str(e) or repr(e)}"
 
 
-def main():
+def main() -> None:
     """Run the MCP server."""
     mcp.run()
 

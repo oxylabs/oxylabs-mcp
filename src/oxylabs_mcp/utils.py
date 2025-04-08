@@ -19,7 +19,7 @@ def get_auth_from_env() -> tuple[str, str]:
     return username, password
 
 
-def clean_html(html: str):
+def clean_html(html: str) -> str:
     """Clean an HTML string."""
     cleaner = Cleaner(
         scripts=True,

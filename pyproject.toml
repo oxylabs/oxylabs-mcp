@@ -69,16 +69,23 @@ lint.select = [
   "FA",  # flake8-future-annotations - https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
   "FBT", # flake8-boolean-trap - https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
   "Q", # flake8-quotes (Q) https://docs.astral.sh/ruff/rules/#flake8-quotes-q
+  "ANN", # flake8-annotations (ANN) https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+  "PLR", # Refactor (PLR) https://docs.astral.sh/ruff/rules/#refactor-plr
+  "PT", # flake8-pytest-style (PT) https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
 ]
 lint.ignore = [
   "D213",  # Contradicts D212.
   "D203",  # Contradicts D211.
   "D104", # Allow no docstrings in packages
   "D100", # Allow no docstrings in modules
+  "ANN002", # https://docs.astral.sh/ruff/rules/missing-type-args/
+  "ANN003", # https://docs.astral.sh/ruff/rules/missing-type-kwargs/
+  "ANN101", # https://docs.astral.sh/ruff/rules/missing-type-self/
+  "ANN102", # https://docs.astral.sh/ruff/rules/missing-type-cls/
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D101", "D102", "D103", "S101", "ARG001"]
+"tests/*" = ["D", "S101", "ARG001", "ANN", "PT011"]
 
 [tool.ruff.lint.pycodestyle]
 max-line-length = 88

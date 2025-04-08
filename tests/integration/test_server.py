@@ -23,7 +23,7 @@ class TestMcpServer:
         return Request("POST", "https://example.com/v1/queries")
 
     @pytest.mark.parametrize(
-        "arguments, expectation, expected_result",
+        ("arguments", "expectation", "expected_result"),
         [
             pytest.param(
                 {"url": "test_url"},
@@ -104,7 +104,7 @@ class TestMcpServer:
             assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.parametrize(
-        "arguments, expectation, expected_result",
+        ("arguments", "expectation", "expected_result"),
         [
             pytest.param(
                 {"url": "test_url"},
@@ -165,7 +165,7 @@ class TestMcpServer:
             assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.parametrize(
-        "arguments, response, expected_result",
+        ("arguments",  "response" , "expected_result"),
         [
             pytest.param(
                 {"url": "test_url"},
@@ -222,7 +222,7 @@ class TestMcpServer:
         request_data: Request,
         arguments: dict,
         response: Response,
-        expected_result: str
+        expected_result: str,
     ):
         response.request = request_data
         with (
@@ -237,7 +237,7 @@ class TestMcpServer:
 
 
     @pytest.mark.parametrize(
-        "arguments, response, expected_result",
+        ("arguments",  "response" , "expected_result"),
         [
             pytest.param(
                 {"url": "test_url"},
@@ -266,7 +266,7 @@ class TestMcpServer:
         request_data: Request,
         arguments: dict,
         response: Response,
-        expected_result: str
+        expected_result: str,
     ):
         response.request = request_data
         with (
