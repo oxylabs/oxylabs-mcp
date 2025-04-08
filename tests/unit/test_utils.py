@@ -10,29 +10,25 @@ TEST_FIXTURES = "tests/fixtures/"
 
 
 @pytest.mark.parametrize(
-    ("env_vars",  "expectation"),
+    ("env_vars", "expectation"),
     [
         pytest.param(
             {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"},
             does_not_raise(),
-            id="valid-env"
+            id="valid-env",
         ),
         pytest.param(
             {"OXYLABS_PASSWORD": "test_pass"},
             pytest.raises(ValueError),
-            id="no-username"
+            id="no-username",
         ),
         pytest.param(
             {"OXYLABS_USERNAME": "test_user"},
             pytest.raises(ValueError),
-            id="no-password"
+            id="no-password",
         ),
-        pytest.param(
-            {},
-            pytest.raises(ValueError),
-            id="no-username-or-password"
-        ),
-    ]
+        pytest.param({}, pytest.raises(ValueError), id="no-username-or-password"),
+    ],
 )
 def test_get_auth_from_env(mocker, env_vars, expectation):
     with expectation, patch("os.environ", new=env_vars):
@@ -41,13 +37,7 @@ def test_get_auth_from_env(mocker, env_vars, expectation):
 
 @pytest.mark.parametrize(
     ("html_input", "expected_output"),
-    [
-        pytest.param(
-            "before_strip.html",
-            "after_strip.html",
-            id="strip-html"
-        )
-    ]
+    [pytest.param("before_strip.html", "after_strip.html", id="strip-html")],
 )
 def test_strip_html(html_input: str, expected_output: str):
     with (
