@@ -52,6 +52,7 @@ Repository = "https://github.com/oxylabs/oxylabs-mcp"
 [[tool.mypy.overrides]]
 module = "markdownify.*"
 ignore_missing_imports = true
+strict = true
 
 [tool.ruff]
 target-version = "py312"
@@ -92,3 +93,4 @@ max-line-length = 88
 
 [tool.ruff.lint.isort]
 known-first-party = ["src", "tests"]
+

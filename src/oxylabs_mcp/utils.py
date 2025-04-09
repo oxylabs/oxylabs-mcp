@@ -38,7 +38,7 @@ def clean_html(html: str) -> str:
         forms=False,
         annoying_tags=False,
     )
-    return cleaner.clean_html(html)
+    return cleaner.clean_html(html)  # type: ignore[no-any-return]
 
 
 def strip_html(html: str) -> str:
@@ -92,9 +92,9 @@ def strip_html(html: str) -> str:
     stripped_html = re.sub(r"\s{2,}", " ", stripped_html)
     # Replace consecutive newlines with an empty string
     stripped_html = re.sub(r"\n{2,}", "", stripped_html)
-    return stripped_html
+    return stripped_html  # type: ignore[no-any-return]
 
 
 def convert_html_to_md(html: str) -> str:
     """Convert HTML string to Markdown format."""
-    return md(html)
+    return md(html)  # type: ignore[no-any-return]
