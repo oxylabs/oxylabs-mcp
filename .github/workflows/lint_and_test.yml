@@ -20,16 +20,20 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.12"
+
     - name: Install uv
       run: |
         pip install uv
+
     - name: Install dependencies
       run: |
         uv sync
+
     - name: Run linter
       run: |
         uv run mypy src
         uv run ruff check .
+
     - name: Run tests
       run: |
         uv run pytest --cov=src --cov-report xml --cov-report term --cov-fail-under=80 ./tests

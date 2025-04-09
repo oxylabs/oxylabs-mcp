@@ -23,7 +23,7 @@ async def scrape_url(
             description="Should result be parsed. "
             "If result should not be parsed then html "
             "will be stripped and converted to markdown file"
-        )
+        ),
     ] = None,
     render: Annotated[
         Literal["html", "None"] | None,
