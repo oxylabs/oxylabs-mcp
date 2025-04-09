@@ -94,4 +94,4 @@ max-line-length = 88
 
 [tool.ruff.lint.isort]
 known-first-party = ["src", "tests"]
-
+lines-after-imports = 2

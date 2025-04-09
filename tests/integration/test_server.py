@@ -10,6 +10,7 @@ from mcp.types import TextContent
 
 from oxylabs_mcp.server import mcp as mcp_server
 
+
 ENV_VARIABLES = {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"}
 
 

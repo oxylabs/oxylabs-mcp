@@ -7,6 +7,7 @@ from pydantic import Field
 
 from oxylabs_mcp.utils import convert_html_to_md, get_auth_from_env, strip_html
 
+
 OXYLABS_SCRAPER_URL = "https://realtime.oxylabs.io/v1/queries"
 REQUEST_TIMEOUT = 100
 

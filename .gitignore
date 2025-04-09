@@ -17,3 +17,6 @@ coverage.xml
 
 # IDEs
 .idea/
+
+# Misc
+var/

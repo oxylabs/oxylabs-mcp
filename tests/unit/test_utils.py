@@ -5,6 +5,7 @@ import pytest
 
 from oxylabs_mcp.utils import get_auth_from_env, strip_html
 
+
 TEST_FIXTURES = "tests/fixtures/"
 
 
