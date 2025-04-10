@@ -5,6 +5,8 @@ build/
 dist/
 wheels/
 *.egg-info
+.coverage
+coverage.xml
 
 # Virtual environments
 .venv
@@ -12,3 +14,9 @@ wheels/
 
 # Env files
 .env
+
+# IDEs
+.idea/
+
+# Misc
+var/

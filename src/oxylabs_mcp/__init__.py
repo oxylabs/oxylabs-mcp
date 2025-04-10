@@ -1,8 +1,8 @@
 from . import server
 
 
-def main():
-    """Main entry point for the package."""
+def main() -> None:
+    """Start the MCP server."""
     server.main()
 
 
