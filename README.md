@@ -1,8 +1,16 @@
-# MCP Server for Oxylabs Scraper
+<p align="center">
+  <img src="img/oxylabs_mcp.svg" alt="Oxylabs + MCP">
+</p>
+<h1 align="center">
+  Oxylabs MCP Server
+</h1>
+<p align="center">
+  <p align="center">Access web data seamlessly with Oxylabs via the Model Context Protocol</p>
+</p>
+
 [![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
-
-A Model Context Protocol (MCP) server that enables AI assistants like Claude to seamlessly access web data through Oxylabs' powerful web scraping technology.
-
+[![pypi package](https://img.shields.io/pypi/v/oxylabs-mcp?color=%2334D058&label=pypi%20package)](https://pypi.org/project/oxylabs-mcp/)
+[![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
 <a href="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp/badge" alt="Oxylabs Server MCP server" />
 </a>
@@ -106,33 +114,91 @@ The Oxylabs MCP server supports these parameters:
 
 ### Install via Smithery
 
-Automatically install Oxylabs MCP server for Claude Desktop via [Smithery](https://smithery.ai/server/@oxylabs/oxylabs-mcp):
+Automatically install Oxylabs MCP server via [Smithery](https://smithery.ai/server/@oxylabs/oxylabs-mcp):
 
 ```bash
-npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client claude
+npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client <client>
 ```
 
----
-### Install using uv in Claude Desktop
+List of clients supported by Oxylabs at the moment:
+  - claude
+  - cursor
 
-With `uv` installed, this method will automatically set up the Oxylabs MCP server in Claude Desktop. Navigate to **Claude → Settings → Developer → Edit Config** and edit your `claude_desktop_config.json` file as follows:
+### Manual MCP configuration options
 
-```json
-{
-  "mcpServers": {
-    "oxylabs_scraper": {
-      "command": "uvx",
-      "args": ["oxylabs-mcp"],
-      "env": {
-        "OXYLABS_USERNAME": "YOUR_USERNAME_HERE",
-        "OXYLABS_PASSWORD": "YOUR_PASSWORD_HERE"
+1. Config with `uvx`. Will install the CLI client and Oxylabs MCP server that performs calls directly to the Oxylabs API. Recommended and the most stable option at the moment.
+    ```json
+    {
+      "mcpServers": {
+        "oxylabs_scraper_uvx": {
+          "command": "uvx",
+          "args": [
+            "oxylabs-mcp"
+          ],
+          "env": {
+            "OXYLABS_USERNAME": "OXYLABS_USERNAME",
+            "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
+          }
+        }
       }
     }
-  }
-}
-```
+    ```
+
+2. Config with `npx`. Will install the Smithery CLI client that performs calls to the Oxylabs MCP server hosted in Smithery.
+    ```json
+    {
+      "mcpServers": {
+        "oxylabs-mcp": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@smithery/cli@latest",
+            "run",
+            "@oxylabs/oxylabs-mcp",
+            "--config",
+            "\"{\\\"oxylabsUsername\\\":\\\"OXYLABS_USERNAME\\\",\\\"oxylabsPassword\\\":\\\"OXYLABS_PASSWORD\\\"}\""
+          ]
+        }
+      }
+    }
+    ```
+
+3. Config with `uv`. Will install CLI client and Oxylabs MCP server that references the local code. For the local development.
+    ```json
+    {
+      "mcpServers": {
+        "oxylabs_scraper": {
+          "command": "uv",
+          "args": [
+            "--directory",
+            "/<Absolute-path-to-folder>/oxylabs-mcp",
+            "run",
+            "oxylabs-mcp"
+          ],
+          "env": {
+            "OXYLABS_USERNAME": "OXYLABS_USERNAME",
+            "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
+          }
+        }
+      }
+    }
+    ```
+
+> [!NOTE]
+> If you don't have `uvx` utility you need to install it first with `brew install uv`
+
 > [!TIP]
-> If you run into errors, try using the full path to `uvx` in the `command` field. For example, `/Users/my-user/.local/bin/uvx`.
+> If you run into errors with `uvx`, try using the full path to `uvx` in the `command` field. For example, `/Users/my-user/.local/bin/uvx`.
+> If you are using Windows and experiencing issues with Cursor, refer to the guidelines described [here](https://smithery.ai/docs/faq/users).
+
+
+### Manual Setup with Claude Desktop
+
+Navigate to **Claude → Settings → Developer → Edit Config** and add one of the configurations above to the `claude_desktop_config.json` file.
+
+### Manual Setup with Cursor AI
+
+Navigate to **Cursor → Settings → Cursor Settings → MCP**. Click **Add new global MCP server** and add one of the configurations above.
 
 ---
 
@@ -162,29 +228,6 @@ source .venv/bin/activate # MacOS/Linux
 uv sync
 ```
 
-### Setup with Claude Desktop
-
-Navigate to **Claude → Settings → Developer → Edit Config** and edit your `claude_desktop_config.json` file as follows:
-
-```json
-{
-  "mcpServers": {
-    "oxylabs_scraper": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/<Absolute-path-to-folder>/oxylabs-mcp",
-        "run",
-        "oxylabs-mcp"
-      ],
-      "env": {
-        "OXYLABS_USERNAME": "YOUR_USERNAME_HERE",
-        "OXYLABS_PASSWORD": "YOUR_PASSWORD_HERE"
-      }
-    }
-  }
-}
-```
 ---
 ### 🐞 Debugging
 

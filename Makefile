@@ -11,16 +11,18 @@ install_deps: $(virtualenv_dir)
 
 .PHONY: lint
 lint: install_deps
+	uv run black --check .
 	uv run mypy $(src_dir)
 	uv run ruff check
 
 .PHONY: format
 format: $(virtualenv_dir)
+	uv run black .
 	uv run ruff check --fix .
 
 .PHONY: test
 test: install_deps
-	uv run pytest ./tests
+	uv run pytest --cov=src --cov-report xml --cov-report term --cov-fail-under=80 ./tests
 
 .PHONY: run
 run: install_deps
