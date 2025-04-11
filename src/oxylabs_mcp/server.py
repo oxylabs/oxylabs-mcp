@@ -61,9 +61,7 @@ async def scrape_with_web_unblocker(
         headers["X-Oxylabs-Render"] = render
 
     try:
-        async with oxylabs_client(
-            with_proxy=True, verify=False, headers=headers
-        ) as client:
+        async with oxylabs_client(with_proxy=True, verify=False, headers=headers) as client:
             response = await client.get(url)
 
             response.raise_for_status()
@@ -146,7 +144,7 @@ async def scrape_amazon_search(
     geo_location: url_params.GEO_LOCATION_PARAM = "",
     locale: url_params.LOCALE_PARAM = "",
 ) -> str:
-    """Scrape Google Search results using Oxylabs Web API."""
+    """Scrape Amazon Search results using Oxylabs Web API."""
     try:
         async with oxylabs_client(with_auth=True) as client:
             payload: dict[str, Any] = {"source": "amazon_search", "query": query}
@@ -171,6 +169,56 @@ async def scrape_amazon_search(
                 payload["start_page"] = start_page
             if pages:
                 payload["pages"] = pages
+            if domain:
+                payload["domain"] = domain
+            if geo_location:
+                payload["geo_location"] = geo_location
+            if geo_location:
+                payload["locale"] = locale
+
+            response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
+
+            response.raise_for_status()
+
+            return get_content(response, parse)
+    except MCPServerError as e:
+        return e.stringify()
+
+
+@mcp.tool(
+    name="oxylabs_amazon_product_scraper",
+    description="Scrape Amazon Products using Oxylabs Web API",
+)
+async def scrape_amazon_products(
+    query: url_params.AMAZON_SEARCH_QUERY_PARAM,
+    autoselect_variant: url_params.AUTOSELECT_VARIANT_CONTEXT_PARAM = False,  # noqa: FBT002
+    currency: url_params.CURRENCY_CONTEXT_PARAM = "",
+    parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
+    render: url_params.RENDER_PARAM = "",
+    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = "",
+    domain: url_params.DOMAIN_PARAM = "",
+    geo_location: url_params.GEO_LOCATION_PARAM = "",
+    locale: url_params.LOCALE_PARAM = "",
+) -> str:
+    """Scrape Amazon Products using Oxylabs Web API."""
+    try:
+        async with oxylabs_client(with_auth=True) as client:
+            payload: dict[str, Any] = {"source": "amazon_product", "query": query}
+
+            context = []
+            if autoselect_variant:
+                context.append({"key": "autoselect_variant", "value": autoselect_variant})
+            if currency:
+                context.append({"key": "currency", "value": currency})
+            if context:
+                payload["context"] = context
+
+            if parse:
+                payload["parse"] = parse
+            if render:
+                payload["render"] = render
+            if user_agent_type:
+                payload["user_agent_type"] = user_agent_type
             if domain:
                 payload["domain"] = domain
             if geo_location:

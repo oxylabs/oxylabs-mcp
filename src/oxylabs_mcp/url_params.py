@@ -26,9 +26,7 @@ RENDER_PARAM = Annotated[
         "`None` will not use render for scraping."
     ),
 ]
-GOOGLE_QUERY_PARAM = Annotated[
-    str, Field(description="URL-encoded keyword to search for.")
-]
+GOOGLE_QUERY_PARAM = Annotated[str, Field(description="URL-encoded keyword to search for.")]
 AMAZON_SEARCH_QUERY_PARAM = Annotated[str, Field(description="Keyword to search for.")]
 USER_AGENT_TYPE_PARAM = Annotated[
     Literal[
@@ -118,5 +116,13 @@ CURRENCY_CONTEXT_PARAM = Annotated[
         "%2FAmazon_search_currency_values.json?alt=media"
         "&token=b72b5c4d-3820-42a6-8e74-78ea6b44e93f",
         examples=["USD", "EUR", "AUD"],
+    ),
+]
+AUTOSELECT_VARIANT_CONTEXT_PARAM = Annotated[
+    bool,
+    Field(
+        description="To get accurate pricing/buybox data, set this parameter "
+        "to true (which tells us to append the th=1&psc=1 "
+        "URL parameters to the end of the product URL).",
     ),
 ]
