@@ -11,6 +11,7 @@
 [![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
 [![pypi package](https://img.shields.io/pypi/v/oxylabs-mcp?color=%2334D058&label=pypi%20package)](https://pypi.org/project/oxylabs-mcp/)
 [![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
+<br/>
 <a href="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp/badge" alt="Oxylabs Server MCP server" />
 </a>
@@ -98,7 +99,6 @@ Via uv:
 - **Python 3.12+**
 - `uv` package manager – install it using [this guide](https://docs.astral.sh/uv/getting-started/installation/)
 
-
 ## 🧩 API Parameters
 
 The Oxylabs MCP server supports these parameters:
@@ -108,7 +108,6 @@ The Oxylabs MCP server supports these parameters:
 | `url` | The URL to scrape | Any valid URL |
 | `parse` | Enable structured data extraction | `True` or `False` |
 | `render` | Use headless browser rendering | `html` or `None` |
-
 
 ## ⚙️ Basic Setup Instructions
 
@@ -236,15 +235,6 @@ make run
 ```
 Then access MCP Inspector at `http://localhost:5173`. You may need to add your username and password as environment variables in the inspector under `OXYLABS_USERNAME` and `OXYLABS_PASSWORD`.
 
-## 🧩 API Parameters
-
-The Oxylabs MCP server supports these parameters:
-
-| Parameter | Description | Values |
-|-----------|-------------|--------|
-| `url` | The URL to scrape | Any valid URL |
-| `parse` | Enable structured data extraction | `True` or `False` |
-| `render` | Use headless browser rendering | `html` or `None` |
 
 ## 🛠️ Technical Details
 
@@ -256,9 +246,6 @@ This server provides two main tools:
 [Web Scraper API](https://oxylabs.io/products/scraper-api/web) supports JavaScript rendering, parsed structured data, and cleaned HTML in Markdown format. [Web Unblocker](https://oxylabs.io/products/web-unblocker) offers JavaScript rendering and cleaned HTML, but doesn’t return parsed data.
 
 ---
-
-> [!WARNING]
-> Usage with the MCP Inspector is affected by an ongoing issue with the Python SDK for MCP, see: https://github.com/modelcontextprotocol/python-sdk/pull/85. For Claude, a forked version of the SDK is used as a temporary fix.
 
 ## License
 
