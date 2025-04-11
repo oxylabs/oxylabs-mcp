@@ -1,6 +1,6 @@
 [project]
 name = "oxylabs-mcp"
-version = "0.1.2"
+version = "0.1.3"
 description = "Oxylabs MCP server"
 authors = [
     {name="Augis Braziunas", email="augis.braziunas@oxylabs.io"},
@@ -26,10 +26,12 @@ dependencies = [
     "markdownify>=0.14.1",
     "mcp[cli]>=1.6.0",
     "pydantic>=2.10.5",
+    "pydantic-settings>=2.8.1",
 ]
 
 [dependency-groups]
 dev = [
+    "black>=25.1.0",
     "lxml-stubs>=0.5.1",
     "mypy>=1.14.1",
     "pytest>=8.3.4",
@@ -82,16 +84,17 @@ lint.ignore = [
   "D100", # Allow no docstrings in modules
   "ANN002", # https://docs.astral.sh/ruff/rules/missing-type-args/
   "ANN003", # https://docs.astral.sh/ruff/rules/missing-type-kwargs/
-  "ANN101", # https://docs.astral.sh/ruff/rules/missing-type-self/
-  "ANN102", # https://docs.astral.sh/ruff/rules/missing-type-cls/
+  "PLR0913", # Allow functions with many arguments
+  "PLR0912",  # Allow many branches for functions
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "S101", "ARG001", "ANN", "PT011"]
+"tests/*" = ["D", "S101", "ARG001", "ANN", "PT011", "FBT"]
 
 [tool.ruff.lint.pycodestyle]
-max-line-length = 88
+max-line-length = 100
 
 [tool.ruff.lint.isort]
 known-first-party = ["src", "tests"]
 lines-after-imports = 2
+

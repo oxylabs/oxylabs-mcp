@@ -1,9 +1,23 @@
+import json
 import os
 import re
+from contextlib import asynccontextmanager
+from typing import AsyncIterator
 
+from httpx import (
+    AsyncClient,
+    BasicAuth,
+    HTTPStatusError,
+    RequestError,
+    Response,
+    Timeout,
+)
 from lxml.html import defs, fromstring, tostring
 from lxml.html.clean import Cleaner
 from markdownify import markdownify as md
+
+from oxylabs_mcp.config import settings
+from oxylabs_mcp.exceptions import MCPServerError
 
 
 def get_auth_from_env() -> tuple[str, str]:
@@ -98,3 +112,60 @@ def strip_html(html: str) -> str:
 def convert_html_to_md(html: str) -> str:
     """Convert HTML string to Markdown format."""
     return md(html)  # type: ignore[no-any-return]
+
+
+@asynccontextmanager
+async def oxylabs_client(
+    headers: dict[str, str] | None = None,
+    *,
+    with_proxy: bool = False,
+    with_auth: bool = False,
+    verify: bool = True,
+) -> AsyncIterator[AsyncClient]:
+    """Async context manager for Oxylabs client that is used in MCP tools."""
+    if headers is None:
+        headers = {}
+
+    username, password = get_auth_from_env()
+
+    if with_proxy:
+        proxy = f"http://{username}:{password}@unblock.oxylabs.io:60000"
+    else:
+        proxy = None
+
+    if with_auth:
+        auth = BasicAuth(username=username, password=password)
+    else:
+        auth = None
+
+    async with AsyncClient(
+        timeout=Timeout(settings.OXYLABS_REQUEST_TIMEOUT_S),
+        verify=verify,
+        proxy=proxy,
+        headers=headers,
+        auth=auth,
+    ) as client:
+        try:
+            yield client
+        except HTTPStatusError as e:
+            raise MCPServerError(
+                "HTTP error during POST request: "
+                f"{e.response.status_code} - {e.response.text}"
+            ) from None
+        except RequestError as e:
+            raise MCPServerError(f"Request error during POST request: {e}") from None
+        except Exception as e:
+            raise MCPServerError(f"Error: {str(e) or repr(e)}") from None
+
+
+def get_content(response: Response, parse: bool | None = None) -> str:
+    """Extract content from response and convert to a proper format."""
+    content = response.json()["results"][0]["content"]
+
+    if not bool(parse):
+        striped_html = strip_html(str(content))
+        return convert_html_to_md(striped_html)
+    if isinstance(content, dict):
+        return json.dumps(content)
+
+    return str(content)
