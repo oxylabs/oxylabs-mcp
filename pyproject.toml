@@ -1,6 +1,6 @@
 [project]
 name = "oxylabs-mcp"
-version = "0.1.3"
+version = "0.1.4"
 description = "Oxylabs MCP server"
 authors = [
     {name="Augis Braziunas", email="augis.braziunas@oxylabs.io"},
@@ -98,3 +98,5 @@ max-line-length = 100
 known-first-party = ["src", "tests"]
 lines-after-imports = 2
 
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "session"

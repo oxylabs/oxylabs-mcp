@@ -29,6 +29,7 @@ RENDER_PARAM = Annotated[
 GOOGLE_QUERY_PARAM = Annotated[
     str, Field(description="URL-encoded keyword to search for.")
 ]
+AMAZON_SEARCH_QUERY_PARAM = Annotated[str, Field(description="Keyword to search for.")]
 USER_AGENT_TYPE_PARAM = Annotated[
     Literal[
         "",
@@ -94,5 +95,28 @@ AD_MODE_PARAM = Annotated[
         description="If true will use the Google Ads source optimized for the "
         "paid ads. See: https://developers.oxylabs.io/scraper-apis"
         "/web-scraper-api/google/ads"
+    ),
+]
+CATEGORY_ID_CONTEXT_PARAM = Annotated[
+    str,
+    Field(
+        description="Search for items in a particular browse node (product category).",
+    ),
+]
+MERCHANT_ID_CONTEXT_PARAM = Annotated[
+    str,
+    Field(
+        description="Search for items sold by a particular seller.",
+    ),
+]
+CURRENCY_CONTEXT_PARAM = Annotated[
+    str,
+    Field(
+        description="Currency that will be used to display the prices. "
+        "See: https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com"
+        "/o/spaces%2FzrXw45naRpCZ0Ku9AjY1%2Fuploads%2FIAHLazcDOwZSiZ6s8IJt"
+        "%2FAmazon_search_currency_values.json?alt=media"
+        "&token=b72b5c4d-3820-42a6-8e74-78ea6b44e93f",
+        examples=["USD", "EUR", "AUD"],
     ),
 ]

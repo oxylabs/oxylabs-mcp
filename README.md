@@ -1,7 +1,7 @@
 <p align="center">
   <img src="img/oxylabs_mcp.svg" alt="Oxylabs + MCP">
 </p>
-<h1 align="center">
+<h1 align="center" style="border-bottom: none;">
   Oxylabs MCP Server
 </h1>
 <p align="center">
