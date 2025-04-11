@@ -27,8 +27,7 @@ def get_auth_from_env() -> tuple[str, str]:
 
     if not username or not password:
         raise ValueError(
-            "OXYLABS_USERNAME and OXYLABS_PASSWORD "
-            "must be set in the environment variables."
+            "OXYLABS_USERNAME and OXYLABS_PASSWORD must be set in the environment variables."
         )
     return username, password
 
@@ -76,10 +75,7 @@ def strip_html(html: str) -> str:
 
         # Remove elements that have no attributes, no content and no children.
         if (
-            (
-                not element.attrib
-                or (len(element.attrib) == 1 and "idx" in element.attrib)
-            )
+            (not element.attrib or (len(element.attrib) == 1 and "idx" in element.attrib))
             and not element.getchildren()  # type: ignore[attr-defined]
             and (not element.text or not element.text.strip())
             and (not element.tail or not element.tail.strip())
@@ -149,8 +145,7 @@ async def oxylabs_client(
             yield client
         except HTTPStatusError as e:
             raise MCPServerError(
-                "HTTP error during POST request: "
-                f"{e.response.status_code} - {e.response.text}"
+                f"HTTP error during POST request: {e.response.status_code} - {e.response.text}"
             ) from None
         except RequestError as e:
             raise MCPServerError(f"Request error during POST request: {e}") from None
