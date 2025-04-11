@@ -1,9 +1,16 @@
-# MCP Server for Oxylabs Scraper
+<p align="center">
+  <img src="img/oxylabs_mcp.svg" alt="Oxylabs + MCP">
+</p>
+<h1 align="center">
+  Oxylabs MCP Server
+</h1>
+<p align="center">
+  <p align="center">Access web data seamlessly with Oxylabs via the Model Context Protocol</p>
+</p>
+
 [![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
-
-[![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5)](https://discord.gg/Pds3gBmKMH)
-
-A Model Context Protocol (MCP) server that enables AI assistants like Claude to seamlessly access web data through Oxylabs' powerful web scraping technology.
+[![pypi package](https://img.shields.io/pypi/v/oxylabs-mcp?color=%2334D058&label=pypi%20package)](https://pypi.org/project/oxylabs-mcp/)
+[![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
 
 ## 📖 Overview
 
