@@ -11,6 +11,10 @@
 [![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
 [![pypi package](https://img.shields.io/pypi/v/oxylabs-mcp?color=%2334D058&label=pypi%20package)](https://pypi.org/project/oxylabs-mcp/)
 [![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
+<br/>
+<a href="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp/badge" alt="Oxylabs Server MCP server" />
+</a>
 
 ## 📖 Overview
 
@@ -69,7 +73,6 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 
 </details>
 
-
 ## 💡 Example Queries
 When you've set up the MCP server with **Claude**, you can make requests like:
 
@@ -77,7 +80,6 @@ When you've set up the MCP server with **Claude**, you can make requests like:
 - Scrape `https://www.amazon.de/-/en/Smartphone-Contract-Function-Manufacturer-Exclusive/dp/B0CNKD651V` with **parse** enabled
 - Scrape `https://www.amazon.de/-/en/gp/bestsellers/beauty/ref=zg_bs_nav_beauty_0` with **parse** and **render** enabled
 - Use web unblocker with **render** to scrape `https://www.bestbuy.com/site/top-deals/all-electronics-on-sale/pcmcat1674241939957.c`
-
 
 ## ✅ Prerequisites
 
