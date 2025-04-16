@@ -22,7 +22,7 @@ format: $(virtualenv_dir)
 
 .PHONY: test
 test: install_deps
-	uv run pytest --cov=src --cov-report xml --cov-report term --cov-fail-under=80 ./tests
+	uv run pytest --cov=src --cov-report xml --cov-report term --cov-fail-under=90 ./tests
 
 .PHONY: run
 run: install_deps
