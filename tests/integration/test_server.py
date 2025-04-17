@@ -1,4 +1,5 @@
 import json
+import re
 from contextlib import nullcontext as does_not_raise
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -434,4 +435,6 @@ class TestMcpServer:
 
         oxylabs_sdk_header = oxylabs_client.context_manager_call_kwargs["headers"]["x-oxylabs-sdk"]
         client_info, _ = oxylabs_sdk_header.split(maxsplit=1)
-        assert client_info == "oxylabs-mcp-fake_cursor/0.1.6"
+
+        client_info_pattern = re.compile(r"oxylabs-mcp-fake_cursor/(\d+)\.(\d+)\.(\d+)$")
+        assert re.match(client_info_pattern, client_info)
