@@ -51,15 +51,15 @@ USER_AGENT_TYPE_PARAM = Annotated[
 ]
 START_PAGE_PARAM = Annotated[
     int,
-    Field(ge=1, description="Starting page number."),
+    Field(description="Starting page number."),
 ]
 PAGES_PARAM = Annotated[
     int,
-    Field(ge=1, description="Number of pages to retrieve."),
+    Field(description="Number of pages to retrieve."),
 ]
 LIMIT_PARAM = Annotated[
     int,
-    Field(ge=1, description="Number of results to retrieve in each page."),
+    Field(description="Number of results to retrieve in each page."),
 ]
 DOMAIN_PARAM = Annotated[
     str,
