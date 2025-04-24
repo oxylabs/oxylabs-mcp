@@ -2,6 +2,8 @@ import json
 import os
 import re
 from contextlib import asynccontextmanager
+from importlib.metadata import version
+from platform import architecture, python_version
 from typing import AsyncIterator
 
 from httpx import (
@@ -15,6 +17,8 @@ from httpx import (
 from lxml.html import defs, fromstring, tostring
 from lxml.html.clean import Cleaner
 from markdownify import markdownify as md
+from mcp.server.fastmcp import Context
+from mcp.shared.context import RequestContext
 
 from oxylabs_mcp.config import settings
 from oxylabs_mcp.exceptions import MCPServerError
@@ -110,8 +114,33 @@ def convert_html_to_md(html: str) -> str:
     return md(html)  # type: ignore[no-any-return]
 
 
+def _get_request_context(ctx: Context) -> RequestContext | None:  # type: ignore[type-arg]
+    try:
+        return ctx.request_context
+    except ValueError:
+        return None
+
+
+def _update_with_default_headers(
+    ctx: Context, headers: dict[str, str]  # type: ignore[type-arg]
+) -> None:
+    if request_context := _get_request_context(ctx):
+        if client_params := request_context.session.client_params:
+            client = f"oxylabs-mcp-{client_params.clientInfo.name}"
+        else:
+            client = "oxylabs-mcp"
+    else:
+        client = "oxylabs-mcp"
+
+    bits, _ = architecture()
+    sdk_type = f"{client}/{version('oxylabs-mcp')} ({python_version()}; {bits})"
+
+    headers["x-oxylabs-sdk"] = sdk_type
+
+
 @asynccontextmanager
 async def oxylabs_client(
+    ctx: Context,  # type: ignore[type-arg]
     headers: dict[str, str] | None = None,
     *,
     with_proxy: bool = False,
@@ -121,6 +150,8 @@ async def oxylabs_client(
     """Async context manager for Oxylabs client that is used in MCP tools."""
     if headers is None:
         headers = {}
+
+    _update_with_default_headers(ctx, headers)
 
     username, password = get_auth_from_env()
 

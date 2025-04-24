@@ -1,6 +1,6 @@
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import Context, FastMCP
 
 from oxylabs_mcp import url_params
 from oxylabs_mcp.config import settings
@@ -21,13 +21,14 @@ mcp = FastMCP("oxylabs_mcp", dependencies=["mcp", "httpx"])
     description="Scrape url using Oxylabs Web API with universal scraper",
 )
 async def scrape_universal_url(
+    ctx: Context,  # type: ignore[type-arg]
     url: url_params.URL_PARAM,
     parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
     render: url_params.RENDER_PARAM = "",
 ) -> str:
     """Scrape url using Oxylabs Web API with universal scraper."""
     try:
-        async with oxylabs_client(with_auth=True) as client:
+        async with oxylabs_client(ctx, with_auth=True) as client:
             payload: dict[str, Any] = {"url": url}
             if parse:
                 payload["parse"] = parse
@@ -48,6 +49,7 @@ async def scrape_universal_url(
     description="Scrape url using Oxylabs Web Unblocker",
 )
 async def scrape_with_web_unblocker(
+    ctx: Context,  # type: ignore[type-arg]
     url: url_params.URL_PARAM,
     render: url_params.RENDER_PARAM = "",
 ) -> str:
@@ -61,7 +63,7 @@ async def scrape_with_web_unblocker(
         headers["X-Oxylabs-Render"] = render
 
     try:
-        async with oxylabs_client(with_proxy=True, verify=False, headers=headers) as client:
+        async with oxylabs_client(ctx, with_proxy=True, verify=False, headers=headers) as client:
             response = await client.get(url)
 
             response.raise_for_status()
@@ -76,6 +78,7 @@ async def scrape_with_web_unblocker(
     description="Scrape Google Search results using Oxylabs Web API",
 )
 async def scrape_google_search(
+    ctx: Context,  # type: ignore[type-arg]
     query: url_params.GOOGLE_QUERY_PARAM,
     parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
     render: url_params.RENDER_PARAM = "",
@@ -90,7 +93,7 @@ async def scrape_google_search(
 ) -> str:
     """Scrape Google Search results using Oxylabs Web API."""
     try:
-        async with oxylabs_client(with_auth=True) as client:
+        async with oxylabs_client(ctx, with_auth=True) as client:
             payload: dict[str, Any] = {"query": query}
 
             if ad_mode:
@@ -131,6 +134,7 @@ async def scrape_google_search(
     description="Scrape Amazon Search results using Oxylabs Web API",
 )
 async def scrape_amazon_search(
+    ctx: Context,  # type: ignore[type-arg]
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     category_id: url_params.CATEGORY_ID_CONTEXT_PARAM = "",
     merchant_id: url_params.MERCHANT_ID_CONTEXT_PARAM = "",
@@ -146,7 +150,7 @@ async def scrape_amazon_search(
 ) -> str:
     """Scrape Amazon Search results using Oxylabs Web API."""
     try:
-        async with oxylabs_client(with_auth=True) as client:
+        async with oxylabs_client(ctx, with_auth=True) as client:
             payload: dict[str, Any] = {"source": "amazon_search", "query": query}
 
             context = []
@@ -190,6 +194,7 @@ async def scrape_amazon_search(
     description="Scrape Amazon Products using Oxylabs Web API",
 )
 async def scrape_amazon_products(
+    ctx: Context,  # type: ignore[type-arg]
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     autoselect_variant: url_params.AUTOSELECT_VARIANT_CONTEXT_PARAM = False,  # noqa: FBT002
     currency: url_params.CURRENCY_CONTEXT_PARAM = "",
@@ -202,7 +207,7 @@ async def scrape_amazon_products(
 ) -> str:
     """Scrape Amazon Products using Oxylabs Web API."""
     try:
-        async with oxylabs_client(with_auth=True) as client:
+        async with oxylabs_client(ctx, with_auth=True) as client:
             payload: dict[str, Any] = {"source": "amazon_product", "query": query}
 
             context = []

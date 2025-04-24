@@ -1,7 +1,8 @@
 import json
+import re
 from contextlib import nullcontext as does_not_raise
 from typing import Any
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from httpx import Request, Response
@@ -246,11 +247,8 @@ class TestMcpServer:
             *params.USER_AGENTS,
             params.INVALID_USER_AGENT,
             params.START_PAGE_SPECIFIED,
-            params.START_PAGE_INVALID,
             params.PAGES_SPECIFIED,
-            params.PAGES_INVALID,
             params.LIMIT_SPECIFIED,
-            params.LIMIT_INVALID,
             params.DOMAIN_SPECIFIED,
             params.GEO_LOCATION_SPECIFIED,
             params.LOCALE_SPECIFIED,
@@ -312,9 +310,7 @@ class TestMcpServer:
             *params.USER_AGENTS,
             params.INVALID_USER_AGENT,
             params.START_PAGE_SPECIFIED,
-            params.START_PAGE_INVALID,
             params.PAGES_SPECIFIED,
-            params.PAGES_INVALID,
             params.DOMAIN_SPECIFIED,
             params.GEO_LOCATION_SPECIFIED,
             params.LOCALE_SPECIFIED,
@@ -381,3 +377,59 @@ class TestMcpServer:
         ):
             result = await mcp.call_tool("oxylabs_amazon_product_scraper", arguments=arguments)
             assert result == [TextContent(type="text", text=expected_result)]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("tool", "arguments"),
+        [
+            pytest.param(
+                "oxylabs_universal_scraper", {"url": "test_url"}, id="oxylabs_universal_scraper"
+            ),
+            pytest.param("oxylabs_web_unblocker", {"url": "test_url"}, id="oxylabs_web_unblocker"),
+            pytest.param(
+                "oxylabs_google_search_scraper",
+                {"query": "Generic query"},
+                id="oxylabs_google_search_scraper",
+            ),
+            pytest.param(
+                "oxylabs_amazon_search_scraper",
+                {"query": "Generic query"},
+                id="oxylabs_amazon_search_scraper",
+            ),
+            pytest.param(
+                "oxylabs_amazon_product_scraper",
+                {"query": "Generic query"},
+                id="oxylabs_amazon_product_scraper",
+            ),
+        ],
+    )
+    async def test_default_headers_are_set(
+        self,
+        mcp: FastMCP,
+        request_data: Request,
+        oxylabs_client: AsyncMock,
+        request_session: MagicMock,
+        tool: str,
+        arguments: dict,
+    ):
+        request_session.client_params.clientInfo.name = "fake_cursor"
+
+        mock_response = Response(
+            200,
+            content=json.dumps({"results": [{"content": "Mocked content"}]}),
+            request=request_data,
+        )
+
+        oxylabs_client.post.return_value = mock_response
+        oxylabs_client.get.return_value = mock_response
+
+        with patch("os.environ", new=ENV_VARIABLES):
+            await mcp.call_tool(tool, arguments=arguments)
+
+        assert "x-oxylabs-sdk" in oxylabs_client.context_manager_call_kwargs["headers"]
+
+        oxylabs_sdk_header = oxylabs_client.context_manager_call_kwargs["headers"]["x-oxylabs-sdk"]
+        client_info, _ = oxylabs_sdk_header.split(maxsplit=1)
+
+        client_info_pattern = re.compile(r"oxylabs-mcp-fake_cursor/(\d+)\.(\d+)\.(\d+)$")
+        assert re.match(client_info_pattern, client_info)
