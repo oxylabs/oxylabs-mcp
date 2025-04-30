@@ -8,6 +8,8 @@
   <p align="center">Access web data seamlessly with Oxylabs via the Model Context Protocol</p>
 </p>
 
+<div align="center">
+
 [![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
 [![pypi package](https://img.shields.io/pypi/v/oxylabs-mcp?color=%2334D058&label=pypi%20package)](https://pypi.org/project/oxylabs-mcp/)
 [![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
@@ -15,6 +17,8 @@
 <a href="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp/badge" alt="Oxylabs Server MCP server" />
 </a>
+
+</div>
 
 ## 📖 Overview
 
