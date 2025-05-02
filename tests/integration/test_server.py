@@ -12,6 +12,7 @@ from mcp.types import TextContent
 
 from oxylabs_mcp.server import mcp as mcp_server
 from tests.integration import params
+from tests.utils import convert_context_params
 
 
 ENV_VARIABLES = {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"}
@@ -32,7 +33,7 @@ class TestMcpServer:
             pytest.param(
                 {"url": "test_url"},
                 does_not_raise(),
-                "<html><body>Mocked content</body></html>",
+                "Mocked content",
                 id="url-only-args",
             ),
             pytest.param(
@@ -153,7 +154,7 @@ class TestMcpServer:
                     200,
                     content=json.dumps({"results": [{"content": "Mocked content"}]}),
                 ),
-                "Mocked content",
+                "\n\nMocked content\n\n",
                 id="url-only-result",
             ),
             pytest.param(
@@ -199,6 +200,9 @@ class TestMcpServer:
 
         with (patch("os.environ", new=ENV_VARIABLES),):
             result = await mcp.call_tool("oxylabs_universal_scraper", arguments=arguments)
+            assert oxylabs_client.post.call_args.kwargs == {
+                "json": {k: v for k, v in arguments.items() if v}
+            }
             assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.parametrize(
@@ -274,6 +278,9 @@ class TestMcpServer:
             patch("os.environ", new=ENV_VARIABLES),
         ):
             result = await mcp.call_tool("oxylabs_google_search_scraper", arguments=arguments)
+            assert oxylabs_client.post.call_args.kwargs == {
+                "json": {"source": "google_search", "parse": True, **arguments}
+            }
             assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.parametrize(
@@ -299,6 +306,7 @@ class TestMcpServer:
 
         with (patch("os.environ", new=ENV_VARIABLES),):
             await mcp.call_tool("oxylabs_google_search_scraper", arguments=arguments)
+            assert oxylabs_client.post.call_args.kwargs == {"json": expected_result}
             assert oxylabs_client.post.await_args.kwargs["json"] == expected_result
 
     @pytest.mark.parametrize(
@@ -339,6 +347,13 @@ class TestMcpServer:
             patch("os.environ", new=ENV_VARIABLES),
         ):
             result = await mcp.call_tool("oxylabs_amazon_search_scraper", arguments=arguments)
+            assert oxylabs_client.post.call_args.kwargs == {
+                "json": {
+                    "source": "amazon_search",
+                    "parse": True,
+                    **convert_context_params(arguments),
+                }
+            }
             assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.parametrize(
@@ -376,6 +391,13 @@ class TestMcpServer:
             patch("os.environ", new=ENV_VARIABLES),
         ):
             result = await mcp.call_tool("oxylabs_amazon_product_scraper", arguments=arguments)
+            assert oxylabs_client.post.call_args.kwargs == {
+                "json": {
+                    "source": "amazon_product",
+                    "parse": True,
+                    **convert_context_params(arguments),
+                }
+            }
             assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.asyncio
