@@ -23,7 +23,7 @@ mcp = FastMCP("oxylabs_mcp", dependencies=["mcp", "httpx"])
 async def scrape_universal_url(
     ctx: Context,  # type: ignore[type-arg]
     url: url_params.URL_PARAM,
-    parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
+    parse: url_params.PARSE_PARAM = False,  # noqa: FBT002
     render: url_params.RENDER_PARAM = "",
 ) -> str:
     """Scrape url using Oxylabs Web API with universal scraper."""
@@ -117,7 +117,7 @@ async def scrape_google_search(
                 payload["domain"] = domain
             if geo_location:
                 payload["geo_location"] = geo_location
-            if geo_location:
+            if locale:
                 payload["locale"] = locale
 
             response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
@@ -177,7 +177,7 @@ async def scrape_amazon_search(
                 payload["domain"] = domain
             if geo_location:
                 payload["geo_location"] = geo_location
-            if geo_location:
+            if locale:
                 payload["locale"] = locale
 
             response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
@@ -228,7 +228,7 @@ async def scrape_amazon_products(
                 payload["domain"] = domain
             if geo_location:
                 payload["geo_location"] = geo_location
-            if geo_location:
+            if locale:
                 payload["locale"] = locale
 
             response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
