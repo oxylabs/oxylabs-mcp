@@ -7,7 +7,7 @@ virtualenv_dir ?= .venv
 
 .PHONY: install_deps
 install_deps: $(virtualenv_dir)
-	uv sync
+	uv sync --group dev
 
 .PHONY: lint
 lint: install_deps
@@ -22,11 +22,16 @@ format: $(virtualenv_dir)
 
 .PHONY: test
 test: install_deps
-	uv run pytest --cov=src --cov-report xml --cov-report term --cov-fail-under=90 ./tests
+	uv run pytest --cov=src --cov-report xml --cov-report term --cov-fail-under=90 tests/unit tests/integration
+
+.PHONY: test-e2e
+test-e2e:
+	uv sync --group dev --group e2e-tests
+	uv run pytest --cov=src --cov-report xml --cov-report term tests/e2e
 
 .PHONY: run
 run: install_deps
-	npx @modelcontextprotocol/inspector@0.3.0 \
+	npx @modelcontextprotocol/inspector \
       uv \
       --directory $(current_dir) \
       run \

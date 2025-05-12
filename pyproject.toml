@@ -1,6 +1,6 @@
 [project]
 name = "oxylabs-mcp"
-version = "0.1.7"
+version = "0.2.0"
 description = "Oxylabs MCP server"
 authors = [
     {name="Augis Braziunas", email="augis.braziunas@oxylabs.io"},
@@ -24,7 +24,7 @@ dependencies = [
     "lxml>=5.3.0",
     "lxml-html-clean>=0.4.1",
     "markdownify>=0.14.1",
-    "mcp[cli]>=1.6.0",
+    "mcp[cli]>=1.8.0",
     "pydantic>=2.10.5",
     "pydantic-settings>=2.8.1",
 ]
@@ -39,6 +39,12 @@ dev = [
     "pytest-cov>=6.1.1",
     "pytest-mock>=3.14.0",
     "ruff>=0.9.1",
+]
+e2e-tests = [
+    "agno>=1.4.5",
+    "anthropic>=0.50.0",
+    "google-genai>=1.13.0",
+    "openai>=1.77.0",
 ]
 
 [build-system]
@@ -89,7 +95,8 @@ lint.ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "S101", "ARG001", "ANN", "PT011", "FBT"]
+"tests/*" = ["D", "S101", "ARG001", "ANN", "PT011", "FBT", "PLR2004"]
+"src/oxylabs_mcp/url_params.py" = ["E501"]
 
 [tool.ruff.lint.pycodestyle]
 max-line-length = 100
@@ -100,6 +107,7 @@ lines-after-imports = 2
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "session"
+asyncio_mode = "auto"
 
 [tool.black]
 line-length = 100

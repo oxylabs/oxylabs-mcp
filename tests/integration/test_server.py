@@ -12,7 +12,7 @@ from mcp.types import TextContent
 
 from oxylabs_mcp.server import mcp as mcp_server
 from tests.integration import params
-from tests.utils import convert_context_params
+from tests.utils import convert_context_params, prepare_expected_arguments
 
 
 ENV_VARIABLES = {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"}
@@ -33,7 +33,7 @@ class TestMcpServer:
             pytest.param(
                 {"url": "test_url"},
                 does_not_raise(),
-                "Mocked content",
+                "<html><body>Mocked content</body></html>",
                 id="url-only-args",
             ),
             pytest.param(
@@ -45,7 +45,7 @@ class TestMcpServer:
             pytest.param(
                 {"url": "test_url", "parse": False},
                 does_not_raise(),
-                "Mocked content",
+                "<html><body>Mocked content</body></html>",
                 id="parse-disabled-args",
             ),
             pytest.param(
@@ -92,57 +92,8 @@ class TestMcpServer:
             patch("os.environ", new=ENV_VARIABLES),
             patch("httpx.AsyncClient.post", new=AsyncMock(return_value=mock_response)),
         ):
-            result = await mcp.call_tool("oxylabs_universal_scraper", arguments=arguments)
-            assert result == [TextContent(type="text", text=expected_result)]
+            result = await mcp.call_tool("universal_scraper", arguments=arguments)
 
-    @pytest.mark.parametrize(
-        ("arguments", "expectation", "expected_result"),
-        [
-            pytest.param(
-                {"url": "test_url"},
-                does_not_raise(),
-                "Mocked content",
-                id="url-only-args",
-            ),
-            pytest.param(
-                {"url": "test_url", "render": "html"},
-                does_not_raise(),
-                "Mocked content",
-                id="render-enabled-args",
-            ),
-            pytest.param(
-                {"url": "test_url"},
-                does_not_raise(),
-                "Mocked content",
-                id="render-disabled-args",
-            ),
-            pytest.param(
-                {"url": "test_url", "render": "png"},
-                pytest.raises(ToolError),
-                None,
-                id="invalid-render-option-args",
-            ),
-            pytest.param({}, pytest.raises(ToolError), None, id="no-url-args"),
-        ],
-    )
-    @pytest.mark.asyncio
-    async def test_oxylabs_web_unblocker_arguments(
-        self,
-        mcp: FastMCP,
-        request_data: Request,
-        arguments: dict,
-        expectation,
-        expected_result: str,
-    ):
-        mock_response_data = "<html><body>Mocked content</body></html>"
-        mock_response = Response(200, text=mock_response_data, request=request_data)
-
-        with (
-            expectation,
-            patch("os.environ", new=ENV_VARIABLES),
-            patch("httpx.AsyncClient.get", new=AsyncMock(return_value=mock_response)),
-        ):
-            result = await mcp.call_tool("oxylabs_web_unblocker", arguments=arguments)
             assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.parametrize(
@@ -154,7 +105,7 @@ class TestMcpServer:
                     200,
                     content=json.dumps({"results": [{"content": "Mocked content"}]}),
                 ),
-                "\n\nMocked content\n\n",
+                "Mocked content",
                 id="url-only-result",
             ),
             pytest.param(
@@ -174,7 +125,7 @@ class TestMcpServer:
                         {"results": [{"content": "<html><body>Mocked content</body></html>"}]}
                     ),
                 ),
-                "Mocked content",
+                "<html><body>Mocked content</body></html>",
                 id="parse-disabled-result",
             ),
             pytest.param(
@@ -198,48 +149,11 @@ class TestMcpServer:
         response.request = request_data
         oxylabs_client.post.return_value = response
 
-        with (patch("os.environ", new=ENV_VARIABLES),):
-            result = await mcp.call_tool("oxylabs_universal_scraper", arguments=arguments)
+        with patch("os.environ", new=ENV_VARIABLES):
+            result = await mcp.call_tool("universal_scraper", arguments=arguments)
             assert oxylabs_client.post.call_args.kwargs == {
                 "json": {k: v for k, v in arguments.items() if v}
             }
-            assert result == [TextContent(type="text", text=expected_result)]
-
-    @pytest.mark.parametrize(
-        ("arguments", "response", "expected_result"),
-        [
-            pytest.param(
-                {"url": "test_url"},
-                Response(200, text="<html><body>Mocked content</body></html>"),
-                "Mocked content",
-                id="url-only-result",
-            ),
-            pytest.param(
-                {"url": "test_url", "render": "html"},
-                Response(
-                    200,
-                    text="<html><body>Mocked content</body></html>",
-                ),
-                "Mocked content",
-                id="parse-disabled-result",
-            ),
-        ],
-    )
-    @pytest.mark.asyncio
-    async def test_oxylabs_web_unblocker_results(
-        self,
-        mcp: FastMCP,
-        request_data: Request,
-        arguments: dict,
-        response: Response,
-        expected_result: str,
-        oxylabs_client: AsyncMock,
-    ):
-        response.request = request_data
-        oxylabs_client.get.return_value = response
-
-        with (patch("os.environ", new=ENV_VARIABLES),):
-            result = await mcp.call_tool("oxylabs_web_unblocker", arguments=arguments)
             assert result == [TextContent(type="text", text=expected_result)]
 
     @pytest.mark.parametrize(
@@ -249,6 +163,7 @@ class TestMcpServer:
             params.PARSE_ENABLED,
             params.RENDER_HTML,
             *params.USER_AGENTS,
+            *params.OUTPUT_FORMATS,
             params.INVALID_USER_AGENT,
             params.START_PAGE_SPECIFIED,
             params.PAGES_SPECIFIED,
@@ -259,7 +174,7 @@ class TestMcpServer:
         ],
     )
     @pytest.mark.asyncio
-    async def test_oxylabs_google_search_scraper_arguments(
+    async def test_google_search_scraper_arguments(
         self,
         mcp: FastMCP,
         request_data: Request,
@@ -277,9 +192,14 @@ class TestMcpServer:
             expectation,
             patch("os.environ", new=ENV_VARIABLES),
         ):
-            result = await mcp.call_tool("oxylabs_google_search_scraper", arguments=arguments)
+            result = await mcp.call_tool("google_search_scraper", arguments=arguments)
+
             assert oxylabs_client.post.call_args.kwargs == {
-                "json": {"source": "google_search", "parse": True, **arguments}
+                "json": {
+                    "source": "google_search",
+                    "parse": True,
+                    **prepare_expected_arguments(arguments),
+                }
             }
             assert result == [TextContent(type="text", text=expected_result)]
 
@@ -304,8 +224,8 @@ class TestMcpServer:
 
         oxylabs_client.post.return_value = mock_response
 
-        with (patch("os.environ", new=ENV_VARIABLES),):
-            await mcp.call_tool("oxylabs_google_search_scraper", arguments=arguments)
+        with patch("os.environ", new=ENV_VARIABLES):
+            await mcp.call_tool("google_search_scraper", arguments=arguments)
             assert oxylabs_client.post.call_args.kwargs == {"json": expected_result}
             assert oxylabs_client.post.await_args.kwargs["json"] == expected_result
 
@@ -316,6 +236,7 @@ class TestMcpServer:
             params.PARSE_ENABLED,
             params.RENDER_HTML,
             *params.USER_AGENTS,
+            *params.OUTPUT_FORMATS,
             params.INVALID_USER_AGENT,
             params.START_PAGE_SPECIFIED,
             params.PAGES_SPECIFIED,
@@ -328,7 +249,7 @@ class TestMcpServer:
         ],
     )
     @pytest.mark.asyncio
-    async def test_oxylabs_amazon_search_scraper_arguments(
+    async def test_amazon_search_scraper_arguments(
         self,
         mcp: FastMCP,
         request_data: Request,
@@ -346,12 +267,13 @@ class TestMcpServer:
             expectation,
             patch("os.environ", new=ENV_VARIABLES),
         ):
-            result = await mcp.call_tool("oxylabs_amazon_search_scraper", arguments=arguments)
+            result = await mcp.call_tool("amazon_search_scraper", arguments=arguments)
+
             assert oxylabs_client.post.call_args.kwargs == {
                 "json": {
                     "source": "amazon_search",
                     "parse": True,
-                    **convert_context_params(arguments),
+                    **convert_context_params(prepare_expected_arguments(arguments)),
                 }
             }
             assert result == [TextContent(type="text", text=expected_result)]
@@ -363,6 +285,7 @@ class TestMcpServer:
             params.PARSE_ENABLED,
             params.RENDER_HTML,
             *params.USER_AGENTS,
+            *params.OUTPUT_FORMATS,
             params.INVALID_USER_AGENT,
             params.DOMAIN_SPECIFIED,
             params.GEO_LOCATION_SPECIFIED,
@@ -372,7 +295,7 @@ class TestMcpServer:
         ],
     )
     @pytest.mark.asyncio
-    async def test_oxylabs_amazon_product_scraper_arguments(
+    async def test_amazon_product_scraper_arguments(
         self,
         mcp: FastMCP,
         request_data: Request,
@@ -390,12 +313,13 @@ class TestMcpServer:
             expectation,
             patch("os.environ", new=ENV_VARIABLES),
         ):
-            result = await mcp.call_tool("oxylabs_amazon_product_scraper", arguments=arguments)
+            result = await mcp.call_tool("amazon_product_scraper", arguments=arguments)
+
             assert oxylabs_client.post.call_args.kwargs == {
                 "json": {
                     "source": "amazon_product",
                     "parse": True,
-                    **convert_context_params(arguments),
+                    **convert_context_params(prepare_expected_arguments(arguments)),
                 }
             }
             assert result == [TextContent(type="text", text=expected_result)]
@@ -404,24 +328,21 @@ class TestMcpServer:
     @pytest.mark.parametrize(
         ("tool", "arguments"),
         [
+            pytest.param("universal_scraper", {"url": "test_url"}, id="universal_scraper"),
             pytest.param(
-                "oxylabs_universal_scraper", {"url": "test_url"}, id="oxylabs_universal_scraper"
-            ),
-            pytest.param("oxylabs_web_unblocker", {"url": "test_url"}, id="oxylabs_web_unblocker"),
-            pytest.param(
-                "oxylabs_google_search_scraper",
+                "google_search_scraper",
                 {"query": "Generic query"},
-                id="oxylabs_google_search_scraper",
+                id="google_search_scraper",
             ),
             pytest.param(
-                "oxylabs_amazon_search_scraper",
+                "amazon_search_scraper",
                 {"query": "Generic query"},
-                id="oxylabs_amazon_search_scraper",
+                id="amazon_search_scraper",
             ),
             pytest.param(
-                "oxylabs_amazon_product_scraper",
+                "amazon_product_scraper",
                 {"query": "Generic query"},
-                id="oxylabs_amazon_product_scraper",
+                id="amazon_product_scraper",
             ),
         ],
     )

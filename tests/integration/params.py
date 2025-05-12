@@ -25,6 +25,35 @@ RENDER_HTML = pytest.param(
     "Mocked content",
     id="render-enabled-args",
 )
+OUTPUT_FORMATS = [
+    pytest.param(
+        {"query": "Generic query", "output_format": "links"},
+        does_not_raise(),
+        {
+            "results": [
+                {
+                    "content": '<html><body><div><p><a href="https://example.com">link</a></p></div></body></html>'
+                }
+            ]
+        },
+        "[link] https://example.com",
+        id="links-output-format-args",
+    ),
+    pytest.param(
+        {"query": "Generic query", "output_format": "md"},
+        does_not_raise(),
+        {"results": [{"content": "Mocked content"}]},
+        "\n\nMocked content\n\n",
+        id="md-output-format-args",
+    ),
+    pytest.param(
+        {"query": "Generic query", "output_format": "html"},
+        does_not_raise(),
+        {"results": [{"content": "Mocked content"}]},
+        "Mocked content",
+        id="html-output-format-args",
+    ),
+]
 USER_AGENTS = [
     pytest.param(
         {"query": "Generic query", "user_agent_type": "mobile"},

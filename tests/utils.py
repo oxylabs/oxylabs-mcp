@@ -11,3 +11,10 @@ def convert_context_params(arguments: dict) -> dict:
             del arguments_copy[f]
 
     return arguments_copy
+
+
+def prepare_expected_arguments(arguments: dict) -> dict:
+    arguments_copy = {**arguments}
+    if "output_format" in arguments_copy:
+        del arguments_copy["output_format"]
+    return arguments_copy
