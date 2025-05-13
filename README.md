@@ -239,16 +239,6 @@ make run
 ```
 Then access MCP Inspector at `http://localhost:5173`. You may need to add your username and password as environment variables in the inspector under `OXYLABS_USERNAME` and `OXYLABS_PASSWORD`.
 
-
-## 🛠️ Technical Details
-
-This server provides two main tools:
-
-1. **oxylabs_scraper**: Uses Oxylabs Web Scraper API for general website scraping
-2. **oxylabs_web_unblocker**: Uses Oxylabs Web Unblocker for hard-to-access websites
-
-[Web Scraper API](https://oxylabs.io/products/scraper-api/web) supports JavaScript rendering, parsed structured data, and cleaned HTML in Markdown format. [Web Unblocker](https://oxylabs.io/products/web-unblocker) offers JavaScript rendering and cleaned HTML, but doesn’t return parsed data.
-
 ---
 
 ## License

@@ -208,18 +208,18 @@ def extract_links_with_text(html: str, base_url: str | None = None) -> list[str]
     return links
 
 
-def get_content(response: Response, *, parse: bool, output_format: str) -> str:
+def get_content(response: Response, *, output_format: str, parse: bool = False) -> str:
     """Extract content from response and convert to a proper format."""
     content = response.json()["results"][0]["content"]
     if parse and isinstance(content, dict):
         return json.dumps(content)
     if output_format == "html":
         return str(content)
-    if output_format == "md":
-        striped_html = strip_html(str(content))
-        return markdownify(striped_html)  # type: ignore[no-any-return]
     if output_format == "links":
         links = extract_links_with_text(str(content))
         return "\n".join(links)
+    if output_format in ("md", ""):
+        striped_html = strip_html(str(content))
+        return markdownify(striped_html)  # type: ignore[no-any-return]
 
     return str(content)

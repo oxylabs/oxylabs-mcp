@@ -16,8 +16,9 @@ mcp = FastMCP("oxylabs_mcp")
 async def universal_scraper(
     ctx: Context,  # type: ignore[type-arg]
     url: url_params.URL_PARAM,
-    parse: url_params.PARSE_PARAM = False,  # noqa: FBT002
     render: url_params.RENDER_PARAM = "",
+    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = "",
+    geo_location: url_params.GEO_LOCATION_PARAM = "",
     output_format: url_params.OUTPUT_FORMAT_PARAM = "",
 ) -> str:
     """Get a content of any webpage.
@@ -28,16 +29,19 @@ async def universal_scraper(
     try:
         async with oxylabs_client(ctx) as client:
             payload: dict[str, Any] = {"url": url}
-            if parse:
-                payload["parse"] = parse
+
             if render:
                 payload["render"] = render
+            if user_agent_type:
+                payload["user_agent_type"] = user_agent_type
+            if geo_location:
+                payload["geo_location"] = geo_location
 
             response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
 
             response.raise_for_status()
 
-            return get_content(response, parse=parse, output_format=output_format)
+            return get_content(response, output_format=output_format)
     except MCPServerError as e:
         return e.stringify()
 

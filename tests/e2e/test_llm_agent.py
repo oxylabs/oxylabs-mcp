@@ -87,6 +87,15 @@ async def oxylabs_mcp_server():
             "iPhone 16",
         ),
         (
+            "Search for iPhone 16 in google with browser rendering",
+            "google_search_scraper",
+            {
+                "query": "iPhone 16",
+                "render": "html",
+            },
+            "iPhone 16",
+        ),
+        (
             "Search for iPhone 16 in google with user agent type mobile",
             "google_search_scraper",
             {

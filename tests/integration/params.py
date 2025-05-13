@@ -8,21 +8,28 @@ QUERY_ONLY = pytest.param(
     {"query": "Generic query"},
     does_not_raise(),
     {"results": [{"content": "Mocked content"}]},
-    "Mocked content",
+    "\n\nMocked content\n\n",
     id="query-only-args",
 )
 PARSE_ENABLED = pytest.param(
     {"query": "Generic query", "parse": True},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="parse-enabled-args",
 )
-RENDER_HTML = pytest.param(
+RENDER_HTML_WITH_QUERY = pytest.param(
     {"query": "Generic query", "render": "html"},
     does_not_raise(),
     {"results": [{"content": "Mocked content"}]},
-    "Mocked content",
+    "\n\nMocked content\n\n",
+    id="render-enabled-args",
+)
+RENDER_INVALID_WITH_QUERY = pytest.param(
+    {"query": "Generic query", "render": "png"},
+    pytest.raises(ToolError),
+    {},
+    None,
     id="render-enabled-args",
 )
 OUTPUT_FORMATS = [
@@ -54,12 +61,33 @@ OUTPUT_FORMATS = [
         id="html-output-format-args",
     ),
 ]
-USER_AGENTS = [
+USER_AGENTS_WITH_QUERY = [
     pytest.param(
-        {"query": "Generic query", "user_agent_type": "mobile"},
+        {"query": "Generic query", "user_agent_type": uat},
         does_not_raise(),
         {"results": [{"content": "Mocked content"}]},
-        "Mocked content",
+        "\n\nMocked content\n\n",
+        id=f"{uat}-user-agent-specified-args",
+    )
+    for uat in [
+        "desktop",
+        "desktop_chrome",
+        "desktop_firefox",
+        "desktop_safari",
+        "desktop_edge",
+        "desktop_opera",
+        "mobile",
+        "mobile_ios",
+        "mobile_android",
+        "tablet",
+    ]
+]
+USER_AGENTS_WITH_URL = [
+    pytest.param(
+        {"url": "https://example.com", "user_agent_type": uat},
+        does_not_raise(),
+        {"results": [{"content": "Mocked content"}]},
+        "\n\nMocked content\n\n",
         id=f"{uat}-user-agent-specified-args",
     )
     for uat in [
@@ -85,91 +113,126 @@ INVALID_USER_AGENT = pytest.param(
 START_PAGE_SPECIFIED = pytest.param(
     {"query": "Generic query", "start_page": 2},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="start-page-specified-args",
 )
 START_PAGE_INVALID = pytest.param(
     {"query": "Generic query", "start_page": -1},
     pytest.raises(ToolError),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="start-page-invalid-args",
 )
 PAGES_SPECIFIED = pytest.param(
     {"query": "Generic query", "pages": 20},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="pages-specified-args",
 )
 PAGES_INVALID = pytest.param(
     {"query": "Generic query", "pages": -10},
     pytest.raises(ToolError),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="pages-invalid-args",
 )
 LIMIT_SPECIFIED = pytest.param(
     {"query": "Generic query", "limit": 100},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="limit-specified-args",
 )
 LIMIT_INVALID = pytest.param(
     {"query": "Generic query", "limit": 0},
     pytest.raises(ToolError),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="limit-invalid-args",
 )
 DOMAIN_SPECIFIED = pytest.param(
     {"query": "Generic query", "domain": "io"},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="domain-specified-args",
 )
-GEO_LOCATION_SPECIFIED = pytest.param(
+GEO_LOCATION_SPECIFIED_WITH_QUERY = pytest.param(
     {"query": "Generic query", "geo_location": "Miami, Florida"},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
+    id="geo-location-specified-args",
+)
+GEO_LOCATION_SPECIFIED_WITH_URL = pytest.param(
+    {"url": "https://example.com", "geo_location": "Miami, Florida"},
+    does_not_raise(),
+    {"results": [{"content": "Mocked content"}]},
+    "\n\nMocked content\n\n",
     id="geo-location-specified-args",
 )
 LOCALE_SPECIFIED = pytest.param(
     {"query": "Generic query", "locale": "ja_JP"},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="locale-specified-args",
 )
 CATEGORY_SPECIFIED = pytest.param(
     {"query": "Man's T-shirt", "category_id": "QE21R9AV"},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="category-id-specified-args",
 )
 MERCHANT_ID_SPECIFIED = pytest.param(
     {"query": "Man's T-shirt", "merchant_id": "QE21R9AV"},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="merchant-id-specified-args",
 )
 CURRENCY_SPECIFIED = pytest.param(
     {"query": "Man's T-shirt", "currency": "USD"},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="currency-specified-args",
 )
 AUTOSELECT_VARIANT_ENABLED = pytest.param(
     {"query": "B0BVF87BST", "autoselect_variant": True},
     does_not_raise(),
-    {"results": [{"content": '{"data": "value"}'}]},
+    {"results": [{"content": {"data": "value"}}]},
     '{"data": "value"}',
     id="autoselect-variant-enabled-args",
+)
+URL_ONLY = pytest.param(
+    {"url": "https://example.com"},
+    does_not_raise(),
+    {"results": [{"content": "Mocked content"}]},
+    "\n\nMocked content\n\n",
+    id="url-only-args",
+)
+NO_URL = pytest.param(
+    {},
+    pytest.raises(ToolError),
+    {"results": [{"content": "Mocked content"}]},
+    "\n\nMocked content\n\n",
+    id="no-url-args",
+)
+RENDER_HTML_WITH_URL = pytest.param(
+    {"url": "https://example.com", "render": "html"},
+    does_not_raise(),
+    {"results": [{"content": "Mocked content"}]},
+    "\n\nMocked content\n\n",
+    id="render-enabled-args",
+)
+RENDER_INVALID_WITH_URL = pytest.param(
+    {"url": "https://example.com", "render": "png"},
+    pytest.raises(ToolError),
+    {},
+    None,
+    id="render-enabled-args",
 )
