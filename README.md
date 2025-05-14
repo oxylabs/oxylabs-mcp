@@ -13,6 +13,7 @@
 [![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
 [![pypi package](https://img.shields.io/pypi/v/oxylabs-mcp?color=%2334D058&label=pypi%20package)](https://pypi.org/project/oxylabs-mcp/)
 [![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
+[![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/f6a9c0bc-83a6-4f78-89d9-f2cec4ece98d)
 <br/>
 <a href="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp/badge" alt="Oxylabs Server MCP server" />
