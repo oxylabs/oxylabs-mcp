@@ -3,10 +3,10 @@ from unittest.mock import patch
 
 import pytest
 
-from oxylabs_mcp.utils import get_auth_from_env, strip_html
+from oxylabs_mcp.utils import extract_links_with_text, get_auth_from_env, strip_html
 
 
-TEST_FIXTURES = "tests/fixtures/"
+TEST_FIXTURES = "tests/unit/fixtures/"
 
 
 @pytest.mark.parametrize(
@@ -27,7 +27,7 @@ TEST_FIXTURES = "tests/fixtures/"
             pytest.raises(ValueError),
             id="no-password",
         ),
-        pytest.param({}, pytest.raises(ValueError), id="no-username-or-password"),
+        pytest.param({}, pytest.raises(ValueError), id="no-username-and-no-password"),
     ],
 )
 def test_get_auth_from_env(mocker, env_vars, expectation):
@@ -49,3 +49,22 @@ def test_strip_html(html_input: str, expected_output: str):
 
         actual_output = strip_html(input_html)
         assert actual_output == expected_html
+
+
+@pytest.mark.parametrize(
+    ("html_input", "expected_output"),
+    [
+        pytest.param(
+            "with_links.html",
+            "[More information...] https://www.iana.org/domains/example\n"
+            "[Another link] https://example.com",
+            id="strip-html",
+        )
+    ],
+)
+def test_extract_links_with_text(html_input: str, expected_output: str):
+    with (open(TEST_FIXTURES + html_input, "r", encoding="utf-8") as input_file,):
+        input_html = input_file.read()
+
+        links = extract_links_with_text(input_html)
+        assert "\n".join(links) == expected_output

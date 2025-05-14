@@ -16,7 +16,7 @@ from httpx import (
 )
 from lxml.html import defs, fromstring, tostring
 from lxml.html.clean import Cleaner
-from markdownify import markdownify as md
+from markdownify import markdownify
 from mcp.server.fastmcp import Context
 from mcp.shared.context import RequestContext
 
@@ -109,11 +109,6 @@ def strip_html(html: str) -> str:
     return stripped_html  # type: ignore[no-any-return]
 
 
-def convert_html_to_md(html: str) -> str:
-    """Convert HTML string to Markdown format."""
-    return md(html)  # type: ignore[no-any-return]
-
-
 def _get_request_context(ctx: Context) -> RequestContext | None:  # type: ignore[type-arg]
     try:
         return ctx.request_context
@@ -121,9 +116,10 @@ def _get_request_context(ctx: Context) -> RequestContext | None:  # type: ignore
         return None
 
 
-def _update_with_default_headers(
-    ctx: Context, headers: dict[str, str]  # type: ignore[type-arg]
-) -> None:
+def _get_default_headers(
+    ctx: Context,  # type: ignore[type-arg]
+) -> dict[str, str]:
+    headers = {}
     if request_context := _get_request_context(ctx):
         if client_params := request_context.session.client_params:
             client = f"oxylabs-mcp-{client_params.clientInfo.name}"
@@ -137,38 +133,23 @@ def _update_with_default_headers(
 
     headers["x-oxylabs-sdk"] = sdk_type
 
+    return headers
+
 
 @asynccontextmanager
 async def oxylabs_client(
     ctx: Context,  # type: ignore[type-arg]
-    headers: dict[str, str] | None = None,
-    *,
-    with_proxy: bool = False,
-    with_auth: bool = False,
-    verify: bool = True,
 ) -> AsyncIterator[AsyncClient]:
     """Async context manager for Oxylabs client that is used in MCP tools."""
-    if headers is None:
-        headers = {}
-
-    _update_with_default_headers(ctx, headers)
+    headers = _get_default_headers(ctx)
 
     username, password = get_auth_from_env()
 
-    if with_proxy:
-        proxy = f"http://{username}:{password}@unblock.oxylabs.io:60000"
-    else:
-        proxy = None
-
-    if with_auth:
-        auth = BasicAuth(username=username, password=password)
-    else:
-        auth = None
+    auth = BasicAuth(username=username, password=password)
 
     async with AsyncClient(
         timeout=Timeout(settings.OXYLABS_REQUEST_TIMEOUT_S),
-        verify=verify,
-        proxy=proxy,
+        verify=True,
         headers=headers,
         auth=auth,
     ) as client:
@@ -184,14 +165,61 @@ async def oxylabs_client(
             raise MCPServerError(f"Error: {str(e) or repr(e)}") from None
 
 
-def get_content(response: Response, parse: bool | None = None) -> str:
+def extract_links_with_text(html: str, base_url: str | None = None) -> list[str]:
+    """Extract links with their display text from HTML.
+
+    Args:
+        html (str): The input HTML string.
+        base_url (str | None): Base URL to use for converting relative URLs to absolute.
+                             If None, relative URLs will remain as is.
+
+    Returns:
+        list[str]: List of links in format [Display Text] URL
+
+    """
+    html_tree = fromstring(html)
+    links = []
+
+    for link in html_tree.xpath("//a[@href]"):  # type: ignore[union-attr]
+        href = link.get("href")  # type: ignore[union-attr]
+        text = link.text_content().strip()  # type: ignore[union-attr]
+
+        if href and text:
+            # Skip empty or whitespace-only text
+            if not text:
+                continue
+
+            # Skip anchor links
+            if href.startswith("#"):
+                continue
+
+            # Skip javascript links
+            if href.startswith("javascript:"):
+                continue
+
+            # Make relative URLs absolute if base_url is provided
+            if base_url and href.startswith("/"):
+                # Remove trailing slash from base_url if present
+                base = base_url.rstrip("/")
+                href = f"{base}{href}"
+
+            links.append(f"[{text}] {href}")
+
+    return links
+
+
+def get_content(response: Response, *, output_format: str, parse: bool = False) -> str:
     """Extract content from response and convert to a proper format."""
     content = response.json()["results"][0]["content"]
-
-    if not bool(parse):
-        striped_html = strip_html(str(content))
-        return convert_html_to_md(striped_html)
-    if isinstance(content, dict):
+    if parse and isinstance(content, dict):
         return json.dumps(content)
+    if output_format == "html":
+        return str(content)
+    if output_format == "links":
+        links = extract_links_with_text(str(content))
+        return "\n".join(links)
+    if output_format in ("md", ""):
+        striped_html = strip_html(str(content))
+        return markdownify(striped_html)  # type: ignore[no-any-return]
 
     return str(content)

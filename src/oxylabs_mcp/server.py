@@ -1,83 +1,53 @@
 from typing import Any
 
 from mcp.server.fastmcp import Context, FastMCP
+from mcp.types import ToolAnnotations
 
 from oxylabs_mcp import url_params
 from oxylabs_mcp.config import settings
 from oxylabs_mcp.exceptions import MCPServerError
-from oxylabs_mcp.utils import (
-    convert_html_to_md,
-    get_content,
-    oxylabs_client,
-    strip_html,
-)
+from oxylabs_mcp.utils import get_content, oxylabs_client
 
 
-mcp = FastMCP("oxylabs_mcp", dependencies=["mcp", "httpx"])
+mcp = FastMCP("oxylabs_mcp")
 
 
-@mcp.tool(
-    name="oxylabs_universal_scraper",
-    description="Scrape url using Oxylabs Web API with universal scraper",
-)
-async def scrape_universal_url(
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+async def universal_scraper(
     ctx: Context,  # type: ignore[type-arg]
     url: url_params.URL_PARAM,
-    parse: url_params.PARSE_PARAM = False,  # noqa: FBT002
     render: url_params.RENDER_PARAM = "",
+    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = "",
+    geo_location: url_params.GEO_LOCATION_PARAM = "",
+    output_format: url_params.OUTPUT_FORMAT_PARAM = "",
 ) -> str:
-    """Scrape url using Oxylabs Web API with universal scraper."""
+    """Get a content of any webpage.
+
+    Supports browser rendering, parsing of certain webpages
+    and different output formats.
+    """
     try:
-        async with oxylabs_client(ctx, with_auth=True) as client:
+        async with oxylabs_client(ctx) as client:
             payload: dict[str, Any] = {"url": url}
-            if parse:
-                payload["parse"] = parse
+
             if render:
                 payload["render"] = render
+            if user_agent_type:
+                payload["user_agent_type"] = user_agent_type
+            if geo_location:
+                payload["geo_location"] = geo_location
 
             response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
 
             response.raise_for_status()
 
-            return get_content(response, parse)
+            return get_content(response, output_format=output_format)
     except MCPServerError as e:
         return e.stringify()
 
 
-@mcp.tool(
-    name="oxylabs_web_unblocker",
-    description="Scrape url using Oxylabs Web Unblocker",
-)
-async def scrape_with_web_unblocker(
-    ctx: Context,  # type: ignore[type-arg]
-    url: url_params.URL_PARAM,
-    render: url_params.RENDER_PARAM = "",
-) -> str:
-    """Scrape url using Oxylabs Web Unblocker.
-
-    This tool manages the unblocking process to extract public data
-    even from the most difficult websites.
-    """
-    headers: dict[str, Any] = {}
-    if render:
-        headers["X-Oxylabs-Render"] = render
-
-    try:
-        async with oxylabs_client(ctx, with_proxy=True, verify=False, headers=headers) as client:
-            response = await client.get(url)
-
-            response.raise_for_status()
-
-            return convert_html_to_md(strip_html(response.text))
-    except MCPServerError as e:
-        return e.stringify()
-
-
-@mcp.tool(
-    name="oxylabs_google_search_scraper",
-    description="Scrape Google Search results using Oxylabs Web API",
-)
-async def scrape_google_search(
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+async def google_search_scraper(
     ctx: Context,  # type: ignore[type-arg]
     query: url_params.GOOGLE_QUERY_PARAM,
     parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
@@ -90,10 +60,15 @@ async def scrape_google_search(
     geo_location: url_params.GEO_LOCATION_PARAM = "",
     locale: url_params.LOCALE_PARAM = "",
     ad_mode: url_params.AD_MODE_PARAM = False,  # noqa: FBT002
+    output_format: url_params.OUTPUT_FORMAT_PARAM = "",
 ) -> str:
-    """Scrape Google Search results using Oxylabs Web API."""
+    """Scrape Google Search results.
+
+    Supports content parsing, different user agent types, pagination,
+    domain, geolocation, locale parameters and different output formats.
+    """
     try:
-        async with oxylabs_client(ctx, with_auth=True) as client:
+        async with oxylabs_client(ctx) as client:
             payload: dict[str, Any] = {"query": query}
 
             if ad_mode:
@@ -124,16 +99,13 @@ async def scrape_google_search(
 
             response.raise_for_status()
 
-            return get_content(response, parse)
+            return get_content(response, parse=parse, output_format=output_format)
     except MCPServerError as e:
         return e.stringify()
 
 
-@mcp.tool(
-    name="oxylabs_amazon_search_scraper",
-    description="Scrape Amazon Search results using Oxylabs Web API",
-)
-async def scrape_amazon_search(
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+async def amazon_search_scraper(
     ctx: Context,  # type: ignore[type-arg]
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     category_id: url_params.CATEGORY_ID_CONTEXT_PARAM = "",
@@ -147,10 +119,16 @@ async def scrape_amazon_search(
     domain: url_params.DOMAIN_PARAM = "",
     geo_location: url_params.GEO_LOCATION_PARAM = "",
     locale: url_params.LOCALE_PARAM = "",
+    output_format: url_params.OUTPUT_FORMAT_PARAM = "",
 ) -> str:
-    """Scrape Amazon Search results using Oxylabs Web API."""
+    """Scrape Amazon search results.
+
+    Supports content parsing, different user agent types, pagination,
+    domain, geolocation, locale parameters and different output formats.
+    Supports Amazon specific parameters such as category id, merchant id, currency.
+    """
     try:
-        async with oxylabs_client(ctx, with_auth=True) as client:
+        async with oxylabs_client(ctx) as client:
             payload: dict[str, Any] = {"source": "amazon_search", "query": query}
 
             context = []
@@ -184,16 +162,13 @@ async def scrape_amazon_search(
 
             response.raise_for_status()
 
-            return get_content(response, parse)
+            return get_content(response, parse=parse, output_format=output_format)
     except MCPServerError as e:
         return e.stringify()
 
 
-@mcp.tool(
-    name="oxylabs_amazon_product_scraper",
-    description="Scrape Amazon Products using Oxylabs Web API",
-)
-async def scrape_amazon_products(
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+async def amazon_product_scraper(
     ctx: Context,  # type: ignore[type-arg]
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     autoselect_variant: url_params.AUTOSELECT_VARIANT_CONTEXT_PARAM = False,  # noqa: FBT002
@@ -204,10 +179,17 @@ async def scrape_amazon_products(
     domain: url_params.DOMAIN_PARAM = "",
     geo_location: url_params.GEO_LOCATION_PARAM = "",
     locale: url_params.LOCALE_PARAM = "",
+    output_format: url_params.OUTPUT_FORMAT_PARAM = "",
 ) -> str:
-    """Scrape Amazon Products using Oxylabs Web API."""
+    """Scrape Amazon products.
+
+    Supports content parsing, different user agent types, domain,
+    geolocation, locale parameters and different output formats.
+    Supports Amazon specific parameters such as currency and getting
+    more accurate pricing data with auto select variant.
+    """
     try:
-        async with oxylabs_client(ctx, with_auth=True) as client:
+        async with oxylabs_client(ctx) as client:
             payload: dict[str, Any] = {"source": "amazon_product", "query": query}
 
             context = []
@@ -235,7 +217,7 @@ async def scrape_amazon_products(
 
             response.raise_for_status()
 
-            return get_content(response, parse)
+            return get_content(response, parse=parse, output_format=output_format)
     except MCPServerError as e:
         return e.stringify()
 
