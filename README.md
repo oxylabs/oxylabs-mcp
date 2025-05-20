@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/oxylabs_mcp.svg" alt="Oxylabs + MCP">
+  <img src="https://storage.googleapis.com/oxylabs-public-assets/oxylabs_mcp.svg" alt="Oxylabs + MCP">
 </p>
 <h1 align="center" style="border-bottom: none;">
   Oxylabs MCP Server
