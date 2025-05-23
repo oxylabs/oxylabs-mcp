@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   lint_and_test:
@@ -55,3 +55,15 @@ jobs:
       with:
         name: coverage-badge
         path: coverage-badge.svg
+
+    - name: Deploy coverage report to branch
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        publish_branch: 'coverage'
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        keep_files: coverage-badge.svg
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: 'chore: Update coverage data from workflow run ${{ github.event.workflow_run.id }}'

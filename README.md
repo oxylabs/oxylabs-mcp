@@ -17,8 +17,7 @@
 [![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
 [![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/f6a9c0bc-83a6-4f78-89d9-f2cec4ece98d)
-[![Coverage](https://github.io/oxylabs-mcp/coverage-badge.svg)](https://github.io/oxylabs-mcp/coverage-badge.svg)
-[![Coverage](coverage-badge.svg)](coverage-badge.svg)
+[![Coverage](coverage-badge.svg)](https://github.com/oxylabs/oxylabs-mcp/blob/coverage/coverage-badge.svg)
 <br/>
 <a href="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp/badge" alt="Oxylabs Server MCP server" />
