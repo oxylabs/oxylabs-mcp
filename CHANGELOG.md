@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1] - 2025-05-23
+
+### Added
+
+- More tests
+
+### Changed
+
+- README.md
+
 ## [0.2.0] - 2025-05-13
 
 ### Added

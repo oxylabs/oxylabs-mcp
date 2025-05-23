@@ -70,7 +70,8 @@ ipython_config.py
 __pypackages__/
 
 # Environments
-*/.env
+.env
+tests/e2e/.env
 .venv
 env/
 venv/
