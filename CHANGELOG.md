@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2] - 2025-05-23
+
+### Fixed
+
+- Coverage badge
+
 ## [0.2.1] - 2025-05-23
 
 ### Added
