@@ -38,3 +38,20 @@ jobs:
     - name: Run tests
       run: |
         uv run pytest --cov=src --cov-report xml --cov-report term --cov-fail-under=90 tests/unit tests/integration
+
+    - name: Generate coverage badge
+      run: |
+        pip install "genbadge[coverage]"
+        genbadge coverage -i coverage.xml -o coverage-badge.svg
+
+    - name: Upload coverage report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage.xml
+
+    - name: Upload coverage badge artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-badge
+        path: coverage-badge.svg

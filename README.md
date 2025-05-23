@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/oxylabs_mcp.svg" alt="Oxylabs + MCP">
+  <img src="https://storage.googleapis.com/oxylabs-public-assets/oxylabs_mcp.svg" alt="Oxylabs + MCP">
 </p>
 <h1 align="center" style="border-bottom: none;">
   Oxylabs MCP Server
@@ -12,11 +12,13 @@
 
 <div align="center">
 
-[![Tests](https://github.com/oxylabs/oxylabs-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/oxylabs/oxylabs-mcp/actions/workflows/tests.yml)
 [![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
 [![pypi package](https://img.shields.io/pypi/v/oxylabs-mcp?color=%2334D058&label=pypi%20package)](https://pypi.org/project/oxylabs-mcp/)
 [![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
 [![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/f6a9c0bc-83a6-4f78-89d9-f2cec4ece98d)
+[![Coverage](https://github.io/oxylabs-mcp/coverage-badge.svg)](https://github.io/oxylabs-mcp/coverage-badge.svg)
+[![Coverage](coverage-badge.svg)](coverage-badge.svg)
 <br/>
 <a href="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@oxylabs/oxylabs-mcp/badge" alt="Oxylabs Server MCP server" />
@@ -35,7 +37,7 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 
 ## Why MCP? &nbsp;🕸️ ➜ 📦 ➜ 🤖
 
-Imagine telling your LLM *“Summarise the latest Hacker News discussion about GPT‑7”* – and it simply answers.  
+Imagine telling your LLM *"Summarise the latest Hacker News discussion about GPT‑7"* – and it simply answers.  
 MCP (Multi‑Client Proxy) makes that happen by doing the boring parts for you:
 
 | What MCP does                                                     | Why it matters to you                    |
@@ -43,56 +45,7 @@ MCP (Multi‑Client Proxy) makes that happen by doing the boring parts for you:
 | **Bypasses anti‑bot walls** with the Oxylabs global proxy network | Keeps you unblocked and anonymous        |
 | **Renders JavaScript** in headless Chrome                         | Single‑page apps, sorted                 |
 | **Cleans HTML → JSON**                                            | Drop straight into vector DBs or prompts |
-| **Optional structured parsers** (Google, Amazon, etc.)            | One‑line access to popular targets       |
-
----
-
-## 🚀 Pick your poison – one‑liner install
-
-| Method                 | Command                                                                                | Perfect when you…            |
-|------------------------|----------------------------------------------------------------------------------------|------------------------------|
-| **npx** (zero‑install) | <code>npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client &lt;client&gt;</code> | want to test it **now**      |
-| **PyPI**               | <code>pip install oxylabs-mcp</code>                                                   | live in a Python virtual env |
-| **Docker**             | <code>docker run --rm -p 3000:3000 oxylabs/oxylabs-mcp</code>                          | deploy to servers / k8s      |
-
-<details>
-<summary>Which <code>&lt;client&gt;</code> can I use?</summary>
-
-Current first‑class clients:
-
-* <code>claude</code>
-* <code>cursor</code>
-
-Want your favourite LLM? [Open an issue](https://github.com/oxylabs/oxylabs-mcp/issues/new).
-</details>
-
----
-
-## 👵 Quickstart (so simple my grandma can do it)
-
-1. **Open Terminal**  
-   – PowerShell on Windows, Terminal on macOS/Linux.
-2. **Paste one command**  
-   ```bash
-   npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client claude
-   ```
-3. **Enter your Oxylabs credentials** when prompted.  
-4. **Scrape something!**  
-   ```bash
-   curl localhost:3000/scrape?url=https://news.ycombinator.com
-   ```
-5. Read the response and have a cup of tea. ☕
-
----
-
-## ✨ Features
-
-* **Pluggable engines** – choose HTML‑only, full JS, or none.  
-* **Automatic retries & smart proxy rotation**.  
-* **Streaming responses** so your model sees tokens sooner.  
-* **Tiny footprint** – zero data stored server‑side.
-
----
+| **Optional structured parsers** (Google, Amazon, etc.)            | One‑line access to popular targets       |
 
 ## ✨ Key Features
 
@@ -187,149 +140,6 @@ The Oxylabs MCP server supports these parameters:
 
 ---
 
-## ⚙️ Basic Setup Instructions
-
-### Install via Smithery
-
-Automatically install Oxylabs MCP server via [Smithery](https://smithery.ai/server/@oxylabs/oxylabs-mcp):
-
-```bash
-npx -y @smithery/cli install @oxylabs/oxylabs-mcp --client <client>
-```
-
-List of clients supported by Oxylabs at the moment:
-  - claude
-  - cursor
-
-[//]: # (### Manual MCP configuration options)
-
-[//]: # ()
-[//]: # (1. Config with `uvx`. Will install the CLI client and Oxylabs MCP server that performs calls directly to the Oxylabs API. Recommended and the most stable option at the moment.)
-
-[//]: # (    ```json)
-
-[//]: # (    {)
-
-[//]: # (      "mcpServers": {)
-
-[//]: # (        "oxylabs_scraper_uvx": {)
-
-[//]: # (          "command": "uvx",)
-
-[//]: # (          "args": [)
-
-[//]: # (            "oxylabs-mcp")
-
-[//]: # (          ],)
-
-[//]: # (          "env": {)
-
-[//]: # (            "OXYLABS_USERNAME": "OXYLABS_USERNAME",)
-
-[//]: # (            "OXYLABS_PASSWORD": "OXYLABS_PASSWORD")
-
-[//]: # (          })
-
-[//]: # (        })
-
-[//]: # (      })
-
-[//]: # (    })
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (2. Config with `npx`. Will install the Smithery CLI client that performs calls to the Oxylabs MCP server hosted in Smithery.)
-
-[//]: # (    ```json)
-
-[//]: # (    {)
-
-[//]: # (      "mcpServers": {)
-
-[//]: # (        "oxylabs-mcp": {)
-
-[//]: # (          "command": "npx",)
-
-[//]: # (          "args": [)
-
-[//]: # (            "-y",)
-
-[//]: # (            "@smithery/cli@latest",)
-
-[//]: # (            "run",)
-
-[//]: # (            "@oxylabs/oxylabs-mcp",)
-
-[//]: # (            "--config",)
-
-[//]: # (            "\"{\\\"oxylabsUsername\\\":\\\"OXYLABS_USERNAME\\\",\\\"oxylabsPassword\\\":\\\"OXYLABS_PASSWORD\\\"}\"")
-
-[//]: # (          ])
-
-[//]: # (        })
-
-[//]: # (      })
-
-[//]: # (    })
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (3. Config with `uv`. Will install CLI client and Oxylabs MCP server that references the local code. For the local development.)
-
-[//]: # (    ```json)
-
-[//]: # (    {)
-
-[//]: # (      "mcpServers": {)
-
-[//]: # (        "oxylabs_scraper": {)
-
-[//]: # (          "command": "uv",)
-
-[//]: # (          "args": [)
-
-[//]: # (            "--directory",)
-
-[//]: # (            "/<Absolute-path-to-folder>/oxylabs-mcp",)
-
-[//]: # (            "run",)
-
-[//]: # (            "oxylabs-mcp")
-
-[//]: # (          ],)
-
-[//]: # (          "env": {)
-
-[//]: # (            "OXYLABS_USERNAME": "OXYLABS_USERNAME",)
-
-[//]: # (            "OXYLABS_PASSWORD": "OXYLABS_PASSWORD")
-
-[//]: # (          })
-
-[//]: # (        })
-
-[//]: # (      })
-
-[//]: # (    })
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (> [!NOTE])
-
-[//]: # (> If you don't have `uvx` utility you need to install it first with `brew install uv`)
-
-[//]: # ()
-[//]: # (> [!TIP])
-
-[//]: # (> If you run into errors with `uvx`, try using the full path to `uvx` in the `command` field. For example, `/Users/my-user/.local/bin/uvx`.)
-
-[//]: # (> If you are using Windows and experiencing issues with Cursor, refer to the guidelines described [here]&#40;https://smithery.ai/docs/faq/users&#41;.)
-
----
-
 ## 🔧 Configuration
 
 Out of the box MCP works with sensible defaults.  
@@ -355,19 +165,50 @@ Need to tweak advanced settings? Expand the snippets below.
 </details>
 
 <details>
-<summary><strong>Docker environment variables</strong></summary>
+<summary><strong>Full <code>npx</code> client config</strong></summary>
 
-```bash
-docker run -d \
-  -e OXYLABS_USERNAME=YOUR_USERNAME \
-  -e OXYLABS_PASSWORD=YOUR_PASSWORD \
-  -p 3000:3000 oxylabs/oxylabs-mcp
+```json
+{
+  "mcpServers": {
+    "oxylabs-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "@oxylabs/oxylabs-mcp",
+        "--config",
+        "\"{\\\"oxylabsUsername\\\":\\\"OXYLABS_USERNAME\\\",\\\"oxylabsPassword\\\":\\\"OXYLABS_PASSWORD\\\"}\""
+      ]
+    }
+  }
+}
 ```
 </details>
 
-[//]: # (More examples live in [`/examples`]&#40;./examples&#41;.)
+<details>
+<summary><strong>Full <code>uv</code> client config</strong></summary>
 
----
+```json
+{
+  "mcpServers": {
+    "oxylabs_scraper": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/<Absolute-path-to-folder>/oxylabs-mcp",
+        "run",
+        "oxylabs-mcp"
+      ],
+      "env": {
+        "OXYLABS_USERNAME": "OXYLABS_USERNAME",
+        "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
+      }
+    }
+  }
+}
+```
+</details>
 
 ### Manual Setup with Claude Desktop
 
@@ -379,63 +220,6 @@ Navigate to **Cursor → Settings → Cursor Settings → MCP**. Click **Add new
 
 ---
 
-[//]: # (## 💻 Local/Dev Setup Instructions)
-
-[//]: # ()
-[//]: # (### Clone repository)
-
-[//]: # ()
-[//]: # (```)
-
-[//]: # (git clone <git:url>)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (### Install dependencies)
-
-[//]: # ()
-[//]: # (Install MCP server dependencies:)
-
-[//]: # ()
-[//]: # (```bash)
-
-[//]: # (cd mcp-server-oxylabs)
-
-[//]: # ()
-[//]: # (# Create virtual environment and activate it)
-
-[//]: # (uv venv)
-
-[//]: # ()
-[//]: # (source .venv/bin/activate # MacOS/Linux)
-
-[//]: # (# OR)
-
-[//]: # (.venv/Scripts/activate # Windows)
-
-[//]: # ()
-[//]: # (# Install dependencies)
-
-[//]: # (uv sync)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # (### 🐞 Debugging)
-
-[//]: # ()
-[//]: # (```bash)
-
-[//]: # (make run)
-
-[//]: # (```)
-
-[//]: # (Then access MCP Inspector at `http://localhost:5173`. You may need to add your username and password as environment variables in the inspector under `OXYLABS_USERNAME` and `OXYLABS_PASSWORD`.)
-
-
 ## 🛠️ Technical Details
 
 This server provides two main tools:
@@ -443,23 +227,7 @@ This server provides two main tools:
 1. **oxylabs_scraper**: Uses Oxylabs Web Scraper API for general website scraping
 2. **oxylabs_web_unblocker**: Uses Oxylabs Web Unblocker for hard-to-access websites
 
-[Web Scraper API](https://oxylabs.io/products/scraper-api/web) supports JavaScript rendering, parsed structured data, and cleaned HTML in Markdown format. [Web Unblocker](https://oxylabs.io/products/web-unblocker) offers JavaScript rendering and cleaned HTML, but doesn’t return parsed data.
-
----
-
-## 📊 Monitoring
-
-MCP exports Prometheus metrics on `/metrics` so you can keep an eye on success rates, latency, and costs.
-
----
-
-## 🤝 Contributing
-
-PRs are welcome!  For major changes, please open an issue first.
-
-* Code style – `ruff` + `black`  
-* Tests – `pytest` with 90 % minimum coverage  
-* Conventional commits (`fix:`, `feat:` …) keep the changelog tidy
+[Web Scraper API](https://oxylabs.io/products/scraper-api/web) supports JavaScript rendering, parsed structured data, and cleaned HTML in Markdown format. [Web Unblocker](https://oxylabs.io/products/web-unblocker) offers JavaScript rendering and cleaned HTML, but doesn't return parsed data.
 
 ---
 
@@ -470,7 +238,7 @@ Distributed under the MIT License – see [`LICENSE`](LICENSE) for details.
 ---
 
 <p align="center">
-  <sub>Made with ☕ by <a href="https://oxylabs.io">Oxylabs</a>.  Feel free to give us a ⭐ if MCP saved you a weekend.</sub>
+  Made with ☕ by <a href="https://oxylabs.io">Oxylabs</a>.  Feel free to give us a ⭐ if MCP saved you a weekend.
 </p>
 
 

@@ -1,0 +1,35 @@
+name: Deploy Coverage Badge to GitHub Pages
+
+on:
+  workflow_run:
+    workflows: ["Lint & Test"]
+    types:
+      - completed
+
+jobs:
+  deploy-badge:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage badge artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: lint_and_test.yml
+          name: coverage-badge
+          path: .
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_PAT }}
+          publish_dir: .
+          publish_branch: gh-pages
+          keep_files: true
+          force_orphan: true
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com 
