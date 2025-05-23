@@ -218,8 +218,6 @@ def get_content(response: Response, *, output_format: str, parse: bool = False) 
     if output_format == "links":
         links = extract_links_with_text(str(content))
         return "\n".join(links)
-    if output_format in ("md", ""):
-        striped_html = strip_html(str(content))
-        return markdownify(striped_html)  # type: ignore[no-any-return]
 
-    return str(content)
+    stripped_html = strip_html(str(content))
+    return markdownify(stripped_html)  # type: ignore[no-any-return]
