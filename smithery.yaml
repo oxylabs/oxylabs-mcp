@@ -1,0 +1,21 @@
+# Smithery configuration file: https://smithery.ai/docs/deployments
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - oxylabsUsername
+      - oxylabsPassword
+    properties:
+      oxylabsUsername:
+        type: string
+        description: The username for Oxylabs API authentication.
+      oxylabsPassword:
+        type: string
+        description: The password for Oxylabs API authentication.
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    config => ({ command: 'oxylabs-mcp', env: { OXYLABS_USERNAME: config.oxylabsUsername, OXYLABS_PASSWORD: config.oxylabsPassword } })
