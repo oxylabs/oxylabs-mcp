@@ -4,7 +4,7 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from httpx import Request, Response
+from httpx import HTTPStatusError, Request, RequestError, Response
 from mcp.server.fastmcp import FastMCP
 from mcp.types import TextContent
 
@@ -282,3 +282,74 @@ async def test_default_headers_are_set(
 
     client_info_pattern = re.compile(r"oxylabs-mcp-fake_cursor/(\d+)\.(\d+)\.(\d+)$")
     assert re.match(client_info_pattern, client_info)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("tool", "arguments"),
+    [
+        pytest.param(
+            "universal_scraper",
+            {"url": "test_url"},
+            id="universal_scraper",
+        ),
+        pytest.param(
+            "google_search_scraper",
+            {"query": "Generic query"},
+            id="google_search_scraper",
+        ),
+        pytest.param(
+            "amazon_search_scraper",
+            {"query": "Generic query"},
+            id="amazon_search_scraper",
+        ),
+        pytest.param(
+            "amazon_product_scraper",
+            {"query": "Generic query"},
+            id="amazon_product_scraper",
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    ("exception", "expected_text"),
+    [
+        pytest.param(
+            HTTPStatusError(
+                "HTTP status error",
+                request=MagicMock(),
+                response=MagicMock(status_code=500, text="Internal Server Error"),
+            ),
+            "HTTP error during POST request: 500 - Internal Server Error",
+            id="https_status_error",
+        ),
+        pytest.param(
+            RequestError("Request error"),
+            "Request error during POST request: Request error",
+            id="request_error",
+        ),
+        pytest.param(
+            Exception("Unexpected exception"),
+            "Error: Unexpected exception",
+            id="unhandled_exception",
+        ),
+    ],
+)
+async def test_request_client_error_handling(
+    mcp: FastMCP,
+    request_data: Request,
+    oxylabs_client: AsyncMock,
+    request_session: MagicMock,
+    tool: str,
+    arguments: dict,
+    exception: Exception,
+    expected_text: str,
+):
+    request_session.client_params.clientInfo.name = "fake_cursor"
+
+    oxylabs_client.post.side_effect = [exception]
+    oxylabs_client.get.side_effect = [exception]
+
+    with patch("os.environ", new=ENV_VARIABLES):
+        result = await mcp.call_tool(tool, arguments=arguments)
+
+    assert result[0].text == expected_text

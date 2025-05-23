@@ -222,10 +222,5 @@ async def amazon_product_scraper(
         return e.stringify()
 
 
-def main() -> None:
-    """Run the MCP server."""
-    mcp.run()
-
-
 if __name__ == "__main__":
-    main()
+    mcp.run()

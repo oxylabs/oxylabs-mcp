@@ -1,9 +1,9 @@
-from . import server
+from oxylabs_mcp.server import mcp
 
 
 def main() -> None:
     """Start the MCP server."""
-    server.main()
+    mcp.run()
 
 
 # Optionally expose other important items at package level
