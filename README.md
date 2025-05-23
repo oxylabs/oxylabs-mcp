@@ -9,7 +9,6 @@
   <em>The missing link between AI models and the real‑world web: one API that delivers clean, structured data from any site.</em>
 </p>
 
-
 <div align="center">
 
 [![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
@@ -26,6 +25,7 @@
 </div>
 
 ---
+
 ## 📖 Overview
 
 The Oxylabs MCP server provides a bridge between AI models and the web. It enables them to scrape any URL, render JavaScript-heavy pages, extract and format content for AI use, bypass anti-scraping measures, and access geo-restricted web data from 195+ countries.
@@ -34,12 +34,12 @@ This implementation leverages the Model Context Protocol (MCP) to create a secur
 
 ---
 
-## Why MCP? &nbsp;🕸️ ➜ 📦 ➜ 🤖
+## Why Oxylabs MCP? &nbsp;🕸️ ➜ 📦 ➜ 🤖
 
 Imagine telling your LLM *"Summarise the latest Hacker News discussion about GPT‑7"* – and it simply answers.  
 MCP (Multi‑Client Proxy) makes that happen by doing the boring parts for you:
 
-| What MCP does                                                     | Why it matters to you                    |
+| What Oxylabs MCP does                                             | Why it matters to you                    |
 |-------------------------------------------------------------------|------------------------------------------|
 | **Bypasses anti‑bot walls** with the Oxylabs global proxy network | Keeps you unblocked and anonymous        |
 | **Renders JavaScript** in headless Chrome                         | Single‑page apps, sorted                 |
@@ -127,25 +127,26 @@ Via uv:
 - **Python 3.12+**
 - `uv` package manager – install it using [this guide](https://docs.astral.sh/uv/getting-started/installation/)
 
+---
+
 ## 🧩 API Parameters
 
-The Oxylabs MCP server supports these parameters:
+The Oxylabs MCP Universal Scraper accepts these parameters:
 
-| Parameter | Description                       | Values            |
-|-----------|-----------------------------------|-------------------|
-| `url`     | The URL to scrape                 | Any valid URL     |
-| `parse`   | Enable structured data extraction | `True` or `False` |
-| `render`  | Use headless browser rendering    | `html` or `None`  |
+| Parameter | Description               | Values                    |
+|-----------|---------------------------|---------------------------|
+| `url`     | The URL to scrape         | Any valid URL             |
+| `render`  | Use headless browser rendering | `html` or `None`          |
+| `geo_location`  | Sets the proxy's geo location to retrieve data. | `Brasil`, `Canada`, etc.  |
+| `user_agent_type`  | Device type and browser   | `desktop`, `tablet`, etc. |
+| `output_format`  | The format of the output  | `links`, `md`, `html`     |
 
 ---
 
 ## 🔧 Configuration
 
-Out of the box MCP works with sensible defaults.  
-Need to tweak advanced settings? Expand the snippets below.
-
 <details>
-<summary><strong>Full <code>uvx</code> client config</strong></summary>
+<summary><strong><code>uvx</code> client config</strong></summary>
 
 ```json
 {
@@ -164,7 +165,7 @@ Need to tweak advanced settings? Expand the snippets below.
 </details>
 
 <details>
-<summary><strong>Full <code>npx</code> client config</strong></summary>
+<summary><strong><code>npx</code> client config</strong></summary>
 
 ```json
 {
@@ -186,7 +187,7 @@ Need to tweak advanced settings? Expand the snippets below.
 </details>
 
 <details>
-<summary><strong>Full <code>uv</code> client config</strong></summary>
+<summary><strong><code>uv</code> client config</strong></summary>
 
 ```json
 {
@@ -223,10 +224,10 @@ Navigate to **Cursor → Settings → Cursor Settings → MCP**. Click **Add new
 
 This server provides two main tools:
 
-1. **oxylabs_scraper**: Uses Oxylabs Web Scraper API for general website scraping
-2. **oxylabs_web_unblocker**: Uses Oxylabs Web Unblocker for hard-to-access websites
-
-[Web Scraper API](https://oxylabs.io/products/scraper-api/web) supports JavaScript rendering, parsed structured data, and cleaned HTML in Markdown format. [Web Unblocker](https://oxylabs.io/products/web-unblocker) offers JavaScript rendering and cleaned HTML, but doesn't return parsed data.
+1. **universal_scraper**: Uses Oxylabs Web Scraper API for general website scraping
+2. **google_search_scraper**: Uses Oxylabs Web Scraper API to extract results from Google Search
+3. **amazon_search_scraper**: Uses Oxylabs Web Scraper API to scrape Amazon search result pages
+4. **amazon_product_scraper**: Uses Oxylabs Web Scraper API to extract data from individual Amazon product pages
 
 ---
 
@@ -236,13 +237,6 @@ Distributed under the MIT License – see [`LICENSE`](LICENSE) for details.
 
 ---
 
-<p align="center">
-  Made with ☕ by <a href="https://oxylabs.io">Oxylabs</a>.  Feel free to give us a ⭐ if MCP saved you a weekend.
-</p>
-
-
-
-
 ## About Oxylabs
 
 Established in 2015, Oxylabs is a market-leading web intelligence collection
@@ -250,3 +244,9 @@ platform, driven by the highest business, ethics, and compliance standards,
 enabling companies worldwide to unlock data-driven insights.
 
 [![image](https://oxylabs.io/images/og-image.png)](https://oxylabs.io/)
+
+<div align="center">
+<sub>
+  Made with ☕ by <a href="https://oxylabs.io">Oxylabs</a>.  Feel free to give us a ⭐ if MCP saved you a weekend.
+</sub>
+</div>
