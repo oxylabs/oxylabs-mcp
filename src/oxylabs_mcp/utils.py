@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import typing
 from contextlib import asynccontextmanager
 from importlib.metadata import version
 from platform import architecture, python_version
@@ -11,7 +12,6 @@ from httpx import (
     BasicAuth,
     HTTPStatusError,
     RequestError,
-    Response,
     Timeout,
 )
 from lxml.html import defs, fromstring, tostring
@@ -136,10 +136,36 @@ def _get_default_headers(
     return headers
 
 
+class _OxylabsClientWrapper:
+    def __init__(
+        self,
+        client: AsyncClient,
+        ctx: Context,  # type: ignore[type-arg]
+    ) -> None:
+        self._client = client
+        self._ctx = ctx
+
+    async def scrape(self, payload: dict[str, typing.Any]) -> dict[str, typing.Any]:
+        await self._ctx.info(f"Create job with params: {json.dumps(payload)}")
+
+        response = await self._client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
+        response_json: dict[str, typing.Any] = response.json()
+
+        await self._ctx.info(
+            f"Job info: "
+            f"job_id={response_json['job']['id']} "
+            f"job_status={response_json['job']['status']}"
+        )
+
+        response.raise_for_status()
+
+        return response_json
+
+
 @asynccontextmanager
 async def oxylabs_client(
     ctx: Context,  # type: ignore[type-arg]
-) -> AsyncIterator[AsyncClient]:
+) -> AsyncIterator[_OxylabsClientWrapper]:
     """Async context manager for Oxylabs client that is used in MCP tools."""
     headers = _get_default_headers(ctx)
 
@@ -154,7 +180,7 @@ async def oxylabs_client(
         auth=auth,
     ) as client:
         try:
-            yield client
+            yield _OxylabsClientWrapper(client, ctx)
         except HTTPStatusError as e:
             raise MCPServerError(
                 f"HTTP error during POST request: {e.response.status_code} - {e.response.text}"
@@ -208,9 +234,14 @@ def extract_links_with_text(html: str, base_url: str | None = None) -> list[str]
     return links
 
 
-def get_content(response: Response, *, output_format: str, parse: bool = False) -> str:
+def get_content(
+    response_json: dict[str, typing.Any],
+    *,
+    output_format: str,
+    parse: bool = False,
+) -> str:
     """Extract content from response and convert to a proper format."""
-    content = response.json()["results"][0]["content"]
+    content = response_json["results"][0]["content"]
     if parse and isinstance(content, dict):
         return json.dumps(content)
     if output_format == "html":
