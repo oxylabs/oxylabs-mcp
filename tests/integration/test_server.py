@@ -8,22 +8,11 @@ from httpx import HTTPStatusError, Request, RequestError, Response
 from mcp.server.fastmcp import FastMCP
 from mcp.types import TextContent
 
-from oxylabs_mcp.server import mcp as mcp_server
 from tests.integration import params
 from tests.utils import convert_context_params, prepare_expected_arguments
 
 
 ENV_VARIABLES = {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"}
-
-
-@pytest.fixture
-def mcp() -> FastMCP:
-    return mcp_server
-
-
-@pytest.fixture
-def request_data():
-    return Request("POST", "https://example.com/v1/queries")
 
 
 @pytest.mark.parametrize(
@@ -261,11 +250,9 @@ async def test_default_headers_are_set(
     tool: str,
     arguments: dict,
 ):
-    request_session.client_params.clientInfo.name = "fake_cursor"
-
     mock_response = Response(
         200,
-        content=json.dumps({"results": [{"content": "Mocked content"}]}),
+        content=json.dumps(params.STR_RESPONSE),
         request=request_data,
     )
 
@@ -344,8 +331,6 @@ async def test_request_client_error_handling(
     exception: Exception,
     expected_text: str,
 ):
-    request_session.client_params.clientInfo.name = "fake_cursor"
-
     oxylabs_client.post.side_effect = [exception]
     oxylabs_client.get.side_effect = [exception]
 

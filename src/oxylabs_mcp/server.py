@@ -1,15 +1,18 @@
+import os
 from typing import Any
 
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.types import ToolAnnotations
 
 from oxylabs_mcp import url_params
-from oxylabs_mcp.config import settings
 from oxylabs_mcp.exceptions import MCPServerError
 from oxylabs_mcp.utils import get_content, oxylabs_client
 
 
-mcp = FastMCP("oxylabs_mcp")
+mcp = FastMCP(
+    "oxylabs_mcp",
+    log_level=os.getenv("LOG_LEVEL", "INFO"),
+)
 
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
@@ -37,13 +40,11 @@ async def universal_scraper(
             if geo_location:
                 payload["geo_location"] = geo_location
 
-            response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
+            response_json = await client.scrape(payload)
 
-            response.raise_for_status()
-
-            return get_content(response, output_format=output_format)
+            return get_content(response_json, output_format=output_format)
     except MCPServerError as e:
-        return e.stringify()
+        return await e.process(ctx)
 
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
@@ -95,13 +96,11 @@ async def google_search_scraper(
             if locale:
                 payload["locale"] = locale
 
-            response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
+            response_json = await client.scrape(payload)
 
-            response.raise_for_status()
-
-            return get_content(response, parse=parse, output_format=output_format)
+            return get_content(response_json, parse=parse, output_format=output_format)
     except MCPServerError as e:
-        return e.stringify()
+        return await e.process(ctx)
 
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
@@ -158,13 +157,11 @@ async def amazon_search_scraper(
             if locale:
                 payload["locale"] = locale
 
-            response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
+            response_json = await client.scrape(payload)
 
-            response.raise_for_status()
-
-            return get_content(response, parse=parse, output_format=output_format)
+            return get_content(response_json, parse=parse, output_format=output_format)
     except MCPServerError as e:
-        return e.stringify()
+        return await e.process(ctx)
 
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
@@ -213,13 +210,11 @@ async def amazon_product_scraper(
             if locale:
                 payload["locale"] = locale
 
-            response = await client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
+            response_json = await client.scrape(payload)
 
-            response.raise_for_status()
-
-            return get_content(response, parse=parse, output_format=output_format)
+            return get_content(response_json, parse=parse, output_format=output_format)
     except MCPServerError as e:
-        return e.stringify()
+        return await e.process(ctx)
 
 
 if __name__ == "__main__":

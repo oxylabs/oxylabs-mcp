@@ -1,6 +1,11 @@
+from mcp.server.fastmcp import Context
+
+
 class MCPServerError(Exception):
     """Generic MCP server exception."""
 
-    def stringify(self) -> str:
-        """Convert the error to a readable string."""
-        return str(self)
+    async def process(self, ctx: Context) -> str:  # type: ignore[type-arg]
+        """Process exception."""
+        err = str(self)
+        await ctx.error(err)
+        return err

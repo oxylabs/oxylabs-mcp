@@ -2,8 +2,36 @@ from contextlib import asynccontextmanager
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from httpx import Request
 from mcp.server.lowlevel.server import request_ctx
-from mcp.shared.context import RequestContext
+
+from oxylabs_mcp.server import mcp as mcp_server
+
+
+@pytest.fixture
+def request_context():
+    request_context_mock = MagicMock()
+    request_context_mock.info = AsyncMock()
+    request_context_mock.error = AsyncMock()
+
+    request_context_mock.request_id = 42
+
+    request_context_mock.request_context.session.client_params.clientInfo.name = "fake_cursor"
+
+    return request_context_mock
+
+
+@pytest.fixture
+def mcp(request_context):
+    mcp_server.get_context = MagicMock()
+    mcp_server.get_context.return_value = request_context
+
+    return mcp_server
+
+
+@pytest.fixture
+def request_data():
+    return Request("POST", "https://example.com/v1/queries")
 
 
 @pytest.fixture
@@ -22,18 +50,9 @@ def oxylabs_client():
 
 
 @pytest.fixture
-def request_session():
-    request_session_mock = MagicMock()
+def request_session(request_context):
+    token = request_ctx.set(request_context)
 
-    token = request_ctx.set(
-        RequestContext(
-            42,
-            None,
-            request_session_mock,
-            None,
-        )
-    )
-
-    yield request_session_mock
+    yield request_context.session
 
     request_ctx.reset(token)

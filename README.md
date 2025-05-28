@@ -100,6 +100,16 @@ MCP (Multi‑Client Proxy) makes that happen by doing the boring parts for you:
 
 ---
 
+## 🛠️ MCP Tools
+
+Oxylabs MCP provides the following tools:
+
+1. **universal_scraper**: Uses Oxylabs Web Scraper API for general website scraping.
+2. **google_search_scraper**: Uses Oxylabs Web Scraper API to extract results from Google Search.
+3. **amazon_search_scraper**: Uses Oxylabs Web Scraper API to scrape Amazon search result pages.
+4. **amazon_product_scraper**: Uses Oxylabs Web Scraper API to extract data from individual Amazon product pages.
+
+
 ## 💡 Example Queries
 When you've set up the MCP server with **Claude**, you can make requests like:
 
@@ -134,13 +144,13 @@ Via uv:
 
 The Oxylabs MCP Universal Scraper accepts these parameters:
 
-| Parameter | Description               | Values                    |
-|-----------|---------------------------|---------------------------|
-| `url`     | The URL to scrape         | Any valid URL             |
-| `render`  | Use headless browser rendering | `html` or `None`          |
-| `geo_location`  | Sets the proxy's geo location to retrieve data. | `Brasil`, `Canada`, etc.  |
-| `user_agent_type`  | Device type and browser   | `desktop`, `tablet`, etc. |
-| `output_format`  | The format of the output  | `links`, `md`, `html`     |
+| Parameter         | Description                                     | Values                    |
+|-------------------|-------------------------------------------------|---------------------------|
+| `url`             | The URL to scrape                               | Any valid URL             |
+| `render`          | Use headless browser rendering                  | `html` or `None`          |
+| `geo_location`    | Sets the proxy's geo location to retrieve data. | `Brasil`, `Canada`, etc.  |
+| `user_agent_type` | Device type and browser                         | `desktop`, `tablet`, etc. |
+| `output_format`   | The format of the output                        | `links`, `md`, `html`     |
 
 ---
 
@@ -221,20 +231,57 @@ Navigate to **Cursor → Settings → Cursor Settings → MCP**. Click **Add new
 
 ---
 
-## 🛠️ Technical Details
+## ⚙️ Environment variables
 
-This server provides two main tools:
+Oxylabs MCP server supports the following environment variables
 
-1. **universal_scraper**: Uses Oxylabs Web Scraper API for general website scraping
-2. **google_search_scraper**: Uses Oxylabs Web Scraper API to extract results from Google Search
-3. **amazon_search_scraper**: Uses Oxylabs Web Scraper API to scrape Amazon search result pages
-4. **amazon_product_scraper**: Uses Oxylabs Web Scraper API to extract data from individual Amazon product pages
+| Name               | Description                                   | Mandatory           | Default |
+|--------------------|-----------------------------------------------|---------------------|---------|
+| `OXYLABS_USERNAME` | Your Oxylabs username                         | true                |         |
+| `OXYLABS_PASSWORD` | Your Oxylabs password                         | true                |         |
+| `LOG_LEVEL`        | Log level for the logs returned to the client | false               | `INFO`  |
+
+---
+
+## 📝 Logging
+
+Server provides additional information about the tool calls in `notification/message` events
+
+```json
+{
+  "method": "notifications/message",
+  "params": {
+    "level": "info",
+    "data": "Create job with params: {\"url\": \"https://ip.oxylabs.io\"}"
+  }
+}
+```
+
+```json
+{
+  "method": "notifications/message",
+  "params": {
+    "level": "info",
+    "data": "Job info: job_id=7333113830223918081 job_status=done"
+  }
+}
+```
+
+```json
+{
+  "method": "notifications/message",
+  "params": {
+    "level": "error",
+    "data": "Error: request to Oxylabs API failed"
+  }
+}
+```
 
 ---
 
 ## 🛡️ License
 
-Distributed under the MIT License – see [`LICENSE`](LICENSE) for details.
+Distributed under the MIT License – see [LICENSE](LICENSE) for details.
 
 ---
 
