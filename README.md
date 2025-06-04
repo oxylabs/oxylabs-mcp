@@ -157,8 +157,33 @@ The Oxylabs MCP Universal Scraper accepts these parameters:
 ## 🔧 Configuration
 
 <details>
-<summary><strong><code>uvx</code> client config</strong></summary>
+<summary><strong><code>smithery</code></strong></summary>
 
+1. Go to https://smithery.ai/server/@oxylabs/oxylabs-mcp
+2. Login with GitHub
+3. Find the _Install_ section
+4. Follow the instructions to generate the config
+
+Auto install with Smithery CLI
+```bash
+# example for Claude Desktop
+npx -y @smithery/cli@latest install @upstash/context7-mcp --client claude --key <smithery_key>
+```
+</details>
+
+<details>
+<summary><strong><code>uvx</code></strong></summary>
+
+1. Install the uv
+```bash
+# macOS and Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+2. Use the following config
 ```json
 {
   "mcpServers": {
@@ -176,30 +201,18 @@ The Oxylabs MCP Universal Scraper accepts these parameters:
 </details>
 
 <details>
-<summary><strong><code>npx</code> client config</strong></summary>
+<summary><strong><code>uv</code></strong></summary>
 
-```json
-{
-  "mcpServers": {
-    "oxylabs-mcp": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@smithery/cli@latest",
-        "run",
-        "@oxylabs/oxylabs-mcp",
-        "--config",
-        "\"{\\\"oxylabsUsername\\\":\\\"OXYLABS_USERNAME\\\",\\\"oxylabsPassword\\\":\\\"OXYLABS_PASSWORD\\\"}\""
-      ]
-    }
-  }
-}
+1. Install the uvx 
+```bash
+# macOS and Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
-</details>
 
-<details>
-<summary><strong><code>uv</code> client config</strong></summary>
-
+2. Use the following config
 ```json
 {
   "mcpServers": {
