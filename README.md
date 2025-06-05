@@ -156,6 +156,8 @@ The Oxylabs MCP Universal Scraper accepts these parameters:
 
 ## 🔧 Configuration
 
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=oxylabs&config=eyJjb21tYW5kIjoidXZ4IG94eWxhYnMtbWNwIiwiZW52Ijp7Ik9YWUxBQlNfVVNFUk5BTUUiOiJPWFlMQUJTX1VTRVJOQU1FIiwiT1hZTEFCU19QQVNTV09SRCI6Ik9YWUxBQlNfUEFTU1dPUkQifX0%3D)
+
 <details>
 <summary><strong><code>smithery</code></strong></summary>
 
@@ -187,12 +189,12 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ```json
 {
   "mcpServers": {
-    "oxylabs_scraper_uvx": {
+    "oxylabs": {
       "command": "uvx",
       "args": ["oxylabs-mcp"],
       "env": {
-        "OXYLABS_USERNAME": "YOUR_USERNAME",
-        "OXYLABS_PASSWORD": "YOUR_PASSWORD"
+        "OXYLABS_USERNAME": "OXYLABS_USERNAME",
+        "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
       }
     }
   }
@@ -216,7 +218,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ```json
 {
   "mcpServers": {
-    "oxylabs_scraper": {
+    "oxylabs": {
       "command": "uv",
       "args": [
         "--directory",
