@@ -5,8 +5,16 @@ from mcp.server.fastmcp import Context, FastMCP
 from mcp.types import ToolAnnotations
 
 from oxylabs_mcp import url_params
+from oxylabs_mcp.ai_studio.tools import (
+    add_ai_studio_tools,
+    is_ai_studio_api_key_available,
+)
 from oxylabs_mcp.exceptions import MCPServerError
-from oxylabs_mcp.utils import get_content, oxylabs_client
+from oxylabs_mcp.utils import (
+    get_content,
+    is_oxylabs_credentials_available,
+    oxylabs_client,
+)
 
 
 mcp = FastMCP(
@@ -15,7 +23,6 @@ mcp = FastMCP(
 )
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def universal_scraper(
     ctx: Context,  # type: ignore[type-arg]
     url: url_params.URL_PARAM,
@@ -47,7 +54,6 @@ async def universal_scraper(
         return await e.process(ctx)
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def google_search_scraper(
     ctx: Context,  # type: ignore[type-arg]
     query: url_params.GOOGLE_QUERY_PARAM,
@@ -103,7 +109,6 @@ async def google_search_scraper(
         return await e.process(ctx)
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def amazon_search_scraper(
     ctx: Context,  # type: ignore[type-arg]
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
@@ -164,7 +169,6 @@ async def amazon_search_scraper(
         return await e.process(ctx)
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def amazon_product_scraper(
     ctx: Context,  # type: ignore[type-arg]
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
@@ -217,5 +221,37 @@ async def amazon_product_scraper(
         return await e.process(ctx)
 
 
+def add_oxylabs_tools(mcp: FastMCP) -> None:
+    """Add Oxylabs scraper API tools."""
+    for tool in (
+        universal_scraper,
+        google_search_scraper,
+        amazon_search_scraper,
+        amazon_product_scraper,
+    ):
+        mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))(tool)
+
+
+def add_tools(mcp: FastMCP) -> None:
+    """Add Oxylabs tools to the MCP server."""
+    oxylabs_credentials_available = is_oxylabs_credentials_available()
+    oxylabs_ai_studio_api_key_available = is_ai_studio_api_key_available()
+    if not oxylabs_credentials_available and not oxylabs_ai_studio_api_key_available:
+        message = (
+            "Oxylabs credentials not set. "
+            "To access universal, google and amazon scraper APIs "
+            "please set 'OXYLABS_USERNAME' and 'OXYLABS_PASSWORD' environment variables."
+            "To use Oxylabs AI Studio, set 'OXYLABS_AI_STUDIO_API_KEY' environment variable."
+        )
+        raise ValueError(message)
+
+    if oxylabs_credentials_available:
+        add_oxylabs_tools(mcp)
+
+    if oxylabs_ai_studio_api_key_available:
+        add_ai_studio_tools(mcp)
+
+
 if __name__ == "__main__":
+    add_tools(mcp)
     mcp.run()

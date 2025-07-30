@@ -10,6 +10,7 @@ class Settings(BaseSettings):
 
     OXYLABS_SCRAPER_URL: str = "https://realtime.oxylabs.io/v1/queries"
     OXYLABS_REQUEST_TIMEOUT_S: int = 100
+    LOG_LEVEL: str = "INFO"
 
 
 settings = Settings()
