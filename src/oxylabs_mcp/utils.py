@@ -36,6 +36,19 @@ def get_auth_from_env() -> tuple[str, str]:
     return username, password
 
 
+def is_oxylabs_credentials_available() -> bool:
+    """Check if Oxylabs credentials are available.
+
+    Only checks if both username and password are set in the environment variables.
+    Does not check if they are valid.
+    """
+    try:
+        get_auth_from_env()
+        return True
+    except ValueError:
+        return False
+
+
 def clean_html(html: str) -> str:
     """Clean an HTML string."""
     cleaner = Cleaner(

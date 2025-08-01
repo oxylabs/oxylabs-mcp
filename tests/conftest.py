@@ -5,7 +5,11 @@ import pytest
 from httpx import Request
 from mcp.server.lowlevel.server import request_ctx
 
+from oxylabs_mcp.server import add_oxylabs_tools
 from oxylabs_mcp.server import mcp as mcp_server
+
+
+add_oxylabs_tools(mcp_server)
 
 
 @pytest.fixture
