@@ -102,21 +102,37 @@ MCP (Multi‑Client Proxy) makes that happen by doing the boring parts for you:
 
 ## 🛠️ MCP Tools
 
-Oxylabs MCP provides the following tools:
+Oxylabs MCP provides two sets of tools that can be used together or independently:
 
+### Oxylabs Web Scraper API Tools
 1. **universal_scraper**: Uses Oxylabs Web Scraper API for general website scraping.
 2. **google_search_scraper**: Uses Oxylabs Web Scraper API to extract results from Google Search.
 3. **amazon_search_scraper**: Uses Oxylabs Web Scraper API to scrape Amazon search result pages.
 4. **amazon_product_scraper**: Uses Oxylabs Web Scraper API to extract data from individual Amazon product pages.
 
+### Oxylabs AI Studio Tools
+The Oxylabs AI Studio MCP server provides various AI tools for your agents:
+
+5. **ai_scraper**: Scrape content from any URL in JSON or Markdown format with AI-powered data extraction.
+6. **ai_crawler**: Based on a prompt, crawls a website and collects data in Markdown or JSON format across multiple pages.
+7. **ai_browser_agent**: Given a task, the agent controls a browser to achieve the given objective and returns data in Markdown, JSON, HTML, or screenshot formats.
+8. **ai_search**: Search the web for URLs and their contents with AI-powered content extraction.
+
 
 ## 💡 Example Queries
 When you've set up the MCP server with **Claude**, you can make requests like:
 
+### Web Scraper API Examples
 - Could you scrape `https://www.google.com/search?q=ai` page?
 - Scrape `https://www.amazon.de/-/en/Smartphone-Contract-Function-Manufacturer-Exclusive/dp/B0CNKD651V` with **parse** enabled
 - Scrape `https://www.amazon.de/-/en/gp/bestsellers/beauty/ref=zg_bs_nav_beauty_0` with **parse** and **render** enabled
 - Use web unblocker with **render** to scrape `https://www.bestbuy.com/site/top-deals/all-electronics-on-sale/pcmcat1674241939957.c`
+
+### AI Studio Examples
+- Use AI scraper to get top news headlines from `https://news-site.com` in JSON format.
+- Use AI crawler with prompt "extract all product information" to crawl `https://example-store.com`
+- Use browser agent with task "log in and extract dashboard data" on `https://complex-app.com`
+- Use AI search to find 5 "latest AI developments" and return URLs with their content
 
 ---
 
@@ -124,7 +140,8 @@ When you've set up the MCP server with **Claude**, you can make requests like:
 
 Before you begin, make sure you have:
 
-- **Oxylabs Account**: Obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available)
+- **Oxylabs Web Scraper API Account**: Obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available)
+- **Oxylabs AI Studio API Key** (Optional): For AI-powered tools, obtain your API key from [Oxylabs AI Studio](https://ai.oxylabs.io/) (separate service)
 
 ### Basic Usage
 Via Smithery CLI:
@@ -156,7 +173,7 @@ The Oxylabs MCP Universal Scraper accepts these parameters:
 
 ## 🔧 Configuration
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=oxylabs&config=eyJjb21tYW5kIjoidXZ4IG94eWxhYnMtbWNwIiwiZW52Ijp7Ik9YWUxBQlNfVVNFUk5BTUUiOiJPWFlMQUJTX1VTRVJOQU1FIiwiT1hZTEFCU19QQVNTV09SRCI6Ik9YWUxBQlNfUEFTU1dPUkQifX0%3D)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=oxylabs&config=JTdCJTIyY29tbWFuZCUyMiUzQSUyMnV2eCUyMG94eWxhYnMtbWNwJTIyJTJDJTIyZW52JTIyJTNBJTdCJTIyT1hZTEFCU19VU0VSTkFNRSUyMiUzQSUyMk9YWUxBQlNfVVNFUk5BTUUlMjIlMkMlMjJPWFlMQUJTX1BBU1NXT1JEJTIyJTNBJTIyT1hZTEFCU19QQVNTV09SRCUyMiUyQyUyMk9YWUxBQlNfQUlfU1RVRElPX0FQSV9LRVklMjIlM0ElMjJPWFlMQUJTX0FJX1NUVURJT19BUElfS0VZJTIyJTdEJTdE)
 
 <details>
 <summary><strong><code>smithery</code></strong></summary>
@@ -194,7 +211,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
       "args": ["oxylabs-mcp"],
       "env": {
         "OXYLABS_USERNAME": "OXYLABS_USERNAME",
-        "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
+        "OXYLABS_PASSWORD": "OXYLABS_PASSWORD",
+        "OXYLABS_AI_STUDIO_API_KEY": "OXYLABS_AI_STUDIO_API_KEY"
       }
     }
   }
@@ -228,7 +246,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
       ],
       "env": {
         "OXYLABS_USERNAME": "OXYLABS_USERNAME",
-        "OXYLABS_PASSWORD": "OXYLABS_PASSWORD"
+        "OXYLABS_PASSWORD": "OXYLABS_PASSWORD",
+        "OXYLABS_AI_STUDIO_API_KEY": "OXYLABS_AI_STUDIO_API_KEY"
       }
     }
   }
@@ -250,11 +269,23 @@ Navigate to **Cursor → Settings → Cursor Settings → MCP**. Click **Add new
 
 Oxylabs MCP server supports the following environment variables
 
-| Name               | Description                                   | Mandatory           | Default |
-|--------------------|-----------------------------------------------|---------------------|---------|
-| `OXYLABS_USERNAME` | Your Oxylabs username                         | true                |         |
-| `OXYLABS_PASSWORD` | Your Oxylabs password                         | true                |         |
-| `LOG_LEVEL`        | Log level for the logs returned to the client | false               | `INFO`  |
+| Name                      | Description                                   | Default |
+|---------------------------|-----------------------------------------------|---------|
+| `OXYLABS_USERNAME`        | Your Oxylabs Web Scraper API username         |         |
+| `OXYLABS_PASSWORD`        | Your Oxylabs Web Scraper API password         |         |
+| `OXYLABS_AI_STUDIO_API_KEY` | Your Oxylabs AI Studio API key               |         |
+| `LOG_LEVEL`               | Log level for the logs returned to the client | `INFO`  |
+
+*At least one set of credentials (Web Scraper API or AI Studio) is required to use the MCP server.
+
+### Credential Requirements
+
+The Oxylabs MCP server supports two independent services:
+
+- **Oxylabs Web Scraper API**: Requires `OXYLABS_USERNAME` and `OXYLABS_PASSWORD`
+- **Oxylabs AI Studio**: Requires `OXYLABS_AI_STUDIO_API_KEY`
+
+You can use either service independently or both together. The server will automatically detect which credentials are available and enable the corresponding tools.
 
 ---
 
