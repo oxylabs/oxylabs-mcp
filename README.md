@@ -141,7 +141,7 @@ When you've set up the MCP server with **Claude**, you can make requests like:
 Before you begin, make sure you have:
 
 - **Oxylabs Web Scraper API Account**: Obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available)
-- **Oxylabs AI Studio API Key** (Optional): For AI-powered tools, obtain your API key from [Oxylabs AI Studio](https://ai.oxylabs.io/) (separate service)
+- **Oxylabs AI Studio API Key** (Optional): For AI-powered tools, obtain your API key from [Oxylabs AI Studio](https://aistudio.oxylabs.io/settings/api-key) (separate service)
 
 ### Basic Usage
 Via Smithery CLI:
