@@ -173,7 +173,7 @@ The Oxylabs MCP Universal Scraper accepts these parameters:
 
 ## 🔧 Configuration
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=oxylabs&config=JTdCJTIyY29tbWFuZCUyMiUzQSUyMnV2eCUyMG94eWxhYnMtbWNwJTIyJTJDJTIyZW52JTIyJTNBJTdCJTIyT1hZTEFCU19VU0VSTkFNRSUyMiUzQSUyMk9YWUxBQlNfVVNFUk5BTUUlMjIlMkMlMjJPWFlMQUJTX1BBU1NXT1JEJTIyJTNBJTIyT1hZTEFCU19QQVNTV09SRCUyMiUyQyUyMk9YWUxBQlNfQUlfU1RVRElPX0FQSV9LRVklMjIlM0ElMjJPWFlMQUJTX0FJX1NUVURJT19BUElfS0VZJTIyJTdEJTdE)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=oxylabs&config=eyJjb21tYW5kIjoidXZ4IG94eWxhYnMtbWNwIiwiZW52Ijp7Ik9YWUxBQlNfVVNFUk5BTUUiOiJPWFlMQUJTX1VTRVJOQU1FIiwiT1hZTEFCU19QQVNTV09SRCI6Ik9YWUxBQlNfUEFTU1dPUkQiLCJPWFlMQUJTX0FJX1NUVURJT19BUElfS0VZIjoiT1hZTEFCU19BSV9TVFVESU9fQVBJX0tFWSJ9fQ%3D%3D)
 
 <details>
 <summary><strong><code>smithery</code></strong></summary>
