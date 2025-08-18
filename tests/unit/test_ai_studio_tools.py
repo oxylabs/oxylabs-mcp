@@ -99,6 +99,7 @@ async def test_ai_crawler(
         schema=schema,
         render_javascript=render_javascript,
         return_sources_limit=return_sources_limit,
+        geo_location=None,
     )
 
 
@@ -138,6 +139,7 @@ async def test_ai_scraper(mocker, url, output_format, schema, render_javascript)
         output_format=output_format,
         schema=schema,
         render_javascript=render_javascript,
+        geo_location=None,
     )
 
 
@@ -202,6 +204,7 @@ async def test_ai_browser_agent(
         user_prompt=task_prompt,
         output_format=output_format,
         schema=schema,
+        geo_location=None,
     )
 
 
@@ -235,6 +238,7 @@ async def test_ai_search(mocker, query, limit, render_javascript, return_content
         limit=limit,
         render_javascript=render_javascript,
         return_content=return_content,
+        geo_location=None,
     )
 
 
@@ -291,6 +295,7 @@ def test_add_ai_studio_tools():
         "ai_scraper",
         "ai_crawler",
         "ai_browser_agent",
+        "ai_map",
     }
 
     assert (
