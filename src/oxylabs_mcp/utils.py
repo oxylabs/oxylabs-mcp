@@ -119,7 +119,7 @@ def strip_html(html: str) -> str:
     stripped_html = re.sub(r"\s{2,}", " ", stripped_html)
     # Replace consecutive newlines with an empty string
     stripped_html = re.sub(r"\n{2,}", "", stripped_html)
-    return stripped_html  # type: ignore[no-any-return]
+    return stripped_html
 
 
 def _get_request_context(ctx: Context) -> RequestContext | None:  # type: ignore[type-arg]

@@ -7,6 +7,7 @@ from typing import Annotated, Any, Literal
 from mcp.server.fastmcp import FastMCP
 from mcp.types import ToolAnnotations
 from oxylabs_ai_studio.apps.ai_crawler import AiCrawler
+from oxylabs_ai_studio.apps.ai_map import AiMap
 from oxylabs_ai_studio.apps.ai_scraper import AiScraper
 from oxylabs_ai_studio.apps.ai_search import AiSearch
 from oxylabs_ai_studio.apps.browser_agent import (
@@ -70,6 +71,9 @@ async def ai_crawler(
     return_sources_limit: Annotated[
         int, Field(description="The maximum number of sources to return.", le=50)
     ] = 25,
+    geo_location: Annotated[
+        str | None, Field(description="Two letter ISO country code to use for the crawl proxy.")
+    ] = None,
 ) -> str:
     """Tool useful for crawling a website from starting url and returning data in a specified format.
 
@@ -91,6 +95,7 @@ async def ai_crawler(
         schema=schema,
         render_javascript=render_javascript,
         return_sources_limit=return_sources_limit,
+        geo_location=geo_location,
     )
     return json.dumps({"data": result.data})
 
@@ -126,6 +131,9 @@ async def ai_scraper(
             )
         ),
     ] = False,
+    geo_location: Annotated[
+        str | None, Field(description="Two letter ISO country code to use for the scrape proxy.")
+    ] = None,
 ) -> str:
     """Scrape the contents of the web page and return the data in the specified format.
 
@@ -141,6 +149,7 @@ async def ai_scraper(
         output_format=output_format,
         schema=schema,
         render_javascript=render_javascript,
+        geo_location=geo_location,
     )
     return json.dumps({"data": result.data})
 
@@ -166,6 +175,9 @@ async def ai_browser_agent(
             )
         ),
     ] = None,
+    geo_location: Annotated[
+        str | None, Field(description="Two letter ISO country code to use for the browser proxy.")
+    ] = None,
 ) -> str:
     """Run the browser agent and return the data in the specified format.
 
@@ -179,7 +191,11 @@ async def ai_browser_agent(
     )
     browser_agent = BrowserAgent(api_key=OXYLABS_AI_STUDIO_API_KEY)
     result = await browser_agent.run_async(
-        url=url, user_prompt=task_prompt, output_format=output_format, schema=schema
+        url=url,
+        user_prompt=task_prompt,
+        output_format=output_format,
+        schema=schema,
+        geo_location=geo_location,
     )
     data = result.data.model_dump(mode="json") if result.data else None
     return json.dumps({"data": data})
@@ -202,6 +218,9 @@ async def ai_search(
         bool,
         Field(description="Whether to return markdown content of the search results."),
     ] = False,
+    geo_location: Annotated[
+        str | None, Field(description="Two letter ISO country code to use for the search proxy.")
+    ] = None,
 ) -> str:
     """Search the web based on a provided query.
 
@@ -219,6 +238,7 @@ async def ai_search(
         limit=limit,
         render_javascript=render_javascript,
         return_content=return_content,
+        geo_location=geo_location,
     )
     data = result.model_dump(mode="json")["data"]
     return json.dumps({"data": data})
@@ -243,7 +263,49 @@ async def generate_schema(
     return json.dumps({"data": schema})
 
 
+async def ai_map(
+    url: Annotated[str, Field(description="The URL from which URLs mapping will be started.")],
+    user_prompt: Annotated[
+        str,
+        Field(description="What kind of urls user wants to find."),
+    ],
+    render_javascript: Annotated[  # noqa: FBT002
+        bool,
+        Field(
+            description=(
+                "Whether to render the HTML of the page using javascript. Much slower, "
+                "therefore use it only for websites "
+                "that require javascript to render the page. "
+                "Unless user asks to use it, first try to crawl the page without it. "
+                "If results are unsatisfactory, try to use it."
+            )
+        ),
+    ] = False,
+    return_sources_limit: Annotated[
+        int, Field(description="The maximum number of sources to return.", le=50)
+    ] = 25,
+    geo_location: Annotated[
+        str | None, Field(description="Two letter ISO country code to use for the mapping proxy.")
+    ] = None,
+) -> str:
+    """Tool useful for mapping website's urls."""  # noqa: E501
+    logger.info(
+        f"Calling ai_map with: {url=}, {user_prompt=}, "
+        f"{render_javascript=}, "
+        f"{return_sources_limit=}"
+    )
+    ai_map = AiMap(api_key=OXYLABS_AI_STUDIO_API_KEY)
+    result = await ai_map.map_async(
+        url=url,
+        user_prompt=user_prompt,
+        render_javascript=render_javascript,
+        return_sources_limit=return_sources_limit,
+        geo_location=geo_location,
+    )
+    return json.dumps({"data": result.data})
+
+
 def add_ai_studio_tools(mcp: FastMCP) -> None:
     """Add AI studio tools to the MCP server if the API key is valid."""
-    for tool in (generate_schema, ai_search, ai_scraper, ai_crawler, ai_browser_agent):
+    for tool in (generate_schema, ai_search, ai_scraper, ai_crawler, ai_browser_agent, ai_map):
         mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))(tool)
