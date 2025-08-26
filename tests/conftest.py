@@ -14,9 +14,9 @@ def request_context():
     request_context = MagicMock()
     request_context.session.client_params.clientInfo.name = "fake_cursor"
     request_context.request.headers = {
-        "oxylabs_username": "oxylabs_username",
-        "oxylabs_password": "oxylabs_password",
-        "oxylabs_ai_studio_api_key": "oxylabs_ai_studio_api_key",
+        "x-oxylabs-username": "oxylabs_username",
+        "x-oxylabs-password": "oxylabs_password",
+        "x-oxylabs-ai-studio-api-key": "oxylabs_ai_studio_api_key",
     }
 
     ctx = Context(MagicMock())
@@ -76,5 +76,5 @@ def request_session(request_context):
 
 @pytest.fixture(scope="session", autouse=True)
 def is_api_key_valid_mock():
-    with patch("oxylabs_mcp.tools.ai_studio.is_api_key_valid", return_value=True):
+    with patch("oxylabs_mcp.utils.is_api_key_valid", return_value=True):
         yield

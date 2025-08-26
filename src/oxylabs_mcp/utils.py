@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import re
 import typing
@@ -20,9 +21,21 @@ from lxml.html.clean import Cleaner
 from markdownify import markdownify
 from mcp.server.fastmcp import Context
 from mcp.shared.context import RequestContext
+from oxylabs_ai_studio.utils import is_api_key_valid  # type: ignore[import-untyped]
 
 from oxylabs_mcp.config import settings
 from oxylabs_mcp.exceptions import MCPServerError
+
+
+logger = logging.getLogger(__name__)
+
+USERNAME_ENV = "OXYLABS_USERNAME"
+PASSWORD_ENV = "OXYLABS_PASSWORD"  # noqa: S105  # nosec
+AI_STUDIO_API_KEY_ENV = "OXYLABS_AI_STUDIO_API_KEY"
+
+USERNAME_HEADER = "X-Oxylabs-Username"
+PASSWORD_HEADER = "X-Oxylabs-Password"  # noqa: S105  # nosec
+AI_STUDIO_API_KEY_HEADER = "X-Oxylabs-AI-Studio-Api-Key"
 
 
 def clean_html(html: str) -> str:
@@ -152,11 +165,11 @@ def get_oxylabs_auth() -> tuple[str | None, str | None]:
     """Extract the Oxylabs credentials."""
     if settings.MCP_TRANSPORT == "streamable-http":
         request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
-        username = request_headers.get("oxylabs_username")
-        password = request_headers.get("oxylabs_password")
+        username = request_headers.get(USERNAME_HEADER.lower())
+        password = request_headers.get(PASSWORD_HEADER.lower())
     else:
-        username = os.environ.get("OXYLABS_USERNAME")
-        password = os.environ.get("OXYLABS_PASSWORD")
+        username = os.environ.get(USERNAME_ENV)
+        password = os.environ.get(PASSWORD_ENV)
 
     return username, password
 
@@ -169,7 +182,7 @@ async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
     username, password = get_oxylabs_auth()
 
     if not username or not password:
-        raise ValueError("OXYLABS_USERNAME and OXYLABS_PASSWORD must be set.")
+        raise ValueError("Oxylabs username and password must be set.")
 
     auth = BasicAuth(username=username, password=password)
 
@@ -189,6 +202,31 @@ async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
             raise MCPServerError(f"Request error during POST request: {e}") from None
         except Exception as e:
             raise MCPServerError(f"Error: {str(e) or repr(e)}") from None
+
+
+def get_oxylabs_ai_studio_api_key(ctx: Context) -> str | None:  # type: ignore[type-arg]
+    """Extract the Oxylabs AI Studio API key."""
+    if settings.MCP_TRANSPORT == "streamable-http":
+        request_headers = dict(ctx.request_context.request.headers)  # type: ignore[union-attr]
+        ai_studio_api_key = request_headers.get(AI_STUDIO_API_KEY_HEADER.lower())
+    else:
+        ai_studio_api_key = os.getenv(AI_STUDIO_API_KEY_ENV)
+
+    return ai_studio_api_key
+
+
+def get_and_verify_oxylabs_ai_studio_api_key(ctx: Context) -> str:  # type: ignore[type-arg]
+    """Extract and varify the Oxylabs AI Studio API key."""
+    ai_studio_api_key = get_oxylabs_ai_studio_api_key(ctx)
+
+    if ai_studio_api_key is None:
+        msg = "AI Studio API key is not set"
+        logger.warning(msg)
+        raise ValueError(msg)
+    if not is_api_key_valid(ai_studio_api_key):
+        raise ValueError("AI Studio API key is not valid")
+
+    return ai_studio_api_key
 
 
 def extract_links_with_text(html: str, base_url: str | None = None) -> list[str]:
