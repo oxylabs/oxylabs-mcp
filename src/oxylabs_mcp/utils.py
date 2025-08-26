@@ -7,6 +7,7 @@ from importlib.metadata import version
 from platform import architecture, python_version
 from typing import AsyncIterator
 
+from fastmcp.server.dependencies import get_context
 from httpx import (
     AsyncClient,
     BasicAuth,
@@ -22,31 +23,6 @@ from mcp.shared.context import RequestContext
 
 from oxylabs_mcp.config import settings
 from oxylabs_mcp.exceptions import MCPServerError
-
-
-def get_auth_from_env() -> tuple[str, str]:
-    """Get username and password from environment variables."""
-    username = os.getenv("OXYLABS_USERNAME")
-    password = os.getenv("OXYLABS_PASSWORD")
-
-    if not username or not password:
-        raise ValueError(
-            "OXYLABS_USERNAME and OXYLABS_PASSWORD must be set in the environment variables."
-        )
-    return username, password
-
-
-def is_oxylabs_credentials_available() -> bool:
-    """Check if Oxylabs credentials are available.
-
-    Only checks if both username and password are set in the environment variables.
-    Does not check if they are valid.
-    """
-    try:
-        get_auth_from_env()
-        return True
-    except ValueError:
-        return False
 
 
 def clean_html(html: str) -> str:
@@ -129,11 +105,9 @@ def _get_request_context(ctx: Context) -> RequestContext | None:  # type: ignore
         return None
 
 
-def _get_default_headers(
-    ctx: Context,  # type: ignore[type-arg]
-) -> dict[str, str]:
+def _get_default_headers() -> dict[str, str]:
     headers = {}
-    if request_context := _get_request_context(ctx):
+    if request_context := get_context().request_context:
         if client_params := request_context.session.client_params:
             client = f"oxylabs-mcp-{client_params.clientInfo.name}"
         else:
@@ -153,10 +127,9 @@ class _OxylabsClientWrapper:
     def __init__(
         self,
         client: AsyncClient,
-        ctx: Context,  # type: ignore[type-arg]
     ) -> None:
         self._client = client
-        self._ctx = ctx
+        self._ctx = get_context()
 
     async def scrape(self, payload: dict[str, typing.Any]) -> dict[str, typing.Any]:
         await self._ctx.info(f"Create job with params: {json.dumps(payload)}")
@@ -175,14 +148,28 @@ class _OxylabsClientWrapper:
         return response_json
 
 
-@asynccontextmanager
-async def oxylabs_client(
-    ctx: Context,  # type: ignore[type-arg]
-) -> AsyncIterator[_OxylabsClientWrapper]:
-    """Async context manager for Oxylabs client that is used in MCP tools."""
-    headers = _get_default_headers(ctx)
+def get_oxylabs_auth() -> tuple[str | None, str | None]:
+    """Extract the Oxylabs credentials."""
+    if settings.MCP_TRANSPORT == "streamable-http":
+        request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
+        username = request_headers.get("oxylabs_username")
+        password = request_headers.get("oxylabs_password")
+    else:
+        username = os.environ.get("OXYLABS_USERNAME")
+        password = os.environ.get("OXYLABS_PASSWORD")
 
-    username, password = get_auth_from_env()
+    return username, password
+
+
+@asynccontextmanager
+async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
+    """Async context manager for Oxylabs client that is used in MCP tools."""
+    headers = _get_default_headers()
+
+    username, password = get_oxylabs_auth()
+
+    if not username or not password:
+        raise ValueError("OXYLABS_USERNAME and OXYLABS_PASSWORD must be set.")
 
     auth = BasicAuth(username=username, password=password)
 
@@ -193,7 +180,7 @@ async def oxylabs_client(
         auth=auth,
     ) as client:
         try:
-            yield _OxylabsClientWrapper(client, ctx)
+            yield _OxylabsClientWrapper(client)
         except HTTPStatusError as e:
             raise MCPServerError(
                 f"HTTP error during POST request: {e.response.status_code} - {e.response.text}"

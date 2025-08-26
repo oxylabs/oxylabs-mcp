@@ -4,15 +4,13 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastmcp import FastMCP
 from httpx import HTTPStatusError, Request, RequestError, Response
-from mcp.server.fastmcp import FastMCP
 from mcp.types import TextContent
 
+from oxylabs_mcp.config import settings
 from tests.integration import params
 from tests.utils import convert_context_params, prepare_expected_arguments
-
-
-ENV_VARIABLES = {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"}
 
 
 @pytest.mark.parametrize(
@@ -41,15 +39,14 @@ async def test_oxylabs_scraper_arguments(
 
     with (
         expectation,
-        patch("os.environ", new=ENV_VARIABLES),
         patch("httpx.AsyncClient.post", new=AsyncMock(return_value=mock_response)),
     ):
-        result = await mcp.call_tool("universal_scraper", arguments=arguments)
+        result = await mcp._call_tool("universal_scraper", arguments=arguments)
 
         assert oxylabs_client.post.call_args.kwargs == {
             "json": convert_context_params(prepare_expected_arguments(arguments)),
         }
-        assert result == [TextContent(type="text", text=expected_result)]
+        assert result.content == [TextContent(type="text", text=expected_result)]
 
 
 @pytest.mark.parametrize(
@@ -82,11 +79,8 @@ async def test_google_search_scraper_arguments(
     mock_response = Response(200, content=json.dumps(response_data), request=request_data)
     oxylabs_client.post.return_value = mock_response
 
-    with (
-        expectation,
-        patch("os.environ", new=ENV_VARIABLES),
-    ):
-        result = await mcp.call_tool("google_search_scraper", arguments=arguments)
+    with expectation:
+        result = await mcp._call_tool("google_search_scraper", arguments=arguments)
 
         assert oxylabs_client.post.call_args.kwargs == {
             "json": {
@@ -95,7 +89,7 @@ async def test_google_search_scraper_arguments(
                 **prepare_expected_arguments(arguments),
             }
         }
-        assert result == [TextContent(type="text", text=expected_result)]
+        assert result.content == [TextContent(type="text", text=expected_result)]
 
 
 @pytest.mark.parametrize(
@@ -117,10 +111,9 @@ async def test_oxylabs_google_search_ad_mode_argument(
     mock_response = Response(200, content=json.dumps('{"data": "value"}'), request=request_data)
     oxylabs_client.post.return_value = mock_response
 
-    with patch("os.environ", new=ENV_VARIABLES):
-        await mcp.call_tool("google_search_scraper", arguments=arguments)
-        assert oxylabs_client.post.call_args.kwargs == {"json": expected_result}
-        assert oxylabs_client.post.await_args.kwargs["json"] == expected_result
+    await mcp._call_tool("google_search_scraper", arguments=arguments)
+    assert oxylabs_client.post.call_args.kwargs == {"json": expected_result}
+    assert oxylabs_client.post.await_args.kwargs["json"] == expected_result
 
 
 @pytest.mark.parametrize(
@@ -151,15 +144,13 @@ async def test_amazon_search_scraper_arguments(
     expectation,
     expected_result: str,
     oxylabs_client: AsyncMock,
+    request_context,
 ):
     mock_response = Response(200, content=json.dumps(response_data), request=request_data)
     oxylabs_client.post.return_value = mock_response
 
-    with (
-        expectation,
-        patch("os.environ", new=ENV_VARIABLES),
-    ):
-        result = await mcp.call_tool("amazon_search_scraper", arguments=arguments)
+    with expectation:
+        result = await mcp._call_tool("amazon_search_scraper", arguments=arguments)
 
         assert oxylabs_client.post.call_args.kwargs == {
             "json": {
@@ -168,7 +159,7 @@ async def test_amazon_search_scraper_arguments(
                 **convert_context_params(prepare_expected_arguments(arguments)),
             }
         }
-        assert result == [TextContent(type="text", text=expected_result)]
+        assert result.content == [TextContent(type="text", text=expected_result)]
 
 
 @pytest.mark.parametrize(
@@ -200,11 +191,8 @@ async def test_amazon_product_scraper_arguments(
     mock_response = Response(200, content=json.dumps(response_data), request=request_data)
     oxylabs_client.post.return_value = mock_response
 
-    with (
-        expectation,
-        patch("os.environ", new=ENV_VARIABLES),
-    ):
-        result = await mcp.call_tool("amazon_product_scraper", arguments=arguments)
+    with expectation:
+        result = await mcp._call_tool("amazon_product_scraper", arguments=arguments)
 
         assert oxylabs_client.post.call_args.kwargs == {
             "json": {
@@ -213,7 +201,7 @@ async def test_amazon_product_scraper_arguments(
                 **convert_context_params(prepare_expected_arguments(arguments)),
             }
         }
-        assert result == [TextContent(type="text", text=expected_result)]
+        assert result.content == [TextContent(type="text", text=expected_result)]
 
 
 @pytest.mark.asyncio
@@ -246,7 +234,6 @@ async def test_default_headers_are_set(
     mcp: FastMCP,
     request_data: Request,
     oxylabs_client: AsyncMock,
-    request_session: MagicMock,
     tool: str,
     arguments: dict,
 ):
@@ -259,8 +246,7 @@ async def test_default_headers_are_set(
     oxylabs_client.post.return_value = mock_response
     oxylabs_client.get.return_value = mock_response
 
-    with patch("os.environ", new=ENV_VARIABLES):
-        await mcp.call_tool(tool, arguments=arguments)
+    await mcp._call_tool(tool, arguments=arguments)
 
     assert "x-oxylabs-sdk" in oxylabs_client.context_manager_call_kwargs["headers"]
 
@@ -325,7 +311,6 @@ async def test_request_client_error_handling(
     mcp: FastMCP,
     request_data: Request,
     oxylabs_client: AsyncMock,
-    request_session: MagicMock,
     tool: str,
     arguments: dict,
     exception: Exception,
@@ -334,7 +319,13 @@ async def test_request_client_error_handling(
     oxylabs_client.post.side_effect = [exception]
     oxylabs_client.get.side_effect = [exception]
 
-    with patch("os.environ", new=ENV_VARIABLES):
-        result = await mcp.call_tool(tool, arguments=arguments)
+    result = await mcp._call_tool(tool, arguments=arguments)
 
-    assert result[0].text == expected_text
+    assert result.content[0].text == expected_text
+
+
+@pytest.mark.parametrize("transport", ["stdio", "streamable-http"])
+async def test_list_tools(mcp: FastMCP, transport: str):
+    settings.MCP_TRANSPORT = transport
+    tools = await mcp._mcp_list_tools()
+    assert len(tools) == 10

@@ -2,34 +2,46 @@ from contextlib import asynccontextmanager
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastmcp.server.context import Context, set_context
 from httpx import Request
 from mcp.server.lowlevel.server import request_ctx
 
-from oxylabs_mcp.server import add_oxylabs_tools
-from oxylabs_mcp.server import mcp as mcp_server
-
-
-add_oxylabs_tools(mcp_server)
+from oxylabs_mcp import mcp as mcp_server
 
 
 @pytest.fixture
 def request_context():
-    request_context_mock = MagicMock()
-    request_context_mock.info = AsyncMock()
-    request_context_mock.error = AsyncMock()
+    request_context = MagicMock()
+    request_context.session.client_params.clientInfo.name = "fake_cursor"
+    request_context.request.headers = {
+        "oxylabs_username": "oxylabs_username",
+        "oxylabs_password": "oxylabs_password",
+        "oxylabs_ai_studio_api_key": "oxylabs_ai_studio_api_key",
+    }
 
-    request_context_mock.request_id = 42
+    ctx = Context(MagicMock())
+    ctx.info = AsyncMock()
+    ctx.error = AsyncMock()
 
-    request_context_mock.request_context.session.client_params.clientInfo.name = "fake_cursor"
+    request_ctx.set(request_context)
 
-    return request_context_mock
+    with set_context(ctx):
+        yield ctx
+
+
+@pytest.fixture(scope="session", autouse=True)
+def environment():
+    env = {
+        "OXYLABS_USERNAME": "oxylabs_username",
+        "OXYLABS_PASSWORD": "oxylabs_password",
+        "OXYLABS_AI_STUDIO_API_KEY": "oxylabs_ai_studio_api_key",
+    }
+    with patch("os.environ", new=env):
+        yield
 
 
 @pytest.fixture
-def mcp(request_context):
-    mcp_server.get_context = MagicMock()
-    mcp_server.get_context.return_value = request_context
-
+def mcp(request_context: Context):
     return mcp_server
 
 
@@ -60,3 +72,9 @@ def request_session(request_context):
     yield request_context.session
 
     request_ctx.reset(token)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def is_api_key_valid_mock():
+    with patch("oxylabs_mcp.tools.ai_studio.is_api_key_valid", return_value=True):
+        yield
