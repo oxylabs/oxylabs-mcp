@@ -39,3 +39,12 @@ run: install_deps
 
 $(virtualenv_dir):
 	$(python) -m venv $@ --symlinks
+
+.PHONY: checkdeps
+checkdeps: $(virtualenv_dir)
+	uv lock --check
+
+.PHONY: sectest
+sectest: $(virtualenv_dir)
+	uv sync
+	uv run bandit -c pyproject.toml -r $(src_dir)

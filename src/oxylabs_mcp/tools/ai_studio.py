@@ -4,7 +4,8 @@ import logging
 import os
 from typing import Annotated, Any, Literal
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
+from mcp.server.fastmcp import Context
 from mcp.types import ToolAnnotations
 from oxylabs_ai_studio.apps.ai_crawler import AiCrawler
 from oxylabs_ai_studio.apps.ai_map import AiMap
@@ -22,20 +23,47 @@ from oxylabs_mcp.config import settings
 logger = logging.getLogger(__name__)
 logger.setLevel(settings.LOG_LEVEL)
 
-OXYLABS_AI_STUDIO_API_KEY = os.getenv("OXYLABS_AI_STUDIO_API_KEY")
+
+AI_TOOLS = [
+    "generate_schema",
+    "ai_search",
+    "ai_scraper",
+    "ai_crawler",
+    "ai_browser_agent",
+    "ai_map",
+]
+API_KEY = "OXYLABS_AI_STUDIO_API_KEY"
+
+mcp = FastMCP("ai_studio")
 
 
-def is_ai_studio_api_key_available() -> bool:
-    """Check if Oxylabs AI Studio API key is available."""
-    if not OXYLABS_AI_STUDIO_API_KEY:
-        logger.info("OXYLABS_AI_STUDIO_API_KEY environment variable is not set")
-        return False
-    if not is_api_key_valid(OXYLABS_AI_STUDIO_API_KEY):
-        raise ValueError("OXYLABS_AI_STUDIO_API_KEY is not valid")
-    return True
+def get_oxylabs_ai_studio_api_key(ctx: Context) -> str | None:  # type: ignore[type-arg]
+    """Extract the Oxylabs AI Studio API key."""
+    request_headers = dict(ctx.request_context.request.headers)  # type: ignore[union-attr]
+    if settings.MCP_TRANSPORT == "streamable-http":
+        ai_studio_api_key = request_headers.get(API_KEY.lower())
+    else:
+        ai_studio_api_key = os.getenv(API_KEY)
+
+    return ai_studio_api_key
 
 
+def get_and_verify_oxylabs_ai_studio_api_key(ctx: Context) -> str:  # type: ignore[type-arg]
+    """Extract and varify the Oxylabs AI Studio API key."""
+    ai_studio_api_key = get_oxylabs_ai_studio_api_key(ctx)
+
+    if ai_studio_api_key is None:
+        logger.warning(f"{API_KEY} environment variable is not set")
+        raise ValueError(f"{API_KEY} is not set")
+    if not is_api_key_valid(ai_studio_api_key):
+        raise ValueError(f"{API_KEY} is not valid")
+
+    return ai_studio_api_key
+
+
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def ai_crawler(
+    ctx: Context,  # type: ignore[type-arg]
     url: Annotated[str, Field(description="The URL from which crawling will be started.")],
     user_prompt: Annotated[
         str,
@@ -87,7 +115,7 @@ async def ai_crawler(
         f"{output_format=}, {schema=}, {render_javascript=}, "
         f"{return_sources_limit=}"
     )
-    crawler = AiCrawler(api_key=OXYLABS_AI_STUDIO_API_KEY)
+    crawler = AiCrawler(api_key=get_and_verify_oxylabs_ai_studio_api_key(ctx))
     result = await crawler.crawl_async(
         url=url,
         user_prompt=user_prompt,
@@ -100,7 +128,9 @@ async def ai_crawler(
     return json.dumps({"data": result.data})
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def ai_scraper(
+    ctx: Context,  # type: ignore[type-arg]
     url: Annotated[str, Field(description="The URL to scrape")],
     output_format: Annotated[
         Literal["json", "markdown"],
@@ -143,7 +173,7 @@ async def ai_scraper(
     logger.info(
         f"Calling ai_scraper with: {url=}, {output_format=}, {schema=}, {render_javascript=}"
     )
-    scraper = AiScraper(api_key=OXYLABS_AI_STUDIO_API_KEY)
+    scraper = AiScraper(api_key=get_and_verify_oxylabs_ai_studio_api_key(ctx))
     result = await scraper.scrape_async(
         url=url,
         output_format=output_format,
@@ -154,7 +184,9 @@ async def ai_scraper(
     return json.dumps({"data": result.data})
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def ai_browser_agent(
+    ctx: Context,  # type: ignore[type-arg]
     url: Annotated[str, Field(description="The URL to start the browser agent navigation from.")],
     task_prompt: Annotated[str, Field(description="What browser agent should do.")],
     output_format: Annotated[
@@ -189,7 +221,7 @@ async def ai_browser_agent(
     logger.info(
         f"Calling ai_browser_agent with: {url=}, {task_prompt=}, {output_format=}, {schema=}"
     )
-    browser_agent = BrowserAgent(api_key=OXYLABS_AI_STUDIO_API_KEY)
+    browser_agent = BrowserAgent(api_key=get_and_verify_oxylabs_ai_studio_api_key(ctx))
     result = await browser_agent.run_async(
         url=url,
         user_prompt=task_prompt,
@@ -201,7 +233,9 @@ async def ai_browser_agent(
     return json.dumps({"data": data})
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def ai_search(
+    ctx: Context,  # type: ignore[type-arg]
     query: Annotated[str, Field(description="The query to search for.")],
     limit: Annotated[int, Field(description="Maximum number of results to return.", le=50)] = 10,
     render_javascript: Annotated[  # noqa: FBT002
@@ -232,7 +266,7 @@ async def ai_search(
     logger.info(
         f"Calling ai_search with: {query=}, {limit=}, {render_javascript=}, {return_content=}"
     )
-    search = AiSearch(api_key=OXYLABS_AI_STUDIO_API_KEY)
+    search = AiSearch(api_key=get_and_verify_oxylabs_ai_studio_api_key(ctx))
     result = await search.search_async(
         query=query,
         limit=limit,
@@ -244,18 +278,21 @@ async def ai_search(
     return json.dumps({"data": data})
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def generate_schema(
-    user_prompt: str, app_name: Literal["ai_crawler", "ai_scraper", "browser_agent"]
+    ctx: Context,  # type: ignore[type-arg]
+    user_prompt: str,
+    app_name: Literal["ai_crawler", "ai_scraper", "browser_agent"],
 ) -> str:
     """Generate a json schema in openapi format."""
     if app_name == "ai_crawler":
-        crawler = AiCrawler(api_key=OXYLABS_AI_STUDIO_API_KEY)
+        crawler = AiCrawler(api_key=get_and_verify_oxylabs_ai_studio_api_key(ctx))
         schema = crawler.generate_schema(prompt=user_prompt)
     elif app_name == "ai_scraper":
-        scraper = AiScraper(api_key=OXYLABS_AI_STUDIO_API_KEY)
+        scraper = AiScraper(api_key=get_and_verify_oxylabs_ai_studio_api_key(ctx))
         schema = scraper.generate_schema(prompt=user_prompt)
     elif app_name == "browser_agent":
-        browser_agent = BrowserAgent(api_key=OXYLABS_AI_STUDIO_API_KEY)
+        browser_agent = BrowserAgent(api_key=get_and_verify_oxylabs_ai_studio_api_key(ctx))
         schema = browser_agent.generate_schema(prompt=user_prompt)
     else:
         raise ValueError(f"Invalid app name: {app_name}")
@@ -263,7 +300,9 @@ async def generate_schema(
     return json.dumps({"data": schema})
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def ai_map(
+    ctx: Context,  # type: ignore[type-arg]
     url: Annotated[str, Field(description="The URL from which URLs mapping will be started.")],
     user_prompt: Annotated[
         str,
@@ -294,7 +333,7 @@ async def ai_map(
         f"{render_javascript=}, "
         f"{return_sources_limit=}"
     )
-    ai_map = AiMap(api_key=OXYLABS_AI_STUDIO_API_KEY)
+    ai_map = AiMap(api_key=get_and_verify_oxylabs_ai_studio_api_key(ctx))
     result = await ai_map.map_async(
         url=url,
         user_prompt=user_prompt,
@@ -303,9 +342,3 @@ async def ai_map(
         geo_location=geo_location,
     )
     return json.dumps({"data": result.data})
-
-
-def add_ai_studio_tools(mcp: FastMCP) -> None:
-    """Add AI studio tools to the MCP server if the API key is valid."""
-    for tool in (generate_schema, ai_search, ai_scraper, ai_crawler, ai_browser_agent, ai_map):
-        mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))(tool)

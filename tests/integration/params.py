@@ -1,7 +1,7 @@
 from contextlib import nullcontext as does_not_raise
 
 import pytest
-from mcp.server.fastmcp.tools.base import ToolError
+from fastmcp.exceptions import ToolError
 
 
 JOB_RESPONSE = {"id": "7333092420940211201", "status": "done"}
