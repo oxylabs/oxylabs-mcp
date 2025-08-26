@@ -1,30 +1,28 @@
-import os
 from typing import Any
 
-from mcp.server.fastmcp import Context, FastMCP
+from fastmcp import FastMCP
 from mcp.types import ToolAnnotations
 
 from oxylabs_mcp import url_params
-from oxylabs_mcp.ai_studio.tools import (
-    add_ai_studio_tools,
-    is_ai_studio_api_key_available,
-)
 from oxylabs_mcp.exceptions import MCPServerError
 from oxylabs_mcp.utils import (
     get_content,
-    is_oxylabs_credentials_available,
     oxylabs_client,
 )
 
 
-mcp = FastMCP(
-    "oxylabs_mcp",
-    log_level=os.getenv("LOG_LEVEL", "INFO"),
-)
+SCRAPER_TOOLS = [
+    "universal_scraper",
+    "google_search_scraper",
+    "amazon_search_scraper",
+    "amazon_product_scraper",
+]
+
+mcp = FastMCP("scraper")
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def universal_scraper(
-    ctx: Context,  # type: ignore[type-arg]
     url: url_params.URL_PARAM,
     render: url_params.RENDER_PARAM = "",
     user_agent_type: url_params.USER_AGENT_TYPE_PARAM = "",
@@ -37,7 +35,7 @@ async def universal_scraper(
     and different output formats.
     """
     try:
-        async with oxylabs_client(ctx) as client:
+        async with oxylabs_client() as client:
             payload: dict[str, Any] = {"url": url}
 
             if render:
@@ -51,11 +49,11 @@ async def universal_scraper(
 
             return get_content(response_json, output_format=output_format)
     except MCPServerError as e:
-        return await e.process(ctx)
+        return await e.process()
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def google_search_scraper(
-    ctx: Context,  # type: ignore[type-arg]
     query: url_params.GOOGLE_QUERY_PARAM,
     parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
     render: url_params.RENDER_PARAM = "",
@@ -75,7 +73,7 @@ async def google_search_scraper(
     domain, geolocation, locale parameters and different output formats.
     """
     try:
-        async with oxylabs_client(ctx) as client:
+        async with oxylabs_client() as client:
             payload: dict[str, Any] = {"query": query}
 
             if ad_mode:
@@ -106,11 +104,11 @@ async def google_search_scraper(
 
             return get_content(response_json, parse=parse, output_format=output_format)
     except MCPServerError as e:
-        return await e.process(ctx)
+        return await e.process()
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def amazon_search_scraper(
-    ctx: Context,  # type: ignore[type-arg]
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     category_id: url_params.CATEGORY_ID_CONTEXT_PARAM = "",
     merchant_id: url_params.MERCHANT_ID_CONTEXT_PARAM = "",
@@ -132,7 +130,7 @@ async def amazon_search_scraper(
     Supports Amazon specific parameters such as category id, merchant id, currency.
     """
     try:
-        async with oxylabs_client(ctx) as client:
+        async with oxylabs_client() as client:
             payload: dict[str, Any] = {"source": "amazon_search", "query": query}
 
             context = []
@@ -166,11 +164,11 @@ async def amazon_search_scraper(
 
             return get_content(response_json, parse=parse, output_format=output_format)
     except MCPServerError as e:
-        return await e.process(ctx)
+        return await e.process()
 
 
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def amazon_product_scraper(
-    ctx: Context,  # type: ignore[type-arg]
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     autoselect_variant: url_params.AUTOSELECT_VARIANT_CONTEXT_PARAM = False,  # noqa: FBT002
     currency: url_params.CURRENCY_CONTEXT_PARAM = "",
@@ -190,7 +188,7 @@ async def amazon_product_scraper(
     more accurate pricing data with auto select variant.
     """
     try:
-        async with oxylabs_client(ctx) as client:
+        async with oxylabs_client() as client:
             payload: dict[str, Any] = {"source": "amazon_product", "query": query}
 
             context = []
@@ -218,40 +216,4 @@ async def amazon_product_scraper(
 
             return get_content(response_json, parse=parse, output_format=output_format)
     except MCPServerError as e:
-        return await e.process(ctx)
-
-
-def add_oxylabs_tools(mcp: FastMCP) -> None:
-    """Add Oxylabs scraper API tools."""
-    for tool in (
-        universal_scraper,
-        google_search_scraper,
-        amazon_search_scraper,
-        amazon_product_scraper,
-    ):
-        mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))(tool)
-
-
-def add_tools(mcp: FastMCP) -> None:
-    """Add Oxylabs tools to the MCP server."""
-    oxylabs_credentials_available = is_oxylabs_credentials_available()
-    oxylabs_ai_studio_api_key_available = is_ai_studio_api_key_available()
-    if not oxylabs_credentials_available and not oxylabs_ai_studio_api_key_available:
-        message = (
-            "Oxylabs credentials not set. "
-            "To access universal, google and amazon scraper APIs "
-            "please set 'OXYLABS_USERNAME' and 'OXYLABS_PASSWORD' environment variables."
-            "To use Oxylabs AI Studio, set 'OXYLABS_AI_STUDIO_API_KEY' environment variable."
-        )
-        raise ValueError(message)
-
-    if oxylabs_credentials_available:
-        add_oxylabs_tools(mcp)
-
-    if oxylabs_ai_studio_api_key_available:
-        add_ai_studio_tools(mcp)
-
-
-if __name__ == "__main__":
-    add_tools(mcp)
-    mcp.run()
+        return await e.process()

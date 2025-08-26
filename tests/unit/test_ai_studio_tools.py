@@ -1,50 +1,15 @@
-import asyncio
 import json
-from contextlib import nullcontext as does_not_raise
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from mcp.server.fastmcp import FastMCP
 
-from oxylabs_mcp.ai_studio.tools import (
-    add_ai_studio_tools,
+from oxylabs_mcp.tools.ai_studio import (
     ai_browser_agent,
     ai_crawler,
     ai_scraper,
     ai_search,
     generate_schema,
-    is_ai_studio_api_key_available,
 )
-
-
-@pytest.mark.parametrize(
-    ("api_key", "is_valid", "expectation", "should_call_validator"),
-    [
-        pytest.param(None, None, does_not_raise(), False, id="no-api-key"),
-        pytest.param("invalid_key", False, pytest.raises(ValueError), True, id="invalid-api-key"),
-        pytest.param("valid_key", True, does_not_raise(), True, id="valid-api-key"),
-    ],
-)
-def test_is_ai_studio_api_key_available(
-    mocker, api_key, is_valid, expectation, should_call_validator
-):
-    mocker.patch("oxylabs_mcp.ai_studio.tools.OXYLABS_AI_STUDIO_API_KEY", api_key)
-    mock_is_valid = mocker.patch(
-        "oxylabs_mcp.ai_studio.tools.is_api_key_valid", return_value=is_valid
-    )
-
-    with expectation:
-        result = is_ai_studio_api_key_available()
-        if api_key == "valid_key":
-            assert result is True
-        elif api_key is None:
-            assert result is False
-
-    # Check if is_api_key_valid was called
-    if should_call_validator:
-        mock_is_valid.assert_called_once_with(api_key)
-    else:
-        mock_is_valid.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -72,17 +37,25 @@ def test_is_ai_studio_api_key_available(
 )
 @pytest.mark.asyncio
 async def test_ai_crawler(
-    mocker, url, user_prompt, output_format, schema, render_javascript, return_sources_limit
+    mocker,
+    url,
+    user_prompt,
+    output_format,
+    schema,
+    render_javascript,
+    return_sources_limit,
+    request_context,
 ):
     """Test that the ai_crawler function returns the correct json format."""
     mock_crawler = MagicMock()
-    mocker.patch("oxylabs_mcp.ai_studio.tools.AiCrawler", return_value=mock_crawler)
+    mocker.patch("oxylabs_mcp.tools.ai_studio.AiCrawler", return_value=mock_crawler)
 
     mock_result = MagicMock()
     mock_result.data = {"test": "data"}
     mock_crawler.crawl_async = AsyncMock(return_value=mock_result)
 
-    result = await ai_crawler(
+    result = await ai_crawler.fn(
+        ctx=request_context,
         url=url,
         user_prompt=user_prompt,
         output_format=output_format,
@@ -117,16 +90,17 @@ async def test_ai_crawler(
     ],
 )
 @pytest.mark.asyncio
-async def test_ai_scraper(mocker, url, output_format, schema, render_javascript):
+async def test_ai_scraper(mocker, url, output_format, schema, render_javascript, request_context):
     """Test that the ai_scraper function returns the correct json format."""
     mock_scraper = MagicMock()
-    mocker.patch("oxylabs_mcp.ai_studio.tools.AiScraper", return_value=mock_scraper)
+    mocker.patch("oxylabs_mcp.tools.ai_studio.AiScraper", return_value=mock_scraper)
 
     mock_result = MagicMock()
     mock_result.data = {"test": "data"}
     mock_scraper.scrape_async = AsyncMock(return_value=mock_result)
 
-    result = await ai_scraper(
+    result = await ai_scraper.fn(
+        ctx=request_context,
         url=url,
         output_format=output_format,
         schema=schema,
@@ -177,11 +151,11 @@ async def test_ai_scraper(mocker, url, output_format, schema, render_javascript)
 )
 @pytest.mark.asyncio
 async def test_ai_browser_agent(
-    mocker, url, task_prompt, output_format, schema, result_data, expected_result
+    mocker, url, task_prompt, output_format, schema, result_data, expected_result, request_context
 ):
     """Test that the ai_browser_agent function returns the correct json format."""
     mock_agent = MagicMock()
-    mocker.patch("oxylabs_mcp.ai_studio.tools.BrowserAgent", return_value=mock_agent)
+    mocker.patch("oxylabs_mcp.tools.ai_studio.BrowserAgent", return_value=mock_agent)
 
     mock_result = MagicMock()
     if result_data is not None:
@@ -191,7 +165,8 @@ async def test_ai_browser_agent(
         mock_result.data = None
     mock_agent.run_async = AsyncMock(return_value=mock_result)
 
-    result = await ai_browser_agent(
+    result = await ai_browser_agent.fn(
+        ctx=request_context,
         url=url,
         task_prompt=task_prompt,
         output_format=output_format,
@@ -216,16 +191,17 @@ async def test_ai_browser_agent(
     ],
 )
 @pytest.mark.asyncio
-async def test_ai_search(mocker, query, limit, render_javascript, return_content):
+async def test_ai_search(mocker, query, limit, render_javascript, return_content, request_context):
     """Test that the ai_search function returns the correct json format."""
     mock_search = MagicMock()
-    mocker.patch("oxylabs_mcp.ai_studio.tools.AiSearch", return_value=mock_search)
+    mocker.patch("oxylabs_mcp.tools.ai_studio.AiSearch", return_value=mock_search)
 
     mock_result = MagicMock()
     mock_result.model_dump.return_value = {"data": {"results": []}}
     mock_search.search_async = AsyncMock(return_value=mock_result)
 
-    result = await ai_search(
+    result = await ai_search.fn(
+        ctx=request_context,
         query=query,
         limit=limit,
         render_javascript=render_javascript,
@@ -251,19 +227,23 @@ async def test_ai_search(mocker, query, limit, render_javascript, return_content
     ],
 )
 @pytest.mark.asyncio
-async def test_generate_schema_valid_apps(mocker, user_prompt, app_name, expected_schema):
+async def test_generate_schema_valid_apps(
+    mocker, user_prompt, app_name, expected_schema, request_context
+):
     """Test that the generate_schema function returns the correct json format."""
     mock_instance = MagicMock()
     mock_instance.generate_schema.return_value = expected_schema
 
     if app_name == "ai_crawler":
-        mocker.patch("oxylabs_mcp.ai_studio.tools.AiCrawler", return_value=mock_instance)
+        mocker.patch("oxylabs_mcp.tools.ai_studio.AiCrawler", return_value=mock_instance)
     elif app_name == "ai_scraper":
-        mocker.patch("oxylabs_mcp.ai_studio.tools.AiScraper", return_value=mock_instance)
+        mocker.patch("oxylabs_mcp.tools.ai_studio.AiScraper", return_value=mock_instance)
     elif app_name == "browser_agent":
-        mocker.patch("oxylabs_mcp.ai_studio.tools.BrowserAgent", return_value=mock_instance)
+        mocker.patch("oxylabs_mcp.tools.ai_studio.BrowserAgent", return_value=mock_instance)
 
-    result = await generate_schema(user_prompt, app_name)
+    result = await generate_schema.fn(
+        ctx=request_context, user_prompt=user_prompt, app_name=app_name
+    )
 
     assert result == json.dumps({"data": expected_schema})
     mock_instance.generate_schema.assert_called_once_with(prompt=user_prompt)
@@ -274,30 +254,7 @@ async def test_generate_schema_valid_apps(mocker, user_prompt, app_name, expecte
     [pytest.param("test", "invalid_app", id="invalid-app-name")],
 )
 @pytest.mark.asyncio
-async def test_generate_schema_invalid_app(mocker, user_prompt, app_name):
+async def test_generate_schema_invalid_app(mocker, user_prompt, app_name, request_context):
     """Test that generate_schema raises ValueError for invalid app names."""
     with pytest.raises(ValueError, match=f"Invalid app name: {app_name}"):
-        await generate_schema(user_prompt, app_name)
-
-
-def test_add_ai_studio_tools():
-    """Test that the AI studio tools are added to the MCP server."""
-
-    mcp = FastMCP()
-
-    add_ai_studio_tools(mcp)
-
-    registered_tools = {i.name for i in asyncio.run(mcp.list_tools())}
-
-    expected_tools = {
-        "generate_schema",
-        "ai_search",
-        "ai_scraper",
-        "ai_crawler",
-        "ai_browser_agent",
-        "ai_map",
-    }
-
-    assert (
-        registered_tools == expected_tools
-    ), f"Expected tools {expected_tools}, but got {registered_tools}"
+        await generate_schema.fn(ctx=request_context, user_prompt=user_prompt, app_name=app_name)

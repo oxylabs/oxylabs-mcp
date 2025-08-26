@@ -1,38 +1,38 @@
-from contextlib import nullcontext as does_not_raise
 from unittest.mock import patch
 
 import pytest
 
-from oxylabs_mcp.utils import extract_links_with_text, get_auth_from_env, strip_html
+from oxylabs_mcp.config import settings
+from oxylabs_mcp.utils import extract_links_with_text, get_oxylabs_auth, strip_html
 
 
 TEST_FIXTURES = "tests/unit/fixtures/"
 
 
 @pytest.mark.parametrize(
-    ("env_vars", "expectation"),
+    "env_vars",
     [
         pytest.param(
             {"OXYLABS_USERNAME": "test_user", "OXYLABS_PASSWORD": "test_pass"},
-            does_not_raise(),
             id="valid-env",
         ),
         pytest.param(
             {"OXYLABS_PASSWORD": "test_pass"},
-            pytest.raises(ValueError),
             id="no-username",
         ),
         pytest.param(
             {"OXYLABS_USERNAME": "test_user"},
-            pytest.raises(ValueError),
             id="no-password",
         ),
-        pytest.param({}, pytest.raises(ValueError), id="no-username-and-no-password"),
+        pytest.param({}, id="no-username-and-no-password"),
     ],
 )
-def test_get_auth_from_env(mocker, env_vars, expectation):
-    with expectation, patch("os.environ", new=env_vars):
-        get_auth_from_env()
+def test_get_oxylabs_auth(env_vars):
+    with patch("os.environ", new=env_vars):
+        settings.MCP_TRANSPORT = "stdio"
+        username, password = get_oxylabs_auth()
+        assert username == env_vars.get("OXYLABS_USERNAME")
+        assert password == env_vars.get("OXYLABS_PASSWORD")
 
 
 @pytest.mark.parametrize(
