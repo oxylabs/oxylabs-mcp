@@ -22,6 +22,7 @@ from markdownify import markdownify
 from mcp.server.fastmcp import Context
 from mcp.shared.context import RequestContext
 from oxylabs_ai_studio.utils import is_api_key_valid  # type: ignore[import-untyped]
+from starlette import status
 
 from oxylabs_mcp.config import settings
 from oxylabs_mcp.exceptions import MCPServerError
@@ -120,8 +121,8 @@ def _get_request_context(ctx: Context) -> RequestContext | None:  # type: ignore
 
 def _get_default_headers() -> dict[str, str]:
     headers = {}
-    if request_context := get_context().request_context:
-        if client_params := request_context.session.client_params:
+    if request_ctx := get_context().request_context:
+        if client_params := request_ctx.session.client_params:
             client = f"oxylabs-mcp-{client_params.clientInfo.name}"
         else:
             client = "oxylabs-mcp"
@@ -150,11 +151,12 @@ class _OxylabsClientWrapper:
         response = await self._client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
         response_json: dict[str, typing.Any] = response.json()
 
-        await self._ctx.info(
-            f"Job info: "
-            f"job_id={response_json['job']['id']} "
-            f"job_status={response_json['job']['status']}"
-        )
+        if response.status_code == status.HTTP_201_CREATED:
+            await self._ctx.info(
+                f"Job info: "
+                f"job_id={response_json['job']['id']} "
+                f"job_status={response_json['job']['status']}"
+            )
 
         response.raise_for_status()
 
@@ -204,10 +206,10 @@ async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
             raise MCPServerError(f"Error: {str(e) or repr(e)}") from None
 
 
-def get_oxylabs_ai_studio_api_key(ctx: Context) -> str | None:  # type: ignore[type-arg]
+def get_oxylabs_ai_studio_api_key() -> str | None:
     """Extract the Oxylabs AI Studio API key."""
     if settings.MCP_TRANSPORT == "streamable-http":
-        request_headers = dict(ctx.request_context.request.headers)  # type: ignore[union-attr]
+        request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
         ai_studio_api_key = request_headers.get(AI_STUDIO_API_KEY_HEADER.lower())
     else:
         ai_studio_api_key = os.getenv(AI_STUDIO_API_KEY_ENV)
@@ -215,9 +217,9 @@ def get_oxylabs_ai_studio_api_key(ctx: Context) -> str | None:  # type: ignore[t
     return ai_studio_api_key
 
 
-def get_and_verify_oxylabs_ai_studio_api_key(ctx: Context) -> str:  # type: ignore[type-arg]
+def get_and_verify_oxylabs_ai_studio_api_key() -> str:
     """Extract and varify the Oxylabs AI Studio API key."""
-    ai_studio_api_key = get_oxylabs_ai_studio_api_key(ctx)
+    ai_studio_api_key = get_oxylabs_ai_studio_api_key()
 
     if ai_studio_api_key is None:
         msg = "AI Studio API key is not set"

@@ -55,7 +55,6 @@ async def test_ai_crawler(
     mock_crawler.crawl_async = AsyncMock(return_value=mock_result)
 
     result = await ai_crawler.fn(
-        ctx=request_context,
         url=url,
         user_prompt=user_prompt,
         output_format=output_format,
@@ -100,7 +99,6 @@ async def test_ai_scraper(mocker, url, output_format, schema, render_javascript,
     mock_scraper.scrape_async = AsyncMock(return_value=mock_result)
 
     result = await ai_scraper.fn(
-        ctx=request_context,
         url=url,
         output_format=output_format,
         schema=schema,
@@ -166,7 +164,6 @@ async def test_ai_browser_agent(
     mock_agent.run_async = AsyncMock(return_value=mock_result)
 
     result = await ai_browser_agent.fn(
-        ctx=request_context,
         url=url,
         task_prompt=task_prompt,
         output_format=output_format,
@@ -201,7 +198,6 @@ async def test_ai_search(mocker, query, limit, render_javascript, return_content
     mock_search.search_async = AsyncMock(return_value=mock_result)
 
     result = await ai_search.fn(
-        ctx=request_context,
         query=query,
         limit=limit,
         render_javascript=render_javascript,
@@ -241,9 +237,7 @@ async def test_generate_schema_valid_apps(
     elif app_name == "browser_agent":
         mocker.patch("oxylabs_mcp.tools.ai_studio.BrowserAgent", return_value=mock_instance)
 
-    result = await generate_schema.fn(
-        ctx=request_context, user_prompt=user_prompt, app_name=app_name
-    )
+    result = await generate_schema.fn(user_prompt=user_prompt, app_name=app_name)
 
     assert result == json.dumps({"data": expected_schema})
     mock_instance.generate_schema.assert_called_once_with(prompt=user_prompt)
@@ -257,4 +251,4 @@ async def test_generate_schema_valid_apps(
 async def test_generate_schema_invalid_app(mocker, user_prompt, app_name, request_context):
     """Test that generate_schema raises ValueError for invalid app names."""
     with pytest.raises(ValueError, match=f"Invalid app name: {app_name}"):
-        await generate_schema.fn(ctx=request_context, user_prompt=user_prompt, app_name=app_name)
+        await generate_schema.fn(user_prompt=user_prompt, app_name=app_name)
