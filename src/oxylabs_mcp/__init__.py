@@ -16,14 +16,14 @@ class OxylabsMCPServer(FastMCP):
 
     async def _mcp_list_tools(self) -> list[MCPTool]:
         """List all available Oxylabs tools."""
-        async with Context(fastmcp=self) as context:
+        async with Context(fastmcp=self):
             tools = await self._list_tools()
 
             username, password = get_oxylabs_auth()
             if not username or not password:
                 tools = [tool for tool in tools if tool.name not in SCRAPER_TOOLS]
 
-            if not get_oxylabs_ai_studio_api_key(context):  # type: ignore[arg-type]
+            if not get_oxylabs_ai_studio_api_key():
                 tools = [tool for tool in tools if tool.name not in AI_TOOLS]
 
             return [
