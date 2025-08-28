@@ -1,12 +1,14 @@
+import logging
+
 from fastmcp import Context, FastMCP
 from mcp import Tool as MCPTool
 
 from oxylabs_mcp.config import settings
-from oxylabs_mcp.tools.ai_studio import AI_TOOLS, get_oxylabs_ai_studio_api_key
+from oxylabs_mcp.tools.ai_studio import AI_TOOLS
 from oxylabs_mcp.tools.ai_studio import mcp as ai_studio_mcp
 from oxylabs_mcp.tools.scraper import SCRAPER_TOOLS
 from oxylabs_mcp.tools.scraper import mcp as scraper_mcp
-from oxylabs_mcp.utils import get_oxylabs_auth
+from oxylabs_mcp.utils import get_oxylabs_ai_studio_api_key, get_oxylabs_auth
 
 
 class OxylabsMCPServer(FastMCP):
@@ -41,11 +43,18 @@ mcp.mount(scraper_mcp)
 
 def main() -> None:
     """Start the MCP server."""
+    logging.getLogger("oxylabs_mcp").setLevel(settings.LOG_LEVEL)
+
+    params = {}
+
+    if settings.MCP_TRANSPORT == "streamable-http":
+        params["host"] = settings.MCP_HOST
+        params["port"] = settings.MCP_PORT  # type: ignore[assignment]
+        params["log_level"] = settings.LOG_LEVEL
+
     mcp.run(
         settings.MCP_TRANSPORT,
-        host=settings.MCP_HOST,
-        port=settings.MCP_PORT,
-        log_level=settings.LOG_LEVEL,
+        **params,  # type: ignore[arg-type]
     )
 
 

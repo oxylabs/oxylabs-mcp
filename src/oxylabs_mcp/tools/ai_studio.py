@@ -1,7 +1,6 @@
 # mypy: disable-error-code=import-untyped
 import json
 import logging
-import os
 from typing import Annotated, Any, Literal
 
 from fastmcp import FastMCP
@@ -14,14 +13,12 @@ from oxylabs_ai_studio.apps.ai_search import AiSearch
 from oxylabs_ai_studio.apps.browser_agent import (
     BrowserAgent,
 )
-from oxylabs_ai_studio.utils import is_api_key_valid
 from pydantic import Field
 
-from oxylabs_mcp.config import settings
+from oxylabs_mcp.utils import get_and_verify_oxylabs_ai_studio_api_key
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(settings.LOG_LEVEL)
 
 
 AI_TOOLS = [
@@ -32,33 +29,9 @@ AI_TOOLS = [
     "ai_browser_agent",
     "ai_map",
 ]
-API_KEY = "OXYLABS_AI_STUDIO_API_KEY"
+
 
 mcp = FastMCP("ai_studio")
-
-
-def get_oxylabs_ai_studio_api_key(ctx: Context) -> str | None:  # type: ignore[type-arg]
-    """Extract the Oxylabs AI Studio API key."""
-    request_headers = dict(ctx.request_context.request.headers)  # type: ignore[union-attr]
-    if settings.MCP_TRANSPORT == "streamable-http":
-        ai_studio_api_key = request_headers.get(API_KEY.lower())
-    else:
-        ai_studio_api_key = os.getenv(API_KEY)
-
-    return ai_studio_api_key
-
-
-def get_and_verify_oxylabs_ai_studio_api_key(ctx: Context) -> str:  # type: ignore[type-arg]
-    """Extract and varify the Oxylabs AI Studio API key."""
-    ai_studio_api_key = get_oxylabs_ai_studio_api_key(ctx)
-
-    if ai_studio_api_key is None:
-        logger.warning(f"{API_KEY} environment variable is not set")
-        raise ValueError(f"{API_KEY} is not set")
-    if not is_api_key_valid(ai_studio_api_key):
-        raise ValueError(f"{API_KEY} is not valid")
-
-    return ai_studio_api_key
 
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
