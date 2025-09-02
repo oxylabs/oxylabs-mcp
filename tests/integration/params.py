@@ -2,6 +2,12 @@ from contextlib import nullcontext as does_not_raise
 
 import pytest
 from fastmcp.exceptions import ToolError
+from pydantic import BaseModel
+
+
+class SimpleSchema(BaseModel):
+    title: str
+    price: float
 
 
 JOB_RESPONSE = {"id": "7333092420940211201", "status": "done"}
@@ -10,6 +16,10 @@ STR_RESPONSE = {
     "job": JOB_RESPONSE,
 }
 JSON_RESPONSE = {
+    "results": [{"content": {"data": "value"}}],
+    "job": JOB_RESPONSE,
+}
+AI_STUDIO_JSON_RESPONSE = {
     "results": [{"content": {"data": "value"}}],
     "job": JOB_RESPONSE,
 }
@@ -246,4 +256,94 @@ RENDER_INVALID_WITH_URL = pytest.param(
     JSON_RESPONSE,
     None,
     id="render-enabled-args",
+)
+AI_STUDIO_URL_ONLY = pytest.param(
+    {"url": "https://example.com"},
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-args",
+)
+AI_STUDIO_QUERY_ONLY = pytest.param(
+    {"query": "Generic query"},
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-args",
+)
+AI_STUDIO_URL_AND_OUTPUT_FORMAT = pytest.param(
+    {"url": "https://example.com", "output_format": "json"},
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-output-format-args",
+)
+AI_STUDIO_URL_AND_SCHEMA = pytest.param(
+    {
+        "url": "https://example.com",
+        "schema": SimpleSchema.model_json_schema(),
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-schema-args",
+)
+AI_STUDIO_URL_AND_RENDER_JAVASCRIPT = pytest.param(
+    {
+        "url": "https://example.com",
+        "render_javascript": True,
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-render-js-args",
+)
+AI_STUDIO_QUERY_AND_RETURN_CONTENT = pytest.param(
+    {
+        "url": "https://example.com",
+        "return_content": True,
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-return-content-args",
+)
+AI_STUDIO_URL_AND_RETURN_SOURCES_LIMIT = pytest.param(
+    {
+        "url": "https://example.com",
+        "return_sources_limit": 10,
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-return-sources-limit-args",
+)
+AI_STUDIO_URL_AND_GEO_LOCATION = pytest.param(
+    {
+        "url": "https://example.com",
+        "geo_location": "US",
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-geo_location-args",
+)
+AI_STUDIO_URL_AND_LIMIT = pytest.param(
+    {
+        "url": "https://example.com",
+        "limit": 5,
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-limit-args",
+)
+AI_STUDIO_USER_PROMPT = pytest.param(
+    {
+        "user_prompt": "Scrape price and title",
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="user-prompt-args",
 )

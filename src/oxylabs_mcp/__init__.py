@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from fastmcp import Context, FastMCP
 from mcp import Tool as MCPTool
@@ -45,16 +46,18 @@ def main() -> None:
     """Start the MCP server."""
     logging.getLogger("oxylabs_mcp").setLevel(settings.LOG_LEVEL)
 
-    params = {}
+    params: dict[str, Any] = {
+        "stateless_http": settings.MCP_STATELESS_HTTP,
+    }
 
     if settings.MCP_TRANSPORT == "streamable-http":
         params["host"] = settings.MCP_HOST
-        params["port"] = settings.MCP_PORT  # type: ignore[assignment]
+        params["port"] = settings.MCP_PORT
         params["log_level"] = settings.LOG_LEVEL
 
     mcp.run(
         settings.MCP_TRANSPORT,
-        **params,  # type: ignore[arg-type]
+        **params,
     )
 
 
