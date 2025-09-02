@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     MCP_TRANSPORT: Literal["stdio", "sse", "streamable-http"] = "stdio"
     MCP_PORT: int = 8000
     MCP_HOST: str = "localhost"
+    MCP_STATELESS_HTTP: bool = False
 
 
 settings = Settings()

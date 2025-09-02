@@ -4,7 +4,7 @@ requires-python = ">=3.12"
 
 [[package]]
 name = "agno"
-version = "1.7.10"
+version = "1.8.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docstring-parser" },
@@ -21,9 +21,9 @@ dependencies = [
     { name = "typer" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a0/37/d12765315c4d3b2d1dd367b40392c6b664a79070e833021c355027073b90/agno-1.7.10.tar.gz", hash = "sha256:d53442728cde22b25507343632ebafe173c29a90160ced50f111df7c0726c85e", size = 738740, upload-time = "2025-08-12T16:26:53.616Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4a/fc/8e815919fde2104c56091632a39b1b5db4b3ffe01c4b192f57d0252b9a7b/agno-1.8.1.tar.gz", hash = "sha256:ef134860987f7bd3397e028b32ce90e51e0920dc8265e886e76a55651a6384ce", size = 754435, upload-time = "2025-08-27T16:27:51.777Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/90/a7/4272120bb5d0d97f547b2d3fda4dc3de22097f0e32180ad15afc159e01b7/agno-1.7.10-py3-none-any.whl", hash = "sha256:102db10ee40b25caea03b2ec8ea185dffd96dc7111075b570be07d36bafaebec", size = 976719, upload-time = "2025-08-12T16:26:51.446Z" },
+    { url = "https://files.pythonhosted.org/packages/0d/2c/88321406cf5218475859e6f04d1485771d30b02668537890117d12b1f89f/agno-1.8.1-py3-none-any.whl", hash = "sha256:1c16c2cec2b930a6fd8a15859a57da8f497223f041ce87a11b9a29b1b61f35e5", size = 996593, upload-time = "2025-08-27T16:27:49.612Z" },
 ]
 
 [[package]]
@@ -1047,7 +1047,7 @@ dev = [
     { name = "ruff", specifier = ">=0.9.1" },
 ]
 e2e-tests = [
-    { name = "agno", specifier = ">=1.4.5" },
+    { name = "agno", specifier = ">=1.8.1" },
     { name = "anthropic", specifier = ">=0.50.0" },
     { name = "google-genai", specifier = ">=1.13.0" },
     { name = "openai", specifier = ">=1.77.0" },
@@ -1682,7 +1682,7 @@ wheels = [
 
 [[package]]
 name = "typer"
-version = "0.16.0"
+version = "0.17.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1690,9 +1690,9 @@ dependencies = [
     { name = "shellingham" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/8c/7d682431efca5fd290017663ea4588bf6f2c6aad085c7f108c5dbc316e70/typer-0.16.0.tar.gz", hash = "sha256:af377ffaee1dbe37ae9440cb4e8f11686ea5ce4e9bae01b84ae7c63b87f1dd3b", size = 102625, upload-time = "2025-05-26T14:30:31.824Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/dd/82/f4bfed3bc18c6ebd6f828320811bbe4098f92a31adf4040bee59c4ae02ea/typer-0.17.3.tar.gz", hash = "sha256:0c600503d472bcf98d29914d4dcd67f80c24cc245395e2e00ba3603c9332e8ba", size = 103517, upload-time = "2025-08-30T12:35:24.05Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/76/42/3efaf858001d2c2913de7f354563e3a3a2f0decae3efe98427125a8f441e/typer-0.16.0-py3-none-any.whl", hash = "sha256:1f79bed11d4d02d4310e3c1b7ba594183bcedb0ac73b27a9e5f28f6fb5b98855", size = 46317, upload-time = "2025-05-26T14:30:30.523Z" },
+    { url = "https://files.pythonhosted.org/packages/ca/e8/b3d537470e8404659a6335e7af868e90657efb73916ef31ddf3d8b9cb237/typer-0.17.3-py3-none-any.whl", hash = "sha256:643919a79182ab7ac7581056d93c6a2b865b026adf2872c4d02c72758e6f095b", size = 46494, upload-time = "2025-08-30T12:35:22.391Z" },
 ]
 
 [[package]]
