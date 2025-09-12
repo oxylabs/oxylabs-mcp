@@ -46,14 +46,13 @@ def main() -> None:
     """Start the MCP server."""
     logging.getLogger("oxylabs_mcp").setLevel(settings.LOG_LEVEL)
 
-    params: dict[str, Any] = {
-        "stateless_http": settings.MCP_STATELESS_HTTP,
-    }
+    params: dict[str, Any] = {}
 
     if settings.MCP_TRANSPORT == "streamable-http":
         params["host"] = settings.MCP_HOST
         params["port"] = settings.MCP_PORT
         params["log_level"] = settings.LOG_LEVEL
+        params["stateless_http"] = settings.MCP_STATELESS_HTTP
 
     mcp.run(
         settings.MCP_TRANSPORT,
