@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/oxylabs-oxylabs-mcp-badge.png)](https://mseep.ai/app/oxylabs-oxylabs-mcp)
+
 <p align="center">
   <img src="https://storage.googleapis.com/oxylabs-public-assets/oxylabs_mcp.svg" alt="Oxylabs + MCP">
 </p>
