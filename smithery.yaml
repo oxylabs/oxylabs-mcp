@@ -1,3 +1,23 @@
-# Smithery configuration file: https://smithery.ai/docs/deployments
-
-runtime: "python"
+runtime: "container"
+build:
+  dockerfile: "Dockerfile"
+  dockerBuildPath: "."
+startCommand:
+  type: "http"
+  configSchema:
+    type: "object"
+    properties:
+      oxylabsUsername:
+        type: "string"
+        description: "Oxylabs username"
+      oxylabsPassword:
+        type: "string"
+        description: "Oxylabs password"
+      aiStudioApiKey:
+        type: "string"
+        description: "Oxylabs AI Studio api key"
+    required: []
+  exampleConfig:
+    oxylabsUsername: "Your Oxylabs username"
+    oxylabsPassword: "Your Oxylabs password"
+    aiStudioApiKey: "Your Oxylabs AI Studio api key"

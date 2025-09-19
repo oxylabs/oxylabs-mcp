@@ -56,8 +56,6 @@ build-backend = "hatchling.build"
 
 [project.scripts]
 oxylabs-mcp = "oxylabs_mcp:main"
-smithery-dev = "smithery.cli.dev:main"
-smithery-playground = "smithery.cli.playground:main"
 
 [project.urls]
 Homepage = "https://github.com/oxylabs/oxylabs-mcp"
@@ -116,6 +114,3 @@ asyncio_mode = "auto"
 
 [tool.black]
 line-length = 100
-
-[tool.smithery]
-server = "oxylabs_mcp.smithery:get_smithery_server"

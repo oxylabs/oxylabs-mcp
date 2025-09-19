@@ -50,7 +50,7 @@ def main() -> None:
 
     if settings.MCP_TRANSPORT == "streamable-http":
         params["host"] = settings.MCP_HOST
-        params["port"] = settings.MCP_PORT
+        params["port"] = settings.PORT or settings.MCP_PORT
         params["log_level"] = settings.LOG_LEVEL
         params["stateless_http"] = settings.MCP_STATELESS_HTTP
 

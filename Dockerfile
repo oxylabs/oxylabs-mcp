@@ -20,5 +20,6 @@ RUN --mount=type=cache,target=UV_CACHE_DIR \
 
 # Add virtual environment to PATH
 ENV PATH="/app/.venv/bin:$PATH"
+ENV MCP_TRANSPORT="streamable-http"
 
 ENTRYPOINT ["oxylabs-mcp"]
