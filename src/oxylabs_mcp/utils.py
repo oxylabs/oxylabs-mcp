@@ -40,7 +40,7 @@ AI_STUDIO_API_KEY_HEADER = "X-Oxylabs-AI-Studio-Api-Key"
 
 USERNAME_QUERY_PARAM = "oxylabsUsername"
 PASSWORD_QUERY_PARAM = "oxylabsPassword"  # noqa: S105  # nosec
-AI_STUDIO_API_KEY_QUERY_PARAM = "aiStudioApiKey"
+AI_STUDIO_API_KEY_QUERY_PARAM = "oxylabsAiStudioApiKey"
 
 
 def clean_html(html: str) -> str:

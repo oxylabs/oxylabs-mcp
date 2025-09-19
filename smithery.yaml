@@ -13,11 +13,11 @@ startCommand:
       oxylabsPassword:
         type: "string"
         description: "Oxylabs password"
-      aiStudioApiKey:
+      oxylabsAiStudioApiKey:
         type: "string"
         description: "Oxylabs AI Studio api key"
     required: []
   exampleConfig:
     oxylabsUsername: "Your Oxylabs username"
     oxylabsPassword: "Your Oxylabs password"
-    aiStudioApiKey: "Your Oxylabs AI Studio api key"
+    oxylabsAiStudioApiKey: "Your Oxylabs AI Studio api key"
