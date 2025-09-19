@@ -166,7 +166,7 @@ In case your client does not support the Oauth2 authentication, you can pass the
   {
     "mcpServers": {
       "oxylabs": {
-        "url": "https://server.smithery.ai/@oxylabs/oxylabs-mcp/mcp?oxylabsUsername=OXYLABS_USERNAME&oxylabsPassword=OXYLABS_PASSWORD&aiStudioApiKey=OXYLABS_AI_STUDIO_API_KEY"
+        "url": "https://server.smithery.ai/@oxylabs/oxylabs-mcp/mcp?oxylabsUsername=OXYLABS_USERNAME&oxylabsPassword=OXYLABS_PASSWORD&oxylabsAiStudioApiKey=OXYLABS_AI_STUDIO_API_KEY"
       }
     }
   }
