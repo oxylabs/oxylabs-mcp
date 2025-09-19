@@ -1,6 +1,6 @@
 [project]
 name = "oxylabs-mcp"
-version = "0.6.4"
+version = "0.6.5"
 description = "Oxylabs MCP server"
 authors = [
     {name="Augis Braziunas", email="augis.braziunas@oxylabs.io"},
@@ -28,6 +28,7 @@ dependencies = [
     "oxylabs-ai-studio>=0.2.12",
     "pydantic>=2.10.5",
     "pydantic-settings>=2.8.1",
+    "smithery>=0.1.25",
 ]
 
 [dependency-groups]

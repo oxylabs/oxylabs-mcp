@@ -19,5 +19,8 @@ class Settings(BaseSettings):
     MCP_HOST: str = "localhost"
     MCP_STATELESS_HTTP: bool = False
 
+    # smithery config
+    PORT: int | None = None
+
 
 settings = Settings()

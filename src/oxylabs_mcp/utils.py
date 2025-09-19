@@ -38,6 +38,10 @@ USERNAME_HEADER = "X-Oxylabs-Username"
 PASSWORD_HEADER = "X-Oxylabs-Password"  # noqa: S105  # nosec
 AI_STUDIO_API_KEY_HEADER = "X-Oxylabs-AI-Studio-Api-Key"
 
+USERNAME_QUERY_PARAM = "oxylabsUsername"
+PASSWORD_QUERY_PARAM = "oxylabsPassword"  # noqa: S105  # nosec
+AI_STUDIO_API_KEY_QUERY_PARAM = "oxylabsAiStudioApiKey"
+
 
 def clean_html(html: str) -> str:
     """Clean an HTML string."""
@@ -169,11 +173,29 @@ def get_oxylabs_auth() -> tuple[str | None, str | None]:
         request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
         username = request_headers.get(USERNAME_HEADER.lower())
         password = request_headers.get(PASSWORD_HEADER.lower())
+        if not username or not password:
+            query_params = get_context().request_context.request.query_params  # type: ignore[union-attr]
+            username = query_params.get(USERNAME_QUERY_PARAM)
+            password = query_params.get(PASSWORD_QUERY_PARAM)
     else:
         username = os.environ.get(USERNAME_ENV)
         password = os.environ.get(PASSWORD_ENV)
 
     return username, password
+
+
+def get_oxylabs_ai_studio_api_key() -> str | None:
+    """Extract the Oxylabs AI Studio API key."""
+    if settings.MCP_TRANSPORT == "streamable-http":
+        request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
+        ai_studio_api_key = request_headers.get(AI_STUDIO_API_KEY_HEADER.lower())
+        if not ai_studio_api_key:
+            query_params = get_context().request_context.request.query_params  # type: ignore[union-attr]
+            ai_studio_api_key = query_params.get(AI_STUDIO_API_KEY_QUERY_PARAM)
+    else:
+        ai_studio_api_key = os.getenv(AI_STUDIO_API_KEY_ENV)
+
+    return ai_studio_api_key
 
 
 @asynccontextmanager
@@ -204,17 +226,6 @@ async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
             raise MCPServerError(f"Request error during POST request: {e}") from None
         except Exception as e:
             raise MCPServerError(f"Error: {str(e) or repr(e)}") from None
-
-
-def get_oxylabs_ai_studio_api_key() -> str | None:
-    """Extract the Oxylabs AI Studio API key."""
-    if settings.MCP_TRANSPORT == "streamable-http":
-        request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
-        ai_studio_api_key = request_headers.get(AI_STUDIO_API_KEY_HEADER.lower())
-    else:
-        ai_studio_api_key = os.getenv(AI_STUDIO_API_KEY_ENV)
-
-    return ai_studio_api_key
 
 
 def get_and_verify_oxylabs_ai_studio_api_key() -> str:
