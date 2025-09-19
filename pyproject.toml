@@ -1,6 +1,6 @@
 [project]
 name = "oxylabs-mcp"
-version = "0.6.4"
+version = "0.6.5"
 description = "Oxylabs MCP server"
 authors = [
     {name="Augis Braziunas", email="augis.braziunas@oxylabs.io"},

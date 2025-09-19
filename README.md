@@ -143,14 +143,34 @@ Leaving placeholder values will result in exposed tools that do not work.**
   }
   ```
 
-### Configure with Smithery
+### Configure with Smithery Oauth2
 
 - Go to https://smithery.ai/server/@oxylabs/oxylabs-mcp;
-- Login with GitHub or Google;
-- Find the _Connect_ section;
-- Follow the instructions to generate the config or auto install command.
+- Click _Auto_ to install the Oxylabs MCP configuration for the respective client;
+- OR use the following config:
+```json
+  {
+    "mcpServers": {
+      "oxylabs": {
+        "url": "https://server.smithery.ai/@oxylabs/oxylabs-mcp/mcp"
+      }
+    }
+  }
+```
+- Follow the instructions to authenticate Oxylabs MCP with Oauth2 flow
 
+### Configure with Smithery query parameters
 
+In case your client does not support the Oauth2 authentication, you can pass the Oxylabs authentication parameters directly in url
+```json
+  {
+    "mcpServers": {
+      "oxylabs": {
+        "url": "https://server.smithery.ai/@oxylabs/oxylabs-mcp/mcp?oxylabsUsername=OXYLABS_USERNAME&oxylabsPassword=OXYLABS_PASSWORD&aiStudioApiKey=OXYLABS_AI_STUDIO_API_KEY"
+      }
+    }
+  }
+```
 
 ### Manual Setup with Claude Desktop
 
