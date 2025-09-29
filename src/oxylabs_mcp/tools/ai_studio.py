@@ -9,14 +9,14 @@ from oxylabs_ai_studio.apps.ai_crawler import AiCrawler
 from oxylabs_ai_studio.apps.ai_map import AiMap
 from oxylabs_ai_studio.apps.ai_scraper import AiScraper
 from oxylabs_ai_studio.apps.ai_search import AiSearch
-from oxylabs_ai_studio.apps.browser_agent import (
-    BrowserAgent,
-)
+from oxylabs_ai_studio.apps.browser_agent import BrowserAgent
 from pydantic import Field
 
+from oxylabs_mcp.tools.misc import setup
 from oxylabs_mcp.utils import get_and_verify_oxylabs_ai_studio_api_key
 
 
+setup()
 logger = logging.getLogger(__name__)
 
 
@@ -71,7 +71,8 @@ async def ai_crawler(
         int, Field(description="The maximum number of sources to return.", le=50)
     ] = 25,
     geo_location: Annotated[
-        str | None, Field(description="Two letter ISO country code to use for the crawl proxy.")
+        str | None,
+        Field(description="Two letter ISO country code to use for the crawl proxy."),
     ] = None,
 ) -> str:
     """Tool useful for crawling a website from starting url and returning data in a specified format.
@@ -132,7 +133,8 @@ async def ai_scraper(
         ),
     ] = False,
     geo_location: Annotated[
-        str | None, Field(description="Two letter ISO country code to use for the scrape proxy.")
+        str | None,
+        Field(description="Two letter ISO country code to use for the scrape proxy."),
     ] = None,
 ) -> str:
     """Scrape the contents of the web page and return the data in the specified format.
@@ -177,7 +179,8 @@ async def ai_browser_agent(
         ),
     ] = None,
     geo_location: Annotated[
-        str | None, Field(description="Two letter ISO country code to use for the browser proxy.")
+        str | None,
+        Field(description="Two letter ISO country code to use for the browser proxy."),
     ] = None,
 ) -> str:
     """Run the browser agent and return the data in the specified format.
@@ -221,7 +224,8 @@ async def ai_search(
         Field(description="Whether to return markdown content of the search results."),
     ] = False,
     geo_location: Annotated[
-        str | None, Field(description="Two letter ISO country code to use for the search proxy.")
+        str | None,
+        Field(description="Two letter ISO country code to use for the search proxy."),
     ] = None,
 ) -> str:
     """Search the web based on a provided query.
@@ -290,7 +294,8 @@ async def ai_map(
         int, Field(description="The maximum number of sources to return.", le=50)
     ] = 25,
     geo_location: Annotated[
-        str | None, Field(description="Two letter ISO country code to use for the mapping proxy.")
+        str | None,
+        Field(description="Two letter ISO country code to use for the mapping proxy."),
     ] = None,
 ) -> str:
     """Tool useful for mapping website's urls."""  # noqa: E501
