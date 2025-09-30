@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.12"
 
 [[package]]
@@ -368,7 +368,7 @@ version = "3.22.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
-    { name = "docstring-parser", marker = "python_full_version < '4.0'" },
+    { name = "docstring-parser", marker = "python_full_version < '4'" },
     { name = "rich" },
     { name = "rich-rst" },
 ]
@@ -984,7 +984,7 @@ wheels = [
 
 [[package]]
 name = "oxylabs-ai-studio"
-version = "0.2.12"
+version = "0.2.13"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -992,14 +992,14 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/75/40/d22e4c3eb3372b72cad3a0d18c32f5646c1c952f2c33d1b1409656baf468/oxylabs_ai_studio-0.2.12.tar.gz", hash = "sha256:631162a1e9e0ef28720866e7b22617352ffbf86597c9168a9e40d9f39aaccb92", size = 1414704, upload-time = "2025-08-14T11:31:28.946Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/dd/58/0bed5501820779c4d7fa4835513904c4085c2a5100e0d9946b54ebc400f6/oxylabs_ai_studio-0.2.13.tar.gz", hash = "sha256:e6d498ee05f4909e9cd41867a7344094570397a13e5577e2b584c6e91ba5d48a", size = 1417939, upload-time = "2025-09-26T13:57:04.823Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/89/e0/5d5c450016d8ed4ad23178e71680e695df47a63ddece910d6184bfd89390/oxylabs_ai_studio-0.2.12-py3-none-any.whl", hash = "sha256:e1e1fe03d8108764c5e79afe706b83255111b776d09ca021939096a79b4ab6fd", size = 13829, upload-time = "2025-08-14T11:31:27.18Z" },
+    { url = "https://files.pythonhosted.org/packages/61/08/80dd6edd740172866b7ebbb0d5218454013eff8a5c37838a7228a28d0a22/oxylabs_ai_studio-0.2.13-py3-none-any.whl", hash = "sha256:ba1fab70f2e373c7fb92087e250564418e087fad35622dfccfbbb410c87962be", size = 14068, upload-time = "2025-09-26T13:57:03.03Z" },
 ]
 
 [[package]]
 name = "oxylabs-mcp"
-version = "0.6.5"
+version = "0.6.6"
 source = { editable = "." }
 dependencies = [
     { name = "fastmcp" },
@@ -1039,7 +1039,7 @@ requires-dist = [
     { name = "lxml", specifier = ">=5.3.0,<6" },
     { name = "lxml-html-clean", specifier = ">=0.4.1" },
     { name = "markdownify", specifier = ">=0.14.1" },
-    { name = "oxylabs-ai-studio", specifier = ">=0.2.12" },
+    { name = "oxylabs-ai-studio", specifier = ">=0.2.13" },
     { name = "pydantic", specifier = ">=2.10.5" },
     { name = "pydantic-settings", specifier = ">=2.8.1" },
     { name = "smithery", specifier = ">=0.1.25" },
