@@ -301,5 +301,5 @@ def get_content(
         links = extract_links_with_text(str(content))
         return "\n".join(links)
 
-    stripped_html = strip_html(str(content))
+    stripped_html = clean_html(str(content))
     return markdownify(stripped_html)  # type: ignore[no-any-return]
