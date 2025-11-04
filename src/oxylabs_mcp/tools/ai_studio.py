@@ -52,7 +52,7 @@ async def ai_crawler(
     schema: Annotated[
         dict[str, Any] | None,
         Field(
-            description="The schema to use for the crawl. Only required if output_format is json or csv."
+            description="The schema to use for the crawl. Required if output_format is json or csv."
         ),
     ] = None,
     render_javascript: Annotated[  # noqa: FBT002
