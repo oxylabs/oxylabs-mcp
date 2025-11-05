@@ -104,13 +104,12 @@ async def ai_crawler(
 async def ai_scraper(
     url: Annotated[str, Field(description="The URL to scrape")],
     output_format: Annotated[
-        Literal["json", "markdown", "csv", "screenshot"],
+        Literal["json", "markdown", "csv"],
         Field(
             description=(
                 "The format of the output. If json or csv, the schema is required. "
                 "Markdown returns full text of the page. CSV returns data in CSV format, "
                 "tabular like data."
-                "Screenshot returns a base64 encoded JPEG image of the page."
             )
         ),
     ] = "markdown",
@@ -163,10 +162,10 @@ async def ai_browser_agent(
     url: Annotated[str, Field(description="The URL to start the browser agent navigation from.")],
     task_prompt: Annotated[str, Field(description="What browser agent should do.")],
     output_format: Annotated[
-        Literal["json", "markdown", "html", "screenshot", "csv"],
+        Literal["json", "markdown", "html", "csv"],
         Field(
             description=(
-                "The output format. Screenshot is base64 encoded jpeg image. "
+                "The output format. "
                 "Markdown returns full text of the page including links. "
                 "If json or csv, the schema is required."
             )
