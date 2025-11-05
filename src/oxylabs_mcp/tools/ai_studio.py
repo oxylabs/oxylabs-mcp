@@ -108,7 +108,8 @@ async def ai_scraper(
         Field(
             description=(
                 "The format of the output. If json or csv, the schema is required. "
-                "Markdown returns full text of the page. CSV returns data in CSV format."
+                "Markdown returns full text of the page. CSV returns data in CSV format, "
+                "tabular like data."
                 "Screenshot returns a base64 encoded JPEG image of the page."
             )
         ),
