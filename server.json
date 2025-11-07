@@ -1,0 +1,43 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.oxylabs/oxylabs-mcp",
+  "description": "Fetch and process content from specified URLs & sources using the Oxylabs Web Scraper API.",
+  "repository": {
+    "url": "https://github.com/oxylabs/oxylabs-mcp",
+    "source": "github"
+  },
+  "version": "0.7.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "oxylabs-mcp",
+      "version": "0.7.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Your Oxylabs username",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true,
+          "name": "OXYLABS_USERNAME"
+        },
+        {
+          "description": "Your Oxylabs password",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true,
+          "name": "OXYLABS_PASSWORD"
+        },
+        {
+          "description": "Your Oxylabs AI Studio api key",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true,
+          "name": "OXYLABS_AI_STUDIO_API_KEY"
+        }
+      ]
+    }
+  ]
+}

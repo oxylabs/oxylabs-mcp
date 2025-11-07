@@ -104,3 +104,5 @@ cython_debug/
 .pypirc
 
 deployment/charts/
+
+.mcpregistry_*
