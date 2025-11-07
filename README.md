@@ -305,3 +305,4 @@ MCP (Multi‑Client Proxy) makes that happen by doing the boring parts for you:
 | **Cleans HTML → JSON**                                            | Drop straight into vector DBs or prompts |
 | **Optional structured parsers** (Google, Amazon, etc.)            | One‑line access to popular targets       |
 
+mcp-name: io.github.oxylabs/oxylabs-mcp
