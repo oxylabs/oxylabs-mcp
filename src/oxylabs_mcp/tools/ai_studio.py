@@ -54,7 +54,8 @@ async def ai_crawler(
     schema: Annotated[
         dict[str, Any] | None,
         Field(
-            description="The schema to use for the crawl. Required if output_format is json, csv or toon."
+            description="The schema to use for the crawl. "
+            "Only required if output_format is json, csv or toon."
         ),
     ] = None,
     render_javascript: Annotated[  # noqa: FBT002
@@ -120,7 +121,8 @@ async def ai_scraper(
         dict[str, Any] | None,
         Field(
             description=(
-                "The schema to use for the scrape. Only required if output_format is json, csv or toon."
+                "The schema to use for the scrape. "
+                "Only required if output_format is json, csv or toon."
             )
         ),
     ] = None,
@@ -180,7 +182,8 @@ async def ai_browser_agent(
         dict[str, Any] | None,
         Field(
             description=(
-                "The schema to use for the scrape. Only required if output_format is json, csv or toon."
+                "The schema to use for the scrape. "
+                "Only required if output_format is json, csv or toon."
             )
         ),
     ] = None,
@@ -193,7 +196,8 @@ async def ai_browser_agent(
 
     This tool is useful if you need navigate around the website and do some actions.
     It allows navigating to any url, clicking on links, filling forms, scrolling, etc.
-    Finally it returns the data in the specified format. Schema is required only if output_format is json, csv or toon.
+    Finally it returns the data in the specified format.
+    Schema is required only if output_format is json, csv or toon.
     'task_prompt' describes what browser agent should achieve
     """  # noqa: E501
     logger.info(
