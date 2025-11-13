@@ -41,18 +41,20 @@ async def ai_crawler(
         Field(description="What information user wants to extract from the domain."),
     ],
     output_format: Annotated[
-        Literal["json", "markdown", "csv"],
+        Literal["json", "markdown", "csv", "toon"],
         Field(
             description=(
-                "The format of the output. If json or csv, the schema is required. "
-                "Markdown returns full text of the page. CSV returns data in CSV format."
+                "The format of the output. If json, csv or toon, the schema is required. "
+                "Markdown returns full text of the page. CSV returns data in CSV format. "
+                "Toon(Token-Oriented Object Notation) returns data in Toon format, "
+                "which is optimized for AI agents."
             )
         ),
     ] = "markdown",
     schema: Annotated[
         dict[str, Any] | None,
         Field(
-            description="The schema to use for the crawl. Required if output_format is json or csv."
+            description="The schema to use for the crawl. Required if output_format is json, csv or toon."
         ),
     ] = None,
     render_javascript: Annotated[  # noqa: FBT002
@@ -104,12 +106,13 @@ async def ai_crawler(
 async def ai_scraper(
     url: Annotated[str, Field(description="The URL to scrape")],
     output_format: Annotated[
-        Literal["json", "markdown", "csv"],
+        Literal["json", "markdown", "csv", "toon"],
         Field(
             description=(
-                "The format of the output. If json or csv, the schema is required. "
+                "The format of the output. If json, csv or toon, the schema is required. "
                 "Markdown returns full text of the page. CSV returns data in CSV format, "
-                "tabular like data."
+                "tabular like data. Toon(Token-Oriented Object Notation) returns data "
+                "in Toon format, which is optimized for AI agents."
             )
         ),
     ] = "markdown",
@@ -117,7 +120,7 @@ async def ai_scraper(
         dict[str, Any] | None,
         Field(
             description=(
-                "The schema to use for the scrape. Only required if output_format is json or csv."
+                "The schema to use for the scrape. Only required if output_format is json, csv or toon."
             )
         ),
     ] = None,
@@ -162,12 +165,14 @@ async def ai_browser_agent(
     url: Annotated[str, Field(description="The URL to start the browser agent navigation from.")],
     task_prompt: Annotated[str, Field(description="What browser agent should do.")],
     output_format: Annotated[
-        Literal["json", "markdown", "html", "csv"],
+        Literal["json", "markdown", "html", "csv", "toon"],
         Field(
             description=(
                 "The output format. "
                 "Markdown returns full text of the page including links. "
-                "If json or csv, the schema is required."
+                "Toon(Token-Oriented Object Notation) returns data "
+                "in Toon format, which is optimized for AI agents. "
+                "If json, csv or toon, the schema is required."
             )
         ),
     ] = "markdown",
@@ -175,7 +180,7 @@ async def ai_browser_agent(
         dict[str, Any] | None,
         Field(
             description=(
-                "The schema to use for the scrape. Only required if output_format is json or csv."
+                "The schema to use for the scrape. Only required if output_format is json, csv or toon."
             )
         ),
     ] = None,
@@ -188,7 +193,7 @@ async def ai_browser_agent(
 
     This tool is useful if you need navigate around the website and do some actions.
     It allows navigating to any url, clicking on links, filling forms, scrolling, etc.
-    Finally it returns the data in the specified format. Schema is required only if output_format is json or csv.
+    Finally it returns the data in the specified format. Schema is required only if output_format is json, csv or toon.
     'task_prompt' describes what browser agent should achieve
     """  # noqa: E501
     logger.info(
