@@ -984,7 +984,7 @@ wheels = [
 
 [[package]]
 name = "oxylabs-ai-studio"
-version = "0.2.15"
+version = "0.2.17"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -993,14 +993,14 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "tenacity" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/64/68/c715a4fdaea29e9bdd5d8e9366851b65ea0e39bbd886eb49f08e09291d1d/oxylabs_ai_studio-0.2.15.tar.gz", hash = "sha256:6e0c670bfca5f9aceabded2614f8f0cd313c88f6d881f09b26b60368378a607e", size = 2388872, upload-time = "2025-11-04T16:56:44.847Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/96/60/c0e8f00fb2baeacf2babb072d0017806e9259b0e42f983b16bddaba603c7/oxylabs_ai_studio-0.2.17.tar.gz", hash = "sha256:76f992fee0a9897e8122cebcca14333f4199d412c3ba6459c478f1ac4b7c469d", size = 2388990, upload-time = "2025-11-13T13:15:39.191Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d3/0f/a11ad5ac672318fe35c4ca375e9a2e90569651cb2c478c45a86ee5fa6179/oxylabs_ai_studio-0.2.15-py3-none-any.whl", hash = "sha256:fe6fed61528f51a91c67a2ef49f603f34724deb5824f71b1ef528e9160a71c41", size = 15444, upload-time = "2025-11-04T16:56:43.056Z" },
+    { url = "https://files.pythonhosted.org/packages/ae/fa/1b28ae6f7a764675866a75883955857b17726c7c5a7dfcc356dfd9afcc62/oxylabs_ai_studio-0.2.17-py3-none-any.whl", hash = "sha256:a1fc83856e9b410338e50f659b68474dc70fb03574478ce05e775226ef22d670", size = 15558, upload-time = "2025-11-13T13:15:37.186Z" },
 ]
 
 [[package]]
 name = "oxylabs-mcp"
-version = "0.7.2"
+version = "0.7.3"
 source = { editable = "." }
 dependencies = [
     { name = "fastmcp" },
@@ -1040,7 +1040,7 @@ requires-dist = [
     { name = "lxml", specifier = ">=5.3.0,<6" },
     { name = "lxml-html-clean", specifier = ">=0.4.1" },
     { name = "markdownify", specifier = ">=0.14.1" },
-    { name = "oxylabs-ai-studio", specifier = ">=0.2.15" },
+    { name = "oxylabs-ai-studio", specifier = ">=0.2.17" },
     { name = "pydantic", specifier = ">=2.10.5" },
     { name = "pydantic-settings", specifier = ">=2.8.1" },
     { name = "smithery", specifier = ">=0.1.25" },
