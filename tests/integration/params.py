@@ -347,3 +347,41 @@ AI_STUDIO_USER_PROMPT = pytest.param(
     {"data": "value"},
     id="user-prompt-args",
 )
+
+AI_STUDIO_AI_MAP_URL_ONLY = pytest.param(
+    {"url": "https://example.com"},
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-args",
+)
+AI_STUDIO_AI_MAP_URL_AND_RENDER_JAVASCRIPT = pytest.param(
+    {
+        "url": "https://example.com",
+        "render_javascript": True,
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-render-js-args",
+)
+AI_STUDIO_AI_MAP_URL_AND_LIMIT = pytest.param(
+    {
+        "url": "https://example.com",
+        "limit": 10,
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-limit-args",
+)
+AI_STUDIO_AI_MAP_URL_AND_GEO_LOCATION = pytest.param(
+    {
+        "url": "https://example.com",
+        "geo_location": "US",
+    },
+    does_not_raise(),
+    AI_STUDIO_JSON_RESPONSE,
+    {"data": "value"},
+    id="url-with-user-prompt-and-geo_location-args",
+)

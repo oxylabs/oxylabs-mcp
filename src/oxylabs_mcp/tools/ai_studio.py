@@ -54,8 +54,10 @@ async def ai_crawler(
     schema: Annotated[
         dict[str, Any] | None,
         Field(
-            description="The schema to use for the crawl. "
-            "Only required if output_format is json, csv or toon."
+            description=(
+                "The JSON schema to use for structured data extraction from the crawled pages. "
+                "Only required if output_format is json, csv or toon."
+            )
         ),
     ] = None,
     render_javascript: Annotated[  # noqa: FBT002
@@ -80,7 +82,7 @@ async def ai_crawler(
 ) -> str:
     """Tool useful for crawling a website from starting url and returning data in a specified format.
 
-    Schema is required only if output_format is json.
+    Schema is required only if output_format is json, csv or toon.
     'render_javascript' is used to render javascript heavy websites.
     'return_sources_limit' is used to limit the number of sources to return,
     for example if you expect results from single source, you can set it to 1.
@@ -121,7 +123,7 @@ async def ai_scraper(
         dict[str, Any] | None,
         Field(
             description=(
-                "The schema to use for the scrape. "
+                "The JSON schema to use for structured data extraction from the scraped page. "
                 "Only required if output_format is json, csv or toon."
             )
         ),
@@ -284,10 +286,29 @@ async def generate_schema(
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def ai_map(
     url: Annotated[str, Field(description="The URL from which URLs mapping will be started.")],
+    search_keywords: Annotated[
+        list[str] | None,
+        Field(
+            description=(
+                "The keywords to use for URLs paths filtering. "
+                "Keywords are matched as OR condition. "
+                "Meaning, one keyword is enough to match the url path."
+            ),
+        ),
+    ] = None,
     user_prompt: Annotated[
-        str,
-        Field(description="What kind of urls user wants to find."),
-    ],
+        str | None,
+        Field(
+            description=(
+                "What kind of URLs user wants to find. "
+                "Can be used together with 'search_keywords'."
+            ),
+        ),
+    ] = None,
+    max_crawl_depth: Annotated[
+        int,
+        Field(description="The maximum depth of the crawl.", le=5),
+    ] = 1,
     render_javascript: Annotated[  # noqa: FBT002
         bool,
         Field(
@@ -300,26 +321,32 @@ async def ai_map(
             )
         ),
     ] = False,
-    return_sources_limit: Annotated[
-        int, Field(description="The maximum number of sources to return.", le=50)
-    ] = 25,
+    limit: Annotated[int, Field(description="The maximum number of URLs to return.", le=50)] = 25,
     geo_location: Annotated[
         str | None,
         Field(description="Two letter ISO country code to use for the mapping proxy."),
     ] = None,
+    allow_subdomains: Annotated[  # noqa: FBT002
+        bool,
+        Field(description="Whether to map subdomains URLs as well."),
+    ] = False,
+    allow_external_domains: Annotated[  # noqa: FBT002
+        bool,
+        Field(description="Whether to include external domains URLs."),
+    ] = False,
 ) -> str:
-    """Tool useful for mapping website's urls."""  # noqa: E501
-    logger.info(
-        f"Calling ai_map with: {url=}, {user_prompt=}, "
-        f"{render_javascript=}, "
-        f"{return_sources_limit=}"
-    )
+    """Tool useful for mapping website's URLs."""  # noqa: E501
+    logger.info(f"Calling ai_map with: {url=}, {user_prompt=}, {render_javascript=}, {limit=}")
     ai_map = AiMap(api_key=get_and_verify_oxylabs_ai_studio_api_key())
     result = await ai_map.map_async(
         url=url,
+        search_keywords=search_keywords,
         user_prompt=user_prompt,
+        max_crawl_depth=max_crawl_depth,
         render_javascript=render_javascript,
-        return_sources_limit=return_sources_limit,
+        limit=limit,
         geo_location=geo_location,
+        allow_subdomains=allow_subdomains,
+        allow_external_domains=allow_external_domains,
     )
     return json.dumps({"data": result.data})

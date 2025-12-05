@@ -237,10 +237,10 @@ async def test_generate_schema(
 @pytest.mark.parametrize(
     ("arguments", "expectation", "response_data", "expected_result"),
     [
-        params.AI_STUDIO_URL_ONLY,
-        params.AI_STUDIO_URL_AND_RENDER_JAVASCRIPT,
-        params.AI_STUDIO_URL_AND_RETURN_SOURCES_LIMIT,
-        params.AI_STUDIO_URL_AND_GEO_LOCATION,
+        params.AI_STUDIO_AI_MAP_URL_ONLY,
+        params.AI_STUDIO_AI_MAP_URL_AND_RENDER_JAVASCRIPT,
+        params.AI_STUDIO_AI_MAP_URL_AND_LIMIT,
+        params.AI_STUDIO_AI_MAP_URL_AND_GEO_LOCATION,
     ],
 )
 @pytest.mark.asyncio
@@ -268,9 +268,13 @@ async def test_ai_map(
         ]
 
         default_args = {
+            "search_keywords": None,
+            "max_crawl_depth": 1,
             "geo_location": None,
             "render_javascript": False,
-            "return_sources_limit": 25,
+            "limit": 25,
+            "allow_subdomains": False,
+            "allow_external_domains": False,
         }
         default_args = {k: v for k, v in default_args.items() if k not in arguments}
 
