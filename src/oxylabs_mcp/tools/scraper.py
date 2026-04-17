@@ -24,10 +24,10 @@ mcp = FastMCP("scraper")
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def universal_scraper(
     url: url_params.URL_PARAM,
-    render: url_params.RENDER_PARAM = "",
-    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = "",
-    geo_location: url_params.GEO_LOCATION_PARAM = "",
-    output_format: url_params.OUTPUT_FORMAT_PARAM = "",
+    render: url_params.RENDER_PARAM = None,
+    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = None,
+    geo_location: url_params.GEO_LOCATION_PARAM = None,
+    output_format: url_params.OUTPUT_FORMAT_PARAM = None,
 ) -> str:
     """Get a content of any webpage.
 
@@ -56,16 +56,16 @@ async def universal_scraper(
 async def google_search_scraper(
     query: url_params.GOOGLE_QUERY_PARAM,
     parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
-    render: url_params.RENDER_PARAM = "",
-    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = "",
+    render: url_params.RENDER_PARAM = None,
+    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = None,
     start_page: url_params.START_PAGE_PARAM = 0,
     pages: url_params.PAGES_PARAM = 0,
     limit: url_params.LIMIT_PARAM = 0,
-    domain: url_params.DOMAIN_PARAM = "",
-    geo_location: url_params.GEO_LOCATION_PARAM = "",
-    locale: url_params.LOCALE_PARAM = "",
+    domain: url_params.DOMAIN_PARAM = None,
+    geo_location: url_params.GEO_LOCATION_PARAM = None,
+    locale: url_params.LOCALE_PARAM = None,
     ad_mode: url_params.AD_MODE_PARAM = False,  # noqa: FBT002
-    output_format: url_params.OUTPUT_FORMAT_PARAM = "",
+    output_format: url_params.OUTPUT_FORMAT_PARAM = None,
 ) -> str:
     """Scrape Google Search results.
 
@@ -110,18 +110,18 @@ async def google_search_scraper(
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 async def amazon_search_scraper(
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
-    category_id: url_params.CATEGORY_ID_CONTEXT_PARAM = "",
-    merchant_id: url_params.MERCHANT_ID_CONTEXT_PARAM = "",
-    currency: url_params.CURRENCY_CONTEXT_PARAM = "",
+    category_id: url_params.CATEGORY_ID_CONTEXT_PARAM = None,
+    merchant_id: url_params.MERCHANT_ID_CONTEXT_PARAM = None,
+    currency: url_params.CURRENCY_CONTEXT_PARAM = None,
     parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
-    render: url_params.RENDER_PARAM = "",
-    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = "",
+    render: url_params.RENDER_PARAM = None,
+    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = None,
     start_page: url_params.START_PAGE_PARAM = 0,
     pages: url_params.PAGES_PARAM = 0,
-    domain: url_params.DOMAIN_PARAM = "",
-    geo_location: url_params.GEO_LOCATION_PARAM = "",
-    locale: url_params.LOCALE_PARAM = "",
-    output_format: url_params.OUTPUT_FORMAT_PARAM = "",
+    domain: url_params.DOMAIN_PARAM = None,
+    geo_location: url_params.GEO_LOCATION_PARAM = None,
+    locale: url_params.LOCALE_PARAM = None,
+    output_format: url_params.OUTPUT_FORMAT_PARAM = None,
 ) -> str:
     """Scrape Amazon search results.
 
@@ -171,14 +171,14 @@ async def amazon_search_scraper(
 async def amazon_product_scraper(
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     autoselect_variant: url_params.AUTOSELECT_VARIANT_CONTEXT_PARAM = False,  # noqa: FBT002
-    currency: url_params.CURRENCY_CONTEXT_PARAM = "",
+    currency: url_params.CURRENCY_CONTEXT_PARAM = None,
     parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
-    render: url_params.RENDER_PARAM = "",
-    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = "",
-    domain: url_params.DOMAIN_PARAM = "",
-    geo_location: url_params.GEO_LOCATION_PARAM = "",
-    locale: url_params.LOCALE_PARAM = "",
-    output_format: url_params.OUTPUT_FORMAT_PARAM = "",
+    render: url_params.RENDER_PARAM = None,
+    user_agent_type: url_params.USER_AGENT_TYPE_PARAM = None,
+    domain: url_params.DOMAIN_PARAM = None,
+    geo_location: url_params.GEO_LOCATION_PARAM = None,
+    locale: url_params.LOCALE_PARAM = None,
+    output_format: url_params.OUTPUT_FORMAT_PARAM = None,
 ) -> str:
     """Scrape Amazon products.
 

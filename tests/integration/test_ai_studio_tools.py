@@ -40,7 +40,7 @@ async def test_ai_crawler(
     arguments = {"user_prompt": "Scrape price and title", **arguments}
 
     with expectation:
-        result = await mcp._call_tool("ai_crawler", arguments=arguments)
+        result = await mcp.call_tool("ai_crawler", arguments=arguments)
 
         assert result.content == [
             TextContent(type="text", text=json.dumps({"data": expected_result}))
@@ -86,7 +86,7 @@ async def test_ai_scraper(
     arguments = {**arguments}
 
     with expectation:
-        result = await mcp._call_tool("ai_scraper", arguments=arguments)
+        result = await mcp.call_tool("ai_scraper", arguments=arguments)
 
         assert result.content == [
             TextContent(type="text", text=json.dumps({"data": expected_result}))
@@ -131,7 +131,7 @@ async def test_ai_browser_agent(
     arguments = {"task_prompt": "Scrape price and title", **arguments}
 
     with expectation:
-        result = await mcp._call_tool("ai_browser_agent", arguments=arguments)
+        result = await mcp.call_tool("ai_browser_agent", arguments=arguments)
 
         assert result.content == [
             TextContent(type="text", text=json.dumps({"data": mock_data.model_dump()}))
@@ -182,7 +182,7 @@ async def test_ai_search(
         arguments["query"] = "Sample query"
 
     with expectation:
-        result = await mcp._call_tool("ai_search", arguments=arguments)
+        result = await mcp.call_tool("ai_search", arguments=arguments)
 
         assert result.content == [
             TextContent(type="text", text=json.dumps({"data": [mock_result.data[0].model_dump()]}))
@@ -227,7 +227,7 @@ async def test_generate_schema(
     arguments = {"app_name": app_name, **arguments}
 
     with expectation:
-        result = await mcp._call_tool("generate_schema", arguments=arguments)
+        result = await mcp.call_tool("generate_schema", arguments=arguments)
 
         assert result.content == [TextContent(type="text", text=json.dumps({"data": mock_schema}))]
 
@@ -261,7 +261,7 @@ async def test_ai_map(
     arguments = {"user_prompt": "Scrape price and title", **arguments}
 
     with expectation:
-        result = await mcp._call_tool("ai_map", arguments=arguments)
+        result = await mcp.call_tool("ai_map", arguments=arguments)
 
         assert result.content == [
             TextContent(type="text", text=json.dumps({"data": expected_result}))

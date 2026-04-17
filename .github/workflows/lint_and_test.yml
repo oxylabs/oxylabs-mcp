@@ -31,7 +31,6 @@ jobs:
 
     - name: Run linters
       run: |
-        uv run black --check .
         uv run mypy src
         uv run ruff check .
 

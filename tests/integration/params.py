@@ -2,7 +2,7 @@ from contextlib import nullcontext as does_not_raise
 
 import pytest
 from fastmcp.exceptions import ToolError
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 
 class SimpleSchema(BaseModel):
@@ -28,7 +28,7 @@ QUERY_ONLY = pytest.param(
     {"query": "Generic query"},
     does_not_raise(),
     STR_RESPONSE,
-    "\n\nMocked content\n\n",
+    "Mocked content",
     id="query-only-args",
 )
 PARSE_ENABLED = pytest.param(
@@ -42,12 +42,12 @@ RENDER_HTML_WITH_QUERY = pytest.param(
     {"query": "Generic query", "render": "html"},
     does_not_raise(),
     STR_RESPONSE,
-    "\n\nMocked content\n\n",
+    "Mocked content",
     id="render-enabled-args",
 )
 RENDER_INVALID_WITH_QUERY = pytest.param(
     {"query": "Generic query", "render": "png"},
-    pytest.raises(ToolError),
+    pytest.raises(ValidationError),
     STR_RESPONSE,
     None,
     id="render-enabled-args",
@@ -71,7 +71,7 @@ OUTPUT_FORMATS = [
         {"query": "Generic query", "output_format": "md"},
         does_not_raise(),
         STR_RESPONSE,
-        "\n\nMocked content\n\n",
+        "Mocked content",
         id="md-output-format-args",
     ),
     pytest.param(
@@ -87,7 +87,7 @@ USER_AGENTS_WITH_QUERY = [
         {"query": "Generic query", "user_agent_type": uat},
         does_not_raise(),
         STR_RESPONSE,
-        "\n\nMocked content\n\n",
+        "Mocked content",
         id=f"{uat}-user-agent-specified-args",
     )
     for uat in [
@@ -108,7 +108,7 @@ USER_AGENTS_WITH_URL = [
         {"url": "https://example.com", "user_agent_type": uat},
         does_not_raise(),
         STR_RESPONSE,
-        "\n\nMocked content\n\n",
+        "Mocked content",
         id=f"{uat}-user-agent-specified-args",
     )
     for uat in [
@@ -126,7 +126,7 @@ USER_AGENTS_WITH_URL = [
 ]
 INVALID_USER_AGENT = pytest.param(
     {"query": "Generic query", "user_agent_type": "invalid"},
-    pytest.raises(ToolError),
+    pytest.raises(ValidationError),
     STR_RESPONSE,
     "Mocked content",
     id="invalid-user-agent-specified-args",
@@ -191,7 +191,7 @@ GEO_LOCATION_SPECIFIED_WITH_URL = pytest.param(
     {"url": "https://example.com", "geo_location": "Miami, Florida"},
     does_not_raise(),
     STR_RESPONSE,
-    "\n\nMocked content\n\n",
+    "Mocked content",
     id="geo-location-specified-args",
 )
 LOCALE_SPECIFIED = pytest.param(
@@ -233,26 +233,26 @@ URL_ONLY = pytest.param(
     {"url": "https://example.com"},
     does_not_raise(),
     STR_RESPONSE,
-    "\n\nMocked content\n\n",
+    "Mocked content",
     id="url-only-args",
 )
 NO_URL = pytest.param(
     {},
-    pytest.raises(ToolError),
+    pytest.raises(ValidationError),
     STR_RESPONSE,
-    "\n\nMocked content\n\n",
+    "Mocked content",
     id="no-url-args",
 )
 RENDER_HTML_WITH_URL = pytest.param(
     {"url": "https://example.com", "render": "html"},
     does_not_raise(),
     STR_RESPONSE,
-    "\n\nMocked content\n\n",
+    "Mocked content",
     id="render-enabled-args",
 )
 RENDER_INVALID_WITH_URL = pytest.param(
     {"url": "https://example.com", "render": "png"},
-    pytest.raises(ToolError),
+    pytest.raises(ValidationError),
     JSON_RESPONSE,
     None,
     id="render-enabled-args",

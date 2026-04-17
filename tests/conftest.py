@@ -12,6 +12,7 @@ from oxylabs_mcp import mcp as mcp_server
 @pytest.fixture
 def request_context():
     request_context = MagicMock()
+    request_context.session = AsyncMock()
     request_context.session.client_params.clientInfo.name = "fake_cursor"
     request_context.request.headers = {
         "x-oxylabs-username": "oxylabs_username",

@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from fastmcp import FastMCP
 from httpx import HTTPStatusError, Request, RequestError, Response
+from mcp.types import ListToolsRequest
 
 from oxylabs_mcp.config import settings
 from tests.integration import params
@@ -52,7 +53,7 @@ async def test_default_headers_are_set(
     oxylabs_client.post.return_value = mock_response
     oxylabs_client.get.return_value = mock_response
 
-    await mcp._call_tool(tool, arguments=arguments)
+    await mcp.call_tool(tool, arguments=arguments)
 
     assert "x-oxylabs-sdk" in oxylabs_client.context_manager_call_kwargs["headers"]
 
@@ -125,7 +126,7 @@ async def test_request_client_error_handling(
     oxylabs_client.post.side_effect = [exception]
     oxylabs_client.get.side_effect = [exception]
 
-    result = await mcp._call_tool(tool, arguments=arguments)
+    result = await mcp.call_tool(tool, arguments=arguments)
 
     assert result.content[0].text == expected_text
 
@@ -133,5 +134,5 @@ async def test_request_client_error_handling(
 @pytest.mark.parametrize("transport", ["stdio", "streamable-http"])
 async def test_list_tools(mcp: FastMCP, transport: str):
     settings.MCP_TRANSPORT = transport
-    tools = await mcp._mcp_list_tools()
-    assert len(tools) == 10
+    result = await mcp._list_tools_mcp(ListToolsRequest())
+    assert len(result.tools) == 10
