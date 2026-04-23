@@ -39,7 +39,7 @@ async def test_oxylabs_scraper_arguments(
         expectation,
         patch("httpx.AsyncClient.post", new=AsyncMock(return_value=mock_response)),
     ):
-        result = await mcp._call_tool("universal_scraper", arguments=arguments)
+        result = await mcp.call_tool("universal_scraper", arguments=arguments)
 
         assert oxylabs_client.post.call_args.kwargs == {
             "json": convert_context_params(prepare_expected_arguments(arguments)),
@@ -78,7 +78,7 @@ async def test_google_search_scraper_arguments(
     oxylabs_client.post.return_value = mock_response
 
     with expectation:
-        result = await mcp._call_tool("google_search_scraper", arguments=arguments)
+        result = await mcp.call_tool("google_search_scraper", arguments=arguments)
 
         assert oxylabs_client.post.call_args.kwargs == {
             "json": {
@@ -109,7 +109,7 @@ async def test_oxylabs_google_search_ad_mode_argument(
     mock_response = Response(200, content=json.dumps('{"data": "value"}'), request=request_data)
     oxylabs_client.post.return_value = mock_response
 
-    await mcp._call_tool("google_search_scraper", arguments=arguments)
+    await mcp.call_tool("google_search_scraper", arguments=arguments)
     assert oxylabs_client.post.call_args.kwargs == {"json": expected_result}
     assert oxylabs_client.post.await_args.kwargs["json"] == expected_result
 
@@ -148,7 +148,7 @@ async def test_amazon_search_scraper_arguments(
     oxylabs_client.post.return_value = mock_response
 
     with expectation:
-        result = await mcp._call_tool("amazon_search_scraper", arguments=arguments)
+        result = await mcp.call_tool("amazon_search_scraper", arguments=arguments)
 
         assert oxylabs_client.post.call_args.kwargs == {
             "json": {
@@ -190,7 +190,7 @@ async def test_amazon_product_scraper_arguments(
     oxylabs_client.post.return_value = mock_response
 
     with expectation:
-        result = await mcp._call_tool("amazon_product_scraper", arguments=arguments)
+        result = await mcp.call_tool("amazon_product_scraper", arguments=arguments)
 
         assert oxylabs_client.post.call_args.kwargs == {
             "json": {

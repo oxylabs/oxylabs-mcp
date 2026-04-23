@@ -3,9 +3,6 @@ from typing import Annotated, Literal
 from pydantic import Field
 
 
-# Note: optional types (e.g `str | None`) break the introspection in the Cursor AI.
-# See: https://github.com/getcursor/cursor/issues/2932
-# Therefore, sentinel values (e.g. `""`, `0`) are used to represent a nullable parameter.
 URL_PARAM = Annotated[str, Field(description="Website url to scrape.")]
 PARSE_PARAM = Annotated[
     bool,
@@ -14,23 +11,23 @@ PARSE_PARAM = Annotated[
     ),
 ]
 RENDER_PARAM = Annotated[
-    Literal["", "html"],
+    Literal["html"] | None,
     Field(
         description="""
         Whether a headless browser should be used to render the page.
         For example:
             - 'html' when browser is required to render the page.
         """,
-        examples=["", "html"],
+        examples=["html"],
     ),
 ]
 OUTPUT_FORMAT_PARAM = Annotated[
     Literal[
-        "",
         "links",
         "md",
         "html",
-    ],
+    ]
+    | None,
     Field(
         description="""
         The format of the output. Works only when parse parameter is false.
@@ -44,7 +41,6 @@ GOOGLE_QUERY_PARAM = Annotated[str, Field(description="URL-encoded keyword to se
 AMAZON_SEARCH_QUERY_PARAM = Annotated[str, Field(description="Keyword to search for.")]
 USER_AGENT_TYPE_PARAM = Annotated[
     Literal[
-        "",
         "desktop",
         "desktop_chrome",
         "desktop_firefox",
@@ -55,7 +51,8 @@ USER_AGENT_TYPE_PARAM = Annotated[
         "mobile_ios",
         "mobile_android",
         "tablet",
-    ],
+    ]
+    | None,
     Field(
         description="Device type and browser that will be used to "
         "determine User-Agent header value."
@@ -74,7 +71,7 @@ LIMIT_PARAM = Annotated[
     Field(description="Number of results to retrieve in each page."),
 ]
 DOMAIN_PARAM = Annotated[
-    str,
+    str | None,
     Field(
         description="""
         Domain localization for Google.
@@ -88,7 +85,7 @@ DOMAIN_PARAM = Annotated[
     ),
 ]
 GEO_LOCATION_PARAM = Annotated[
-    str,
+    str | None,
     Field(
         description="""
         The geographical location that the result should be adapted for.
@@ -104,7 +101,7 @@ GEO_LOCATION_PARAM = Annotated[
     ),
 ]
 LOCALE_PARAM = Annotated[
-    str,
+    str | None,
     Field(
         description="""
         Set 'Accept-Language' header value which changes your Google search page web interface language.
@@ -123,19 +120,19 @@ AD_MODE_PARAM = Annotated[
     ),
 ]
 CATEGORY_ID_CONTEXT_PARAM = Annotated[
-    str,
+    str | None,
     Field(
         description="Search for items in a particular browse node (product category).",
     ),
 ]
 MERCHANT_ID_CONTEXT_PARAM = Annotated[
-    str,
+    str | None,
     Field(
         description="Search for items sold by a particular seller.",
     ),
 ]
 CURRENCY_CONTEXT_PARAM = Annotated[
-    str,
+    str | None,
     Field(
         description="Currency that will be used to display the prices.",
         examples=["USD", "EUR", "AUD"],

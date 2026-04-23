@@ -1,4 +1,3 @@
-# mypy: disable-error-code=import-untyped
 import json
 import logging
 from typing import Annotated, Any, Literal
@@ -300,8 +299,7 @@ async def ai_map(
         str | None,
         Field(
             description=(
-                "What kind of URLs user wants to find. "
-                "Can be used together with 'search_keywords'."
+                "What kind of URLs user wants to find. Can be used together with 'search_keywords'."
             ),
         ),
     ] = None,
