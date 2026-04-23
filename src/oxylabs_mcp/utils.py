@@ -288,7 +288,7 @@ def extract_links_with_text(html: str, base_url: str | None = None) -> list[str]
 def get_content(
     response_json: dict[str, typing.Any],
     *,
-    output_format: str,
+    output_format: str | None,
     parse: bool = False,
 ) -> str:
     """Extract content from response and convert to a proper format."""
@@ -302,4 +302,4 @@ def get_content(
         return "\n".join(links)
 
     stripped_html = clean_html(str(content))
-    return markdownify(stripped_html)  # type: ignore[no-any-return]
+    return markdownify(stripped_html)

@@ -11,14 +11,14 @@ install_deps: $(virtualenv_dir)
 
 .PHONY: lint
 lint: install_deps
-	uv run black --check .
+	uv run ruff format --check .
 	uv run mypy $(src_dir)
 	uv run ruff check
 
 .PHONY: format
 format: $(virtualenv_dir)
-	uv run black .
-	uv run ruff check --fix .
+	uv run ruff format src tests
+	uv run ruff check --fix src tests
 
 .PHONY: test
 test: install_deps

@@ -1,4 +1,3 @@
-import json
 import os
 from contextlib import asynccontextmanager
 
@@ -153,13 +152,12 @@ async def test_basic_agent_prompts(
         agent = get_agent(model, mcp_server)
         response = await agent.arun(query)
 
-    tool_calls = agent.memory.get_tool_calls(agent.session_id)
+    tool_calls = response.tools or []
 
-    # [tool_call, tool_call_result]
-    assert len(tool_calls) == 2, "Extra tool calls found!"
+    assert len(tool_calls) == 1, "Extra tool calls found!"
 
-    assert tool_calls[0]["function"]["name"] == tool
-    assert json.loads(tool_calls[0]["function"]["arguments"]) == arguments
+    assert tool_calls[0].tool_name == tool
+    assert tool_calls[0].tool_args == arguments
 
     assert expected_content in response.content
 
@@ -170,23 +168,23 @@ async def test_complex_agent_prompt(model: str):
     async with oxylabs_mcp_server() as mcp_server:
         agent = get_agent(model, mcp_server)
 
-        await agent.arun(
+        response = await agent.arun(
             "Go to oxylabs.io, look for career page, "
             "go to it and return all job titles in markdown format. "
             "Don't invent URLs, start from one provided."
         )
 
-    tool_calls = agent.memory.get_tool_calls(agent.session_id)
-    assert len(tool_calls) == 4, f"Not enough tool_calls, got {len(tool_calls)}: {tool_calls}"
+    tool_calls = response.tools or []
+    assert len(tool_calls) == 2, f"Not enough tool_calls, got {len(tool_calls)}: {tool_calls}"
 
-    oxylabs_page_call, _, careers_page_call, _ = agent.memory.get_tool_calls(agent.session_id)
-    assert oxylabs_page_call["function"]["name"] == "universal_scraper"
-    assert json.loads(oxylabs_page_call["function"]["arguments"]) == {
+    oxylabs_page_call, careers_page_call = tool_calls
+    assert oxylabs_page_call.tool_name == "universal_scraper"
+    assert oxylabs_page_call.tool_args == {
         "output_format": "links",
         "url": "https://oxylabs.io",
     }
-    assert careers_page_call["function"]["name"] == "universal_scraper"
-    assert json.loads(careers_page_call["function"]["arguments"]) == {
+    assert careers_page_call.tool_name == "universal_scraper"
+    assert careers_page_call.tool_args == {
         "output_format": "md",
         "url": "https://career.oxylabs.io/",
     }
