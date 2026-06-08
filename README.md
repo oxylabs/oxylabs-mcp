@@ -29,7 +29,7 @@
 
 ## 📖 Overview
 
-The Oxylabs MCP server provides a bridge between AI models and the web. It enables them to scrape any URL, render JavaScript-heavy pages, extract and format content for AI use, bypass anti-scraping measures, and access geo-restricted web data from 195+ countries.
+The Oxylabs MCP server provides a bridge between AI models and the web. It enables them to scrape any URL, render JavaScript-heavy pages, extract and format content for AI use, manage CAPTCHA, and access geo-restricted web data from 195+ countries.
 
 
 ## 🛠️ MCP Tools
@@ -262,10 +262,10 @@ enabling companies worldwide to unlock data-driven insights.
 </details>
 
 <details>
-<summary><strong> Bypass blocks & geo-restrictions</strong></summary>
+<summary><strong> Manage CAPTCHA & geo-restrictions</strong></summary>
 <br>
 
-- Bypass sophisticated bot protection systems with high success rate
+- Navigate sophisticated automated request management systems with high success rate
 - Reliably scrape even the most complex websites
 - Get automatically rotating IPs from a proxy pool covering 195+ countries
 
@@ -300,7 +300,7 @@ MCP (Multi‑Client Proxy) makes that happen by doing the boring parts for you:
 
 | What Oxylabs MCP does                                             | Why it matters to you                    |
 |-------------------------------------------------------------------|------------------------------------------|
-| **Bypasses anti‑bot walls** with the Oxylabs global proxy network | Keeps you unblocked and anonymous        |
+| **Manage automated requests walls** with the Oxylabs global proxy network | Enables website access and anonymity        |
 | **Renders JavaScript** in headless Chrome                         | Single‑page apps, sorted                 |
 | **Cleans HTML → JSON**                                            | Drop straight into vector DBs or prompts |
 | **Optional structured parsers** (Google, Amazon, etc.)            | One‑line access to popular targets       |
