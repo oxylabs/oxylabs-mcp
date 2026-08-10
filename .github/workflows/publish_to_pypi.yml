@@ -11,6 +11,30 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Check that versions are in sync
+      run: |
+        python3 - <<'EOF'
+        import json
+        import re
+        import sys
+
+        pyproject_version = re.search(
+            r'^version = "([^"]+)"', open("pyproject.toml").read(), re.MULTILINE
+        ).group(1)
+        server = json.load(open("server.json"))
+        versions = {
+            "pyproject.toml": pyproject_version,
+            "server.json (top-level)": server["version"],
+            "server.json (package)": server["packages"][0]["version"],
+        }
+        tag = "${{ github.ref_name }}".lstrip("v")
+        versions["git tag"] = tag
+        if len(set(versions.values())) != 1:
+            print(f"Version mismatch: {versions}")
+            sys.exit(1)
+        print(f"All versions in sync: {pyproject_version}")
+        EOF
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
