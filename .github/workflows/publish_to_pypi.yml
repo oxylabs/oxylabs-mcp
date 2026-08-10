@@ -56,3 +56,47 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+
+  publish-to-mcp-registry:
+    name: Publish server.json to the official MCP registry
+    runs-on: ubuntu-latest
+    needs: build-n-publish
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check for registry signing key
+      id: key
+      run: |
+        if [ -n "${{ secrets.MCP_REGISTRY_PRIVATE_KEY }}" ]; then
+          echo "present=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "present=false" >> "$GITHUB_OUTPUT"
+          echo "::warning::MCP_REGISTRY_PRIVATE_KEY secret is not set; skipping MCP registry publish"
+        fi
+
+    - name: Wait for PyPI to serve the new version
+      if: steps.key.outputs.present == 'true'
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        for i in $(seq 1 30); do
+          if curl -sf "https://pypi.org/pypi/oxylabs-mcp/$VERSION/json" > /dev/null; then
+            echo "PyPI serves $VERSION"
+            exit 0
+          fi
+          sleep 10
+        done
+        echo "PyPI never served $VERSION" >&2
+        exit 1
+
+    - name: Install mcp-publisher
+      if: steps.key.outputs.present == 'true'
+      run: |
+        curl -sL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" \
+          | tar xz mcp-publisher
+        sudo mv mcp-publisher /usr/local/bin/
+
+    - name: Publish to MCP registry
+      if: steps.key.outputs.present == 'true'
+      run: |
+        mcp-publisher login dns --domain oxylabs.io --private-key "${{ secrets.MCP_REGISTRY_PRIVATE_KEY }}"
+        mcp-publisher publish
