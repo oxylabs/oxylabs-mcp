@@ -6,12 +6,33 @@
     "url": "https://github.com/oxylabs/oxylabs-mcp",
     "source": "github"
   },
-  "version": "0.9.0",
+  "websiteUrl": "https://oxylabs.io",
+  "version": "0.9.1",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.oxylabs.io/mcp",
+      "headers": [
+        {
+          "description": "HTTP Basic auth with your Oxylabs Web Scraper API username and password: 'Basic <base64(username:password)>'",
+          "isRequired": false,
+          "isSecret": true,
+          "name": "Authorization"
+        },
+        {
+          "description": "Your Oxylabs AI Studio API key",
+          "isRequired": false,
+          "isSecret": true,
+          "name": "X-Oxylabs-AI-Studio-Api-Key"
+        }
+      ]
+    }
+  ],
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "oxylabs-mcp",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "transport": {
         "type": "stdio"
       },
