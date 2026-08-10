@@ -28,8 +28,6 @@ dependencies = [
     "oxylabs-ai-studio>=0.2.20",
     "pydantic>=2.13.3",
     "pydantic-settings>=2.14.0",
-    "smithery>=0.4.4",
-    "authlib>=1.7.0"
 ]
 
 [dependency-groups]
