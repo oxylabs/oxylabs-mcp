@@ -11,7 +11,6 @@
 
 <div align="center">
 
-[![smithery badge](https://smithery.ai/badge/@oxylabs/oxylabs-mcp)](https://smithery.ai/server/@oxylabs/oxylabs-mcp)
 [![pypi package](https://img.shields.io/pypi/v/oxylabs-mcp?color=%2334D058&label=pypi%20package)](https://pypi.org/project/oxylabs-mcp/)
 [![](https://dcbadge.vercel.app/api/server/eWsVUJrnG5?style=flat)](https://discord.gg/Pds3gBmKMH)
 [![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -31,160 +30,127 @@
 
 The Oxylabs MCP server provides a bridge between AI models and the web. It enables them to scrape any URL, render JavaScript-heavy pages, extract and format content for AI use, manage CAPTCHA, and access geo-restricted web data from 195+ countries.
 
+It is built on the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), the open standard for connecting AI assistants to external tools and data.
+
 
 ## 🛠️ MCP Tools
 
 Oxylabs MCP provides two sets of tools that can be used together or independently:
 
-### Oxylabs Web Scraper API Tools
-1. **universal_scraper**: Uses Oxylabs Web Scraper API for general website scraping;
-2. **google_search_scraper**: Uses Oxylabs Web Scraper API to extract results from Google Search;
-3. **amazon_search_scraper**: Uses Oxylabs Web Scraper API to scrape Amazon search result pages;
-4. **amazon_product_scraper**: Uses Oxylabs Web Scraper API to extract data from individual Amazon product pages.
+### Oxylabs Web Scraper API tools
 
-### Oxylabs AI Studio Tools
+1. **universal_scraper**: scrapes any URL, with optional JavaScript rendering, geo-targeting, and Markdown/HTML/links output;
+2. **google_search_scraper**: extracts results from Google Search, with optional parsing into structured JSON;
+3. **amazon_search_scraper**: scrapes Amazon search result pages, with optional parsing into structured JSON;
+4. **amazon_product_scraper**: extracts data from individual Amazon product pages.
 
-5. **ai_scraper**: Scrape content from any URL in JSON or Markdown format with AI-powered data extraction;
-6. **ai_crawler**: Based on a prompt, crawls a website and collects data in Markdown or JSON format across multiple pages;
-7. **ai_browser_agent**: Based on prompt, controls a browser and returns data in Markdown, JSON, HTML, or screenshot formats;
-8. **ai_search**: Search the web for URLs and their contents with AI-powered content extraction.
+### Oxylabs AI Studio tools
+
+5. **ai_scraper**: scrapes content from any URL with AI-powered extraction, in JSON, CSV, Markdown, or TOON format;
+6. **ai_crawler**: crawls a website from a starting URL based on a prompt and collects data across multiple pages;
+7. **ai_browser_agent**: controls a real browser based on a prompt — navigates, clicks, fills forms — and returns the result;
+8. **ai_search**: searches the web and optionally returns Markdown content of each result;
+9. **ai_map**: maps a website's URLs, filtered by keywords or a prompt;
+10. **generate_schema**: generates an OpenAPI-format JSON schema for structured extraction with the AI tools above.
 
 
 ## ✅ Prerequisites
 
 Before you begin, make sure you have **at least one** of the following:
 
-- **Oxylabs Web Scraper API Account**: Obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available);
-- **Oxylabs AI Studio API Key**: Obtain your API key from [Oxylabs AI Studio](https://aistudio.oxylabs.io/settings/api-key). (1000 credits free).
+- **Oxylabs Web Scraper API account**: obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available);
+- **Oxylabs AI Studio API key**: obtain your API key from [Oxylabs AI Studio](https://aistudio.oxylabs.io/settings/api-key) (1000 credits free).
+
+You will also need the [uv](https://docs.astral.sh/uv/) package manager to run the server:
+
+```bash
+# macOS and Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+```powershell
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
 
 ## 📦 Configuration
 
 ### Environment variables
 
 Oxylabs MCP server supports the following environment variables:
-| Name                       | Description                                   | Default |
-|----------------------------|-----------------------------------------------|---------|
-| `OXYLABS_USERNAME`         | Your Oxylabs Web Scraper API username         |         |
-| `OXYLABS_PASSWORD`         | Your Oxylabs Web Scraper API password         |         |
-| `OXYLABS_AI_STUDIO_API_KEY`| Your Oxylabs AI Studio API key                |         |
-| `LOG_LEVEL`                | Log level for the logs returned to the client | `INFO`  |
 
-Based on provided credentials, the server will automatically expose the corresponding tools:
-- If only `OXYLABS_USERNAME` and `OXYLABS_PASSWORD` are provided, the server will expose the Web Scraper API tools;
-- If only `OXYLABS_AI_STUDIO_API_KEY` is provided, the server will expose the AI Studio tools;
-- If both `OXYLABS_USERNAME` and `OXYLABS_PASSWORD` and `OXYLABS_AI_STUDIO_API_KEY` are provided, the server will expose all tools.
+| Name                        | Description                                   | Default |
+|-----------------------------|-----------------------------------------------|---------|
+| `OXYLABS_USERNAME`          | Your Oxylabs Web Scraper API username         |         |
+| `OXYLABS_PASSWORD`          | Your Oxylabs Web Scraper API password         |         |
+| `OXYLABS_AI_STUDIO_API_KEY` | Your Oxylabs AI Studio API key                |         |
+| `LOG_LEVEL`                 | Log level for the logs returned to the client | `INFO`  |
 
-❗❗❗ **Important note: if you don't have Web Scraper API or Oxylabs AI studio credentials, delete the corresponding environment variables placeholders.
+Based on the provided credentials, the server automatically exposes the corresponding tools:
+- If only `OXYLABS_USERNAME` and `OXYLABS_PASSWORD` are provided, the server exposes the Web Scraper API tools;
+- If only `OXYLABS_AI_STUDIO_API_KEY` is provided, the server exposes the AI Studio tools;
+- If all three are provided, the server exposes all tools.
+
+❗ **Important: only set the environment variables you have real credentials for.
 Leaving placeholder values will result in exposed tools that do not work.**
-
-
 
 ### Configure with uvx
 
-- Install the uvx package manager:
-  ```bash
-  # macOS and Linux
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  ```
-  OR:
-  ```bash
-  # Windows
-  powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-  ```
-- Use the following config:
-  ```json
-  {
-    "mcpServers": {
-      "oxylabs": {
-        "command": "uvx",
-        "args": ["oxylabs-mcp"],
-        "env": {
-          "OXYLABS_USERNAME": "OXYLABS_USERNAME",
-          "OXYLABS_PASSWORD": "OXYLABS_PASSWORD",
-          "OXYLABS_AI_STUDIO_API_KEY": "OXYLABS_AI_STUDIO_API_KEY"
-        }
-      }
-    }
-  }
-  ```
+Installs the [package from PyPI](https://pypi.org/project/oxylabs-mcp/) and runs it automatically:
 
-### Configure with uv
-
-- Install the uv package manager:
-  ```bash
-  # macOS and Linux
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  ```
-  OR:
-  ```bash
-  # Windows
-  powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-  ```
-
-- Use the following config:
-  ```json
-  {
-    "mcpServers": {
-      "oxylabs": {
-        "command": "uv",
-        "args": [
-          "--directory",
-          "/<Absolute-path-to-folder>/oxylabs-mcp",
-          "run",
-          "oxylabs-mcp"
-        ],
-        "env": {
-          "OXYLABS_USERNAME": "OXYLABS_USERNAME",
-          "OXYLABS_PASSWORD": "OXYLABS_PASSWORD",
-          "OXYLABS_AI_STUDIO_API_KEY": "OXYLABS_AI_STUDIO_API_KEY"
-        }
-      }
-    }
-  }
-  ```
-
-### Configure with Smithery Oauth2
-
-- Go to https://smithery.ai/server/@oxylabs/oxylabs-mcp;
-- Click _Auto_ to install the Oxylabs MCP configuration for the respective client;
-- OR use the following config:
 ```json
-  {
-    "mcpServers": {
-      "oxylabs": {
-        "url": "https://server.smithery.ai/@oxylabs/oxylabs-mcp/mcp"
+{
+  "mcpServers": {
+    "oxylabs": {
+      "command": "uvx",
+      "args": ["oxylabs-mcp"],
+      "env": {
+        "OXYLABS_USERNAME": "YOUR_USERNAME",
+        "OXYLABS_PASSWORD": "YOUR_PASSWORD",
+        "OXYLABS_AI_STUDIO_API_KEY": "YOUR_API_KEY"
       }
     }
   }
-```
-- Follow the instructions to authenticate Oxylabs MCP with Oauth2 flow
-
-### Configure with Smithery query parameters
-
-In case your client does not support the Oauth2 authentication, you can pass the Oxylabs authentication parameters directly in url
-```json
-  {
-    "mcpServers": {
-      "oxylabs": {
-        "url": "https://server.smithery.ai/@oxylabs/oxylabs-mcp/mcp?oxylabsUsername=OXYLABS_USERNAME&oxylabsPassword=OXYLABS_PASSWORD&oxylabsAiStudioApiKey=OXYLABS_AI_STUDIO_API_KEY"
-      }
-    }
-  }
+}
 ```
 
-### Manual Setup with Claude Desktop
+### Configure with a local checkout
+
+Useful for development — runs the server from a local clone of this repository:
+
+```json
+{
+  "mcpServers": {
+    "oxylabs": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/<absolute-path-to-folder>/oxylabs-mcp",
+        "run",
+        "oxylabs-mcp"
+      ],
+      "env": {
+        "OXYLABS_USERNAME": "YOUR_USERNAME",
+        "OXYLABS_PASSWORD": "YOUR_PASSWORD",
+        "OXYLABS_AI_STUDIO_API_KEY": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+### Setup with Claude Desktop
 
 Navigate to **Claude → Settings → Developer → Edit Config** and add one of the configurations above to the `claude_desktop_config.json` file.
 
-### Manual Setup with Cursor AI
+### Setup with Cursor AI
 
 Navigate to **Cursor → Settings → Cursor Settings → MCP**. Click **Add new global MCP server** and add one of the configurations above.
 
 
-
 ## 📝 Logging
 
-Server provides additional information about the tool calls in `notification/message` events
+The server provides additional information about the tool calls in `notification/message` events:
 
 ```json
 {
@@ -215,28 +181,6 @@ Server provides additional information about the tool calls in `notification/mes
   }
 }
 ```
-
----
-
-## 🛡️ License
-
-Distributed under the MIT License – see [LICENSE](LICENSE) for details.
-
----
-
-## About Oxylabs
-
-Established in 2015, Oxylabs is a market-leading web intelligence collection
-platform, driven by the highest business, ethics, and compliance standards,
-enabling companies worldwide to unlock data-driven insights.
-
-[![image](https://oxylabs.io/images/og-image.png)](https://oxylabs.io/)
-
-<div align="center">
-<sub>
-  Made with ☕ by <a href="https://oxylabs.io">Oxylabs</a>.  Feel free to give us a ⭐ if MCP saved you a weekend.
-</sub>
-</div>
 
 
 ## ✨ Key Features
@@ -290,19 +234,39 @@ enabling companies worldwide to unlock data-driven insights.
 
 </details>
 
----
-
 
 ## Why Oxylabs MCP? &nbsp;🕸️ ➜ 📦 ➜ 🤖
 
-Imagine telling your LLM *"Summarise the latest Hacker News discussion about GPT‑5"* – and it simply answers.  
-MCP (Multi‑Client Proxy) makes that happen by doing the boring parts for you:
+Imagine telling your LLM *"Summarise the latest Hacker News discussion about GPT‑5"* – and it simply answers.
+The Oxylabs MCP server makes that happen by doing the boring parts for you:
 
-| What Oxylabs MCP does                                             | Why it matters to you                    |
-|-------------------------------------------------------------------|------------------------------------------|
-| **Manage automated requests walls** with the Oxylabs global proxy network | Enables website access and anonymity        |
-| **Renders JavaScript** in headless Chrome                         | Single‑page apps, sorted                 |
-| **Cleans HTML → JSON**                                            | Drop straight into vector DBs or prompts |
-| **Optional structured parsers** (Google, Amazon, etc.)            | One‑line access to popular targets       |
+| What Oxylabs MCP does                                                      | Why it matters to you                    |
+|----------------------------------------------------------------------------|------------------------------------------|
+| **Manages automated request walls** with the Oxylabs global proxy network  | Enables website access and anonymity     |
+| **Renders JavaScript** in headless Chrome                                  | Single‑page apps, sorted                 |
+| **Cleans HTML → Markdown**                                                 | Drop straight into vector DBs or prompts |
+| **Optional structured parsers** (Google, Amazon, etc.)                     | One‑line access to popular targets       |
+
+---
+
+## 🛡️ License
+
+Distributed under the MIT License – see [LICENSE](LICENSE) for details.
+
+---
+
+## About Oxylabs
+
+Established in 2015, Oxylabs is a market-leading web intelligence collection
+platform, driven by the highest business, ethics, and compliance standards,
+enabling companies worldwide to unlock data-driven insights.
+
+[![image](https://oxylabs.io/images/og-image.png)](https://oxylabs.io/)
+
+<div align="center">
+<sub>
+  Made with ☕ by <a href="https://oxylabs.io">Oxylabs</a>.  Feel free to give us a ⭐ if MCP saved you a weekend.
+</sub>
+</div>
 
 mcp-name: io.oxylabs/oxylabs-mcp
