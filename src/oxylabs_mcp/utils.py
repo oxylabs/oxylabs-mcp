@@ -1,3 +1,5 @@
+import base64
+import binascii
 import json
 import logging
 import os
@@ -34,13 +36,45 @@ USERNAME_ENV = "OXYLABS_USERNAME"
 PASSWORD_ENV = "OXYLABS_PASSWORD"  # noqa: S105  # nosec
 AI_STUDIO_API_KEY_ENV = "OXYLABS_AI_STUDIO_API_KEY"
 
-USERNAME_HEADER = "X-Oxylabs-Username"
-PASSWORD_HEADER = "X-Oxylabs-Password"  # noqa: S105  # nosec
-AI_STUDIO_API_KEY_HEADER = "X-Oxylabs-AI-Studio-Api-Key"
+AUTHORIZATION_HEADER = "authorization"
 
-USERNAME_QUERY_PARAM = "oxylabsUsername"
-PASSWORD_QUERY_PARAM = "oxylabsPassword"  # noqa: S105  # nosec
-AI_STUDIO_API_KEY_QUERY_PARAM = "oxylabsAiStudioApiKey"
+# Header pairs accepted for Web Scraper API credentials, in priority order.
+# The X-Oxylabs-* pair is the documented one; the underscore pair is kept for
+# compatibility with clients configured against older deployments.
+CREDENTIAL_HEADER_PAIRS = (
+    ("x-oxylabs-username", "x-oxylabs-password"),
+    ("oxylabs_username", "oxylabs_password"),
+)
+
+# Headers accepted for the AI Studio API key, in priority order.
+AI_STUDIO_API_KEY_HEADERS = (
+    "x-oxylabs-ai-studio-api-key",
+    "oxylabs_ai_studio_api_key",
+)
+
+SCRAPER_CREDENTIALS_MISSING_HTTP = (
+    "Oxylabs Web Scraper API credentials are not provided. "
+    "Pass an 'Authorization: Basic <base64(username:password)>' header, "
+    "or 'X-Oxylabs-Username' and 'X-Oxylabs-Password' headers. "
+    "Get credentials at https://dashboard.oxylabs.io/"
+)
+SCRAPER_CREDENTIALS_MISSING_STDIO = (
+    "Oxylabs Web Scraper API credentials are not provided. "
+    "Set the OXYLABS_USERNAME and OXYLABS_PASSWORD environment variables "
+    "in the MCP server configuration. "
+    "Get credentials at https://dashboard.oxylabs.io/"
+)
+AI_STUDIO_API_KEY_MISSING_HTTP = (
+    "Oxylabs AI Studio API key is not provided. "
+    "Pass an 'X-Oxylabs-AI-Studio-Api-Key' header. "
+    "Get your API key at https://aistudio.oxylabs.io/settings/api-key"
+)
+AI_STUDIO_API_KEY_MISSING_STDIO = (
+    "Oxylabs AI Studio API key is not provided. "
+    "Set the OXYLABS_AI_STUDIO_API_KEY environment variable "
+    "in the MCP server configuration. "
+    "Get your API key at https://aistudio.oxylabs.io/settings/api-key"
+)
 
 
 def clean_html(html: str) -> str:
@@ -167,35 +201,64 @@ class _OxylabsClientWrapper:
         return response_json
 
 
+def _parse_basic_auth(header_value: str) -> tuple[str | None, str | None]:
+    """Parse an 'Authorization: Basic <credentials>' header value."""
+    scheme, _, encoded = header_value.strip().partition(" ")
+    if scheme.lower() != "basic" or not encoded:
+        return None, None
+
+    try:
+        decoded = base64.b64decode(encoded.strip(), validate=True).decode()
+    except (binascii.Error, UnicodeDecodeError):
+        return None, None
+
+    username, separator, password = decoded.partition(":")
+    if not separator:
+        return None, None
+
+    return username or None, password or None
+
+
 def get_oxylabs_auth() -> tuple[str | None, str | None]:
-    """Extract the Oxylabs credentials."""
+    """Extract the Oxylabs Web Scraper API credentials.
+
+    With the HTTP transport, credentials are read from the request headers:
+    the standard 'Authorization: Basic' header first, then the documented
+    'X-Oxylabs-Username'/'X-Oxylabs-Password' pair, then the legacy
+    underscore pair. With the stdio transport, credentials are read from
+    the environment.
+    """
     if settings.MCP_TRANSPORT == "streamable-http":
         request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
-        username = request_headers.get(USERNAME_HEADER.lower())
-        password = request_headers.get(PASSWORD_HEADER.lower())
-        if not username or not password:
-            query_params = get_context().request_context.request.query_params  # type: ignore[union-attr]
-            username = query_params.get(USERNAME_QUERY_PARAM)
-            password = query_params.get(PASSWORD_QUERY_PARAM)
-    else:
-        username = os.environ.get(USERNAME_ENV)
-        password = os.environ.get(PASSWORD_ENV)
 
-    return username, password
+        if authorization := request_headers.get(AUTHORIZATION_HEADER):
+            username, password = _parse_basic_auth(authorization)
+            if username and password:
+                return username, password
+
+        for username_header, password_header in CREDENTIAL_HEADER_PAIRS:
+            username = request_headers.get(username_header)
+            password = request_headers.get(password_header)
+            if username and password:
+                return username, password
+
+        return None, None
+
+    return os.environ.get(USERNAME_ENV), os.environ.get(PASSWORD_ENV)
 
 
 def get_oxylabs_ai_studio_api_key() -> str | None:
     """Extract the Oxylabs AI Studio API key."""
     if settings.MCP_TRANSPORT == "streamable-http":
-        request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
-        ai_studio_api_key = request_headers.get(AI_STUDIO_API_KEY_HEADER.lower())
-        if not ai_studio_api_key:
-            query_params = get_context().request_context.request.query_params  # type: ignore[union-attr]
-            ai_studio_api_key = query_params.get(AI_STUDIO_API_KEY_QUERY_PARAM)
-    else:
-        ai_studio_api_key = os.getenv(AI_STUDIO_API_KEY_ENV)
+        request_headers: dict[str, str] = dict(
+            get_context().request_context.request.headers  # type: ignore[union-attr]
+        )
+        for header in AI_STUDIO_API_KEY_HEADERS:
+            if ai_studio_api_key := request_headers.get(header):
+                return ai_studio_api_key
+        return None
 
-    return ai_studio_api_key
+    return os.getenv(AI_STUDIO_API_KEY_ENV)
 
 
 @asynccontextmanager
@@ -206,7 +269,9 @@ async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
     username, password = get_oxylabs_auth()
 
     if not username or not password:
-        raise ValueError("Oxylabs username and password must be set.")
+        if settings.MCP_TRANSPORT == "streamable-http":
+            raise ValueError(SCRAPER_CREDENTIALS_MISSING_HTTP)
+        raise ValueError(SCRAPER_CREDENTIALS_MISSING_STDIO)
 
     auth = BasicAuth(username=username, password=password)
 
@@ -229,15 +294,21 @@ async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
 
 
 def get_and_verify_oxylabs_ai_studio_api_key() -> str:
-    """Extract and varify the Oxylabs AI Studio API key."""
+    """Extract and verify the Oxylabs AI Studio API key."""
     ai_studio_api_key = get_oxylabs_ai_studio_api_key()
 
     if ai_studio_api_key is None:
-        msg = "AI Studio API key is not set"
+        if settings.MCP_TRANSPORT == "streamable-http":
+            msg = AI_STUDIO_API_KEY_MISSING_HTTP
+        else:
+            msg = AI_STUDIO_API_KEY_MISSING_STDIO
         logger.warning(msg)
         raise ValueError(msg)
     if not is_api_key_valid(ai_studio_api_key):
-        raise ValueError("AI Studio API key is not valid")
+        raise ValueError(
+            "The provided Oxylabs AI Studio API key is not valid. "
+            "Check your API key at https://aistudio.oxylabs.io/settings/api-key"
+        )
 
     return ai_studio_api_key
 
