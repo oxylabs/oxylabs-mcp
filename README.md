@@ -139,6 +139,41 @@ Useful for development — runs the server from a local clone of this repository
 }
 ```
 
+### Running as a remote HTTP server (self-hosting)
+
+The server also supports the MCP streamable-HTTP transport. Start it with:
+
+```bash
+MCP_TRANSPORT=streamable-http MCP_HOST=0.0.0.0 MCP_PORT=8000 uvx oxylabs-mcp
+```
+
+With the HTTP transport, credentials are passed per request instead of environment variables:
+
+| Credential                | How to pass it                                                                                         |
+|---------------------------|--------------------------------------------------------------------------------------------------------|
+| Web Scraper API           | `Authorization: Basic <base64(username:password)>` (standard HTTP Basic auth)                            |
+| Web Scraper API (alternative) | `X-Oxylabs-Username` and `X-Oxylabs-Password` headers                                                |
+| AI Studio                 | `X-Oxylabs-AI-Studio-Api-Key` header                                                                     |
+
+Example client configuration:
+
+```json
+{
+  "mcpServers": {
+    "oxylabs": {
+      "url": "https://your-host:8000/mcp",
+      "headers": {
+        "Authorization": "Basic <base64 of username:password>",
+        "X-Oxylabs-AI-Studio-Api-Key": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+All tools are always listed regardless of provided credentials; calling a tool without the
+credentials it needs returns an error message explaining exactly what to configure.
+
 ### Setup with Claude Desktop
 
 Navigate to **Claude → Settings → Developer → Edit Config** and add one of the configurations above to the `claude_desktop_config.json` file.
