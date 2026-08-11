@@ -97,6 +97,7 @@ lint.ignore = [
   "ANN002", # https://docs.astral.sh/ruff/rules/missing-type-args/
   "ANN003", # https://docs.astral.sh/ruff/rules/missing-type-kwargs/
   "PLR0913", # Allow functions with many arguments
+  "PLR0917", # Allow functions with many positional arguments (MCP tools)
   "PLR0912",  # Allow many branches for functions
 ]
 

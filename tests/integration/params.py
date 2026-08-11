@@ -1,8 +1,8 @@
 from contextlib import nullcontext as does_not_raise
 
 import pytest
-from fastmcp.exceptions import ToolError
-from pydantic import BaseModel, ValidationError
+from fastmcp.exceptions import ToolError, ValidationError
+from pydantic import BaseModel
 
 
 class SimpleSchema(BaseModel):
