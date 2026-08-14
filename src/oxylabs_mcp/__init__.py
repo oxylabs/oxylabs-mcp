@@ -1,4 +1,5 @@
 import logging
+from importlib.metadata import version
 from typing import Any
 
 from fastmcp import FastMCP
@@ -8,7 +9,7 @@ from oxylabs_mcp.tools.ai_studio import mcp as ai_studio_mcp
 from oxylabs_mcp.tools.scraper import mcp as scraper_mcp
 
 
-mcp = FastMCP("oxylabs_mcp")
+mcp = FastMCP("oxylabs_mcp", version=version("oxylabs-mcp"))
 
 mcp.mount(ai_studio_mcp)
 mcp.mount(scraper_mcp)
