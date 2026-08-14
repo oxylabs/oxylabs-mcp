@@ -136,6 +136,15 @@ async def test_request_client_error_handling(
     assert result.content[0].text == expected_text
 
 
+async def test_server_reports_package_version(mcp: FastMCP):
+    from importlib.metadata import version
+
+    async with Client(mcp) as client:
+        server_info = client.initialize_result.serverInfo
+
+    assert server_info.version == version("oxylabs-mcp")
+
+
 @pytest.mark.parametrize("transport", ["stdio", "streamable-http"])
 async def test_list_tools(mcp: FastMCP, transport: str):
     settings.MCP_TRANSPORT = transport
