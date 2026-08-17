@@ -61,7 +61,7 @@ Before you begin, make sure you have **at least one** of the following:
 - **Oxylabs Web Scraper API account**: obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available);
 - **Oxylabs AI Studio API key**: obtain your API key from [Oxylabs AI Studio](https://aistudio.oxylabs.io/settings/api-key) (1000 credits free).
 
-You will also need the [uv](https://docs.astral.sh/uv/) package manager to run the server:
+To run the server locally (Option 2 below) you will also need the [uv](https://docs.astral.sh/uv/) package manager:
 
 ```bash
 # macOS and Linux
@@ -75,7 +75,58 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ## 📦 Configuration
 
-### Environment variables
+There are two ways to use the server: connect to the **hosted instance** (no installation)
+or **run it locally** with credentials in environment variables.
+
+### Option 1: Hosted server (no installation)
+
+Oxylabs runs a hosted MCP server at:
+
+```
+https://mcp.oxylabs.io/mcp
+```
+
+Credentials are passed with request headers:
+
+| Credential                     | Header                                                          |
+|--------------------------------|------------------------------------------------------------------|
+| Web Scraper API                | `Authorization: Basic <base64(username:password)>`               |
+| Web Scraper API (alternative)  | `X-Oxylabs-Username` and `X-Oxylabs-Password`                    |
+| AI Studio                      | `X-Oxylabs-AI-Studio-Api-Key`                                    |
+
+Setup with **Claude Code**:
+
+```bash
+claude mcp add --transport http oxylabs https://mcp.oxylabs.io/mcp \
+  --header "Authorization: Basic $(echo -n 'YOUR_USERNAME:YOUR_PASSWORD' | base64)" \
+  --header "X-Oxylabs-AI-Studio-Api-Key: YOUR_API_KEY"
+```
+
+Setup with **Cursor** or any client that supports remote MCP servers with custom headers:
+
+```json
+{
+  "mcpServers": {
+    "oxylabs": {
+      "url": "https://mcp.oxylabs.io/mcp",
+      "headers": {
+        "Authorization": "Basic <base64 of username:password>",
+        "X-Oxylabs-AI-Studio-Api-Key": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+The server is also listed on [Smithery](https://smithery.ai/servers/oxylabsmcp/oxylabs-mcp).
+
+> **Note:** clients that only support OAuth for remote servers (for example, adding a custom
+> connector in the claude.ai web UI) cannot pass headers yet — OAuth sign-in is on our roadmap.
+> Use the local setup below with those clients in the meantime.
+
+### Option 2: Run locally
+
+#### Environment variables
 
 Oxylabs MCP server supports the following environment variables:
 
@@ -94,7 +145,7 @@ Based on the provided credentials, the server automatically exposes the correspo
 ❗ **Important: only set the environment variables you have real credentials for.
 Leaving placeholder values will result in exposed tools that do not work.**
 
-### Configure with uvx
+#### Configure with uvx
 
 Installs the [package from PyPI](https://pypi.org/project/oxylabs-mcp/) and runs it automatically:
 
@@ -114,7 +165,7 @@ Installs the [package from PyPI](https://pypi.org/project/oxylabs-mcp/) and runs
 }
 ```
 
-### Configure with a local checkout
+#### Configure with a local checkout
 
 Useful for development — runs the server from a local clone of this repository:
 
@@ -139,7 +190,7 @@ Useful for development — runs the server from a local clone of this repository
 }
 ```
 
-### Running as a remote HTTP server (self-hosting)
+#### Running as a remote HTTP server (self-hosting)
 
 The server also supports the MCP streamable-HTTP transport. Start it with:
 
@@ -174,11 +225,11 @@ Example client configuration:
 All tools are always listed regardless of provided credentials; calling a tool without the
 credentials it needs returns an error message explaining exactly what to configure.
 
-### Setup with Claude Desktop
+#### Setup with Claude Desktop
 
 Navigate to **Claude → Settings → Developer → Edit Config** and add one of the configurations above to the `claude_desktop_config.json` file.
 
-### Setup with Cursor AI
+#### Setup with Cursor AI
 
 Navigate to **Cursor → Settings → Cursor Settings → MCP**. Click **Add new global MCP server** and add one of the configurations above.
 
