@@ -356,3 +356,6 @@ enabling companies worldwide to unlock data-driven insights.
 </div>
 
 mcp-name: io.oxylabs/oxylabs-mcp
+
+## Solutions made based on this MCP:
+[Michelin Detour](https://michelindetour.com/)
