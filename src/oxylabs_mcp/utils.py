@@ -356,14 +356,12 @@ def extract_links_with_text(html: str, base_url: str | None = None) -> list[str]
     return links
 
 
-def get_content(
-    response_json: dict[str, typing.Any],
+def _render_content(
+    content: str | dict[str, typing.Any],
     *,
     output_format: str | None,
-    parse: bool = False,
+    parse: bool,
 ) -> str:
-    """Extract content from response and convert to a proper format."""
-    content = response_json["results"][0]["content"]
     if parse and isinstance(content, dict):
         return json.dumps(content)
     if output_format == "html":
@@ -374,3 +372,32 @@ def get_content(
 
     stripped_html = clean_html(str(content))
     return markdownify(stripped_html)
+
+
+def get_content(
+    response_json: dict[str, typing.Any],
+    *,
+    output_format: str | None,
+    parse: bool = False,
+) -> str:
+    """Extract content from response and convert to a proper format.
+
+    A paginated request (`pages` > 1) returns one entry in `results` per page;
+    every page is included in the output. Single-page responses keep the same
+    output shape as before.
+    """
+    results = response_json["results"]
+    contents = [result["content"] for result in results]
+
+    if len(contents) == 1:
+        return _render_content(contents[0], output_format=output_format, parse=parse)
+
+    if parse and all(isinstance(content, dict) for content in contents):
+        return json.dumps(contents)
+
+    rendered_pages = (
+        _render_content(content, output_format=output_format, parse=parse) for content in contents
+    )
+    return "\n\n".join(
+        f"<!-- Page {number} -->\n{page}" for number, page in enumerate(rendered_pages, start=1)
+    )
