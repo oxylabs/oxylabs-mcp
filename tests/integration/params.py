@@ -23,6 +23,18 @@ AI_STUDIO_JSON_RESPONSE = {
     "results": [{"content": {"data": "value"}}],
     "job": JOB_RESPONSE,
 }
+# A paginated request (pages > 1) returns one entry in `results` per page.
+MULTI_PAGE_STR_RESPONSE = {
+    "results": [{"content": "Mocked content page 1"}, {"content": "Mocked content page 2"}],
+    "job": JOB_RESPONSE,
+}
+MULTI_PAGE_JSON_RESPONSE = {
+    "results": [
+        {"content": {"page": 1, "data": "value1"}},
+        {"content": {"page": 2, "data": "value2"}},
+    ],
+    "job": JOB_RESPONSE,
+}
 
 QUERY_ONLY = pytest.param(
     {"query": "Generic query"},

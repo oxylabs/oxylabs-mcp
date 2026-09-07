@@ -231,6 +231,63 @@ def test_get_oxylabs_ai_studio_api_key_with_http_transport(request_context, head
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("tool", ["google_search_scraper", "amazon_search_scraper"])
+async def test_paginated_parsed_response_returns_all_pages(
+    mcp: FastMCP,
+    request_data: Request,
+    oxylabs_client: AsyncMock,
+    tool: str,
+):
+    mock_response = Response(
+        200, content=json.dumps(params.MULTI_PAGE_JSON_RESPONSE), request=request_data
+    )
+    oxylabs_client.post.return_value = mock_response
+
+    result = await mcp.call_tool(tool, arguments={"query": "Generic query", "pages": 2})
+
+    payload = json.loads(result.content[0].text)
+    assert payload == [{"page": 1, "data": "value1"}, {"page": 2, "data": "value2"}]
+
+
+@pytest.mark.asyncio
+async def test_paginated_unparsed_response_includes_every_page(
+    mcp: FastMCP,
+    request_data: Request,
+    oxylabs_client: AsyncMock,
+):
+    mock_response = Response(
+        200, content=json.dumps(params.MULTI_PAGE_STR_RESPONSE), request=request_data
+    )
+    oxylabs_client.post.return_value = mock_response
+
+    result = await mcp.call_tool(
+        "google_search_scraper",
+        arguments={"query": "Generic query", "pages": 2, "parse": False},
+    )
+
+    text = result.content[0].text
+    assert "Mocked content page 1" in text
+    assert "Mocked content page 2" in text
+    assert "<!-- Page 1 -->" in text
+    assert "<!-- Page 2 -->" in text
+
+
+@pytest.mark.asyncio
+async def test_single_page_response_shape_is_unchanged(
+    mcp: FastMCP,
+    request_data: Request,
+    oxylabs_client: AsyncMock,
+):
+    mock_response = Response(200, content=json.dumps(params.JSON_RESPONSE), request=request_data)
+    oxylabs_client.post.return_value = mock_response
+
+    result = await mcp.call_tool("google_search_scraper", arguments={"query": "Generic query"})
+
+    # A single page stays a bare object, not a one-element array.
+    assert json.loads(result.content[0].text) == {"data": "value"}
+
+
+@pytest.mark.asyncio
 async def test_scraper_tool_without_credentials_returns_actionable_error(
     mcp: FastMCP,
     request_context,
