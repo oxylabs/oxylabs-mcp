@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastmcp import Client, FastMCP
-from httpx import HTTPStatusError, Request, RequestError, Response
+from httpx import BasicAuth, HTTPStatusError, Request, RequestError, Response
 
 from oxylabs_mcp import utils
 from oxylabs_mcp.config import settings
@@ -108,6 +108,15 @@ async def test_default_headers_are_set(
             id="https_status_error",
         ),
         pytest.param(
+            HTTPStatusError(
+                "HTTP status error",
+                request=MagicMock(),
+                response=MagicMock(status_code=401, text=""),
+            ),
+            utils.SCRAPER_CREDENTIALS_REJECTED,
+            id="unauthorized_error",
+        ),
+        pytest.param(
             RequestError("Request error"),
             "Request error during POST request: Request error",
             id="request_error",
@@ -203,6 +212,116 @@ def test_get_oxylabs_auth_with_http_transport(request_context, headers, expected
         assert utils.get_oxylabs_auth() == expected
     finally:
         settings.MCP_TRANSPORT = "stdio"
+
+
+@pytest.mark.parametrize(
+    ("headers", "expected"),
+    [
+        pytest.param({"authorization": "Bearer my-token"}, "my-token", id="authorization_bearer"),
+        pytest.param(
+            {"authorization": "bearer my-token"}, "my-token", id="bearer_case_insensitive"
+        ),
+        pytest.param(
+            {"x-oxylabs-api-token": "header-token"}, "header-token", id="api_token_header"
+        ),
+        pytest.param(
+            {"authorization": "Bearer my-token", "x-oxylabs-api-token": "header-token"},
+            "my-token",
+            id="authorization_bearer_takes_priority",
+        ),
+        pytest.param(
+            {
+                "authorization": _basic_auth("basic_user", "basic_pass"),
+                "x-oxylabs-api-token": "header-token",
+            },
+            "header-token",
+            id="api_token_header_alongside_basic",
+        ),
+        pytest.param(
+            {"authorization": _basic_auth("basic_user", "basic_pass")},
+            None,
+            id="basic_authorization_is_not_a_token",
+        ),
+        pytest.param({"authorization": "Bearer "}, None, id="empty_bearer_is_ignored"),
+        pytest.param({}, None, id="no_token"),
+    ],
+)
+def test_get_oxylabs_api_token_with_http_transport(request_context, headers, expected):
+    settings.MCP_TRANSPORT = "streamable-http"
+    try:
+        request_context.request_context.request.headers = headers
+        assert utils.get_oxylabs_api_token() == expected
+    finally:
+        settings.MCP_TRANSPORT = "stdio"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "headers",
+    [
+        pytest.param({"authorization": "Bearer my-token"}, id="authorization_bearer"),
+        pytest.param(
+            {
+                "x-oxylabs-api-token": "my-token",
+                "x-oxylabs-username": "dash_user",
+                "x-oxylabs-password": "dash_pass",
+            },
+            id="token_takes_priority_over_username_and_password",
+        ),
+    ],
+)
+async def test_scraper_tool_sends_api_token_as_bearer(
+    mcp: FastMCP,
+    request_context,
+    request_data: Request,
+    oxylabs_client: AsyncMock,
+    headers: dict,
+):
+    oxylabs_client.post.return_value = Response(
+        200, content=json.dumps(params.STR_RESPONSE), request=request_data
+    )
+    settings.MCP_TRANSPORT = "streamable-http"
+    try:
+        request_context.request_context.request.headers = headers
+
+        await mcp.call_tool("universal_scraper", arguments={"url": "test_url"})
+
+        call_kwargs = oxylabs_client.context_manager_call_kwargs
+        assert call_kwargs["headers"]["Authorization"] == "Bearer my-token"
+        assert call_kwargs["auth"] is None
+    finally:
+        settings.MCP_TRANSPORT = "stdio"
+
+
+@pytest.mark.asyncio
+async def test_empty_unauthorized_response_returns_credentials_error(
+    mcp: FastMCP,
+    request_data: Request,
+    oxylabs_client: AsyncMock,
+):
+    # The API answers bad credentials with an empty-body 401, which is not JSON.
+    oxylabs_client.post.return_value = Response(401, content=b"", request=request_data)
+
+    result = await mcp.call_tool("universal_scraper", arguments={"url": "test_url"})
+
+    assert "rejected the credentials" in result.content[0].text
+
+
+@pytest.mark.asyncio
+async def test_scraper_tool_sends_username_and_password_as_basic_auth(
+    mcp: FastMCP,
+    request_data: Request,
+    oxylabs_client: AsyncMock,
+):
+    oxylabs_client.post.return_value = Response(
+        200, content=json.dumps(params.STR_RESPONSE), request=request_data
+    )
+
+    await mcp.call_tool("universal_scraper", arguments={"url": "test_url"})
+
+    call_kwargs = oxylabs_client.context_manager_call_kwargs
+    assert "Authorization" not in call_kwargs["headers"]
+    assert isinstance(call_kwargs["auth"], BasicAuth)
 
 
 @pytest.mark.parametrize(

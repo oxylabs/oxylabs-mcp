@@ -58,7 +58,7 @@ Oxylabs MCP provides two sets of tools that can be used together or independentl
 
 Before you begin, make sure you have **at least one** of the following:
 
-- **Oxylabs Web Scraper API account**: obtain your username and password from [Oxylabs](https://dashboard.oxylabs.io/) (1-week free trial available);
+- **Oxylabs Web Scraper API account**: obtain an API token (or your username and password) from the [Oxylabs dashboard](https://dashboard.oxylabs.io/) (1-week free trial available);
 - **Oxylabs AI Studio API key**: obtain your API key from [Oxylabs AI Studio](https://aistudio.oxylabs.io/settings/api-key) (1000 credits free).
 
 To run the server locally (Option 2 below) you will also need the [uv](https://docs.astral.sh/uv/) package manager:
@@ -88,17 +88,21 @@ https://mcp.oxylabs.io/mcp
 
 Credentials are passed with request headers:
 
-| Credential                     | Header                                                          |
-|--------------------------------|------------------------------------------------------------------|
-| Web Scraper API                | `Authorization: Basic <base64(username:password)>`               |
-| Web Scraper API (alternative)  | `X-Oxylabs-Username` and `X-Oxylabs-Password`                    |
-| AI Studio                      | `X-Oxylabs-AI-Studio-Api-Key`                                    |
+| Credential                                    | Header                                              |
+|-----------------------------------------------|-----------------------------------------------------|
+| Web Scraper API token (recommended)           | `Authorization: Bearer <token>`                     |
+| Web Scraper API token (alternative)           | `X-Oxylabs-Api-Token`                               |
+| Web Scraper API username and password         | `Authorization: Basic <base64(username:password)>`  |
+| Web Scraper API username and password (alt.)  | `X-Oxylabs-Username` and `X-Oxylabs-Password`       |
+| AI Studio                                     | `X-Oxylabs-AI-Studio-Api-Key`                       |
+
+If both an API token and a username and password are passed, the token is used.
 
 Setup with **Claude Code**:
 
 ```bash
 claude mcp add --transport http oxylabs https://mcp.oxylabs.io/mcp \
-  --header "Authorization: Basic $(echo -n 'YOUR_USERNAME:YOUR_PASSWORD' | base64)" \
+  --header "Authorization: Bearer YOUR_API_TOKEN" \
   --header "X-Oxylabs-AI-Studio-Api-Key: YOUR_API_KEY"
 ```
 
@@ -110,7 +114,7 @@ Setup with **Cursor** or any client that supports remote MCP servers with custom
     "oxylabs": {
       "url": "https://mcp.oxylabs.io/mcp",
       "headers": {
-        "Authorization": "Basic <base64 of username:password>",
+        "Authorization": "Bearer YOUR_API_TOKEN",
         "X-Oxylabs-AI-Studio-Api-Key": "YOUR_API_KEY"
       }
     }
@@ -132,18 +136,21 @@ Oxylabs MCP server supports the following environment variables:
 
 | Name                        | Description                                   | Default |
 |-----------------------------|-----------------------------------------------|---------|
+| `OXYLABS_API_TOKEN`         | Your Oxylabs Web Scraper API token            |         |
 | `OXYLABS_USERNAME`          | Your Oxylabs Web Scraper API username         |         |
 | `OXYLABS_PASSWORD`          | Your Oxylabs Web Scraper API password         |         |
 | `OXYLABS_AI_STUDIO_API_KEY` | Your Oxylabs AI Studio API key                |         |
 | `LOG_LEVEL`                 | Log level for the logs returned to the client | `INFO`  |
 
-Based on the provided credentials, the server automatically exposes the corresponding tools:
-- If only `OXYLABS_USERNAME` and `OXYLABS_PASSWORD` are provided, the server exposes the Web Scraper API tools;
-- If only `OXYLABS_AI_STUDIO_API_KEY` is provided, the server exposes the AI Studio tools;
-- If all three are provided, the server exposes all tools.
+For the Web Scraper API tools, set either `OXYLABS_API_TOKEN` or both `OXYLABS_USERNAME` and
+`OXYLABS_PASSWORD`. If both are set, the token is used. For the AI Studio tools, set
+`OXYLABS_AI_STUDIO_API_KEY`.
+
+All tools are always listed; calling a tool without the credentials it needs returns an error
+message explaining what to configure.
 
 ❗ **Important: only set the environment variables you have real credentials for.
-Leaving placeholder values will result in exposed tools that do not work.**
+Placeholder values make tool calls fail.**
 
 #### Configure with uvx
 
@@ -156,8 +163,7 @@ Installs the [package from PyPI](https://pypi.org/project/oxylabs-mcp/) and runs
       "command": "uvx",
       "args": ["oxylabs-mcp"],
       "env": {
-        "OXYLABS_USERNAME": "YOUR_USERNAME",
-        "OXYLABS_PASSWORD": "YOUR_PASSWORD",
+        "OXYLABS_API_TOKEN": "YOUR_API_TOKEN",
         "OXYLABS_AI_STUDIO_API_KEY": "YOUR_API_KEY"
       }
     }
@@ -181,8 +187,7 @@ Useful for development — runs the server from a local clone of this repository
         "oxylabs-mcp"
       ],
       "env": {
-        "OXYLABS_USERNAME": "YOUR_USERNAME",
-        "OXYLABS_PASSWORD": "YOUR_PASSWORD",
+        "OXYLABS_API_TOKEN": "YOUR_API_TOKEN",
         "OXYLABS_AI_STUDIO_API_KEY": "YOUR_API_KEY"
       }
     }
@@ -200,11 +205,13 @@ MCP_TRANSPORT=streamable-http MCP_HOST=0.0.0.0 MCP_PORT=8000 uvx oxylabs-mcp
 
 With the HTTP transport, credentials are passed per request instead of environment variables:
 
-| Credential                | How to pass it                                                                                         |
-|---------------------------|--------------------------------------------------------------------------------------------------------|
-| Web Scraper API           | `Authorization: Basic <base64(username:password)>` (standard HTTP Basic auth)                            |
-| Web Scraper API (alternative) | `X-Oxylabs-Username` and `X-Oxylabs-Password` headers                                                |
-| AI Studio                 | `X-Oxylabs-AI-Studio-Api-Key` header                                                                     |
+| Credential                                    | How to pass it                                                        |
+|-----------------------------------------------|-----------------------------------------------------------------------|
+| Web Scraper API token (recommended)           | `Authorization: Bearer <token>`                                       |
+| Web Scraper API token (alternative)           | `X-Oxylabs-Api-Token` header                                          |
+| Web Scraper API username and password         | `Authorization: Basic <base64(username:password)>` (HTTP Basic auth)  |
+| Web Scraper API username and password (alt.)  | `X-Oxylabs-Username` and `X-Oxylabs-Password` headers                 |
+| AI Studio                                     | `X-Oxylabs-AI-Studio-Api-Key` header                                  |
 
 Example client configuration:
 
@@ -214,7 +221,7 @@ Example client configuration:
     "oxylabs": {
       "url": "https://your-host:8000/mcp",
       "headers": {
-        "Authorization": "Basic <base64 of username:password>",
+        "Authorization": "Bearer YOUR_API_TOKEN",
         "X-Oxylabs-AI-Studio-Api-Key": "YOUR_API_KEY"
       }
     }
