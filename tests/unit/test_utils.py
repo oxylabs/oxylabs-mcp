@@ -3,7 +3,12 @@ from unittest.mock import patch
 import pytest
 
 from oxylabs_mcp.config import settings
-from oxylabs_mcp.utils import extract_links_with_text, get_oxylabs_auth, strip_html
+from oxylabs_mcp.utils import (
+    extract_links_with_text,
+    get_oxylabs_api_token,
+    get_oxylabs_auth,
+    strip_html,
+)
 
 
 TEST_FIXTURES = "tests/unit/fixtures/"
@@ -33,6 +38,20 @@ def test_get_oxylabs_auth(env_vars):
         username, password = get_oxylabs_auth()
         assert username == env_vars.get("OXYLABS_USERNAME")
         assert password == env_vars.get("OXYLABS_PASSWORD")
+
+
+@pytest.mark.parametrize(
+    ("env_vars", "expected"),
+    [
+        pytest.param({"OXYLABS_API_TOKEN": "test_token"}, "test_token", id="token-set"),
+        pytest.param({"OXYLABS_API_TOKEN": ""}, None, id="token-empty"),
+        pytest.param({}, None, id="token-unset"),
+    ],
+)
+def test_get_oxylabs_api_token(env_vars, expected):
+    with patch("os.environ", new=env_vars):
+        settings.MCP_TRANSPORT = "stdio"
+        assert get_oxylabs_api_token() == expected
 
 
 @pytest.mark.parametrize(
