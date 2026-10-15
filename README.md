@@ -358,7 +358,7 @@ enabling companies worldwide to unlock data-driven insights.
 
 <div align="center">
 <sub>
-  Made with ☕ by <a href="https://oxylabs.io">Oxylabs</a>.  Feel free to give us a ⭐ if MCP saved you a weekend.
+  Made with ☕ by <a href="https://oxylabs.io">Oxylabs</a>.  Feel free to give us a ⭐ and a follow if our MCP saved you a weekend.
 </sub>
 </div>
 
