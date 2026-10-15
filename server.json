@@ -7,14 +7,14 @@
     "source": "github"
   },
   "websiteUrl": "https://oxylabs.io",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "remotes": [
     {
       "type": "streamable-http",
       "url": "https://mcp.oxylabs.io/mcp",
       "headers": [
         {
-          "description": "HTTP Basic auth with your Oxylabs Web Scraper API username and password: 'Basic <base64(username:password)>'",
+          "description": "Your Oxylabs Web Scraper API token as 'Bearer <token>', or your username and password as 'Basic <base64(username:password)>'",
           "isRequired": false,
           "isSecret": true,
           "name": "Authorization"
@@ -32,11 +32,18 @@
     {
       "registryType": "pypi",
       "identifier": "oxylabs-mcp",
-      "version": "0.9.3",
+      "version": "0.10.0",
       "transport": {
         "type": "stdio"
       },
       "environmentVariables": [
+        {
+          "description": "Your Oxylabs Web Scraper API token (alternative to username and password)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true,
+          "name": "OXYLABS_API_TOKEN"
+        },
         {
           "description": "Your Oxylabs username",
           "isRequired": false,

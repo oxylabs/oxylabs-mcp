@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 USERNAME_ENV = "OXYLABS_USERNAME"
 PASSWORD_ENV = "OXYLABS_PASSWORD"  # noqa: S105  # nosec
+API_TOKEN_ENV = "OXYLABS_API_TOKEN"  # noqa: S105  # nosec
 AI_STUDIO_API_KEY_ENV = "OXYLABS_AI_STUDIO_API_KEY"
 
 AUTHORIZATION_HEADER = "authorization"
@@ -46,6 +47,11 @@ CREDENTIAL_HEADER_PAIRS = (
     ("oxylabs_username", "oxylabs_password"),
 )
 
+# Header accepted for the Web Scraper API token, as an alternative to
+# 'Authorization: Bearer <token>' for clients that reserve the Authorization
+# header for their own use.
+API_TOKEN_HEADER = "x-oxylabs-api-token"  # noqa: S105  # nosec
+
 # Headers accepted for the AI Studio API key, in priority order.
 AI_STUDIO_API_KEY_HEADERS = (
     "x-oxylabs-ai-studio-api-key",
@@ -54,15 +60,23 @@ AI_STUDIO_API_KEY_HEADERS = (
 
 SCRAPER_CREDENTIALS_MISSING_HTTP = (
     "Oxylabs Web Scraper API credentials are not provided. "
-    "Pass an 'Authorization: Basic <base64(username:password)>' header, "
+    "Pass your API token in an 'Authorization: Bearer <token>' header, "
+    "or your username and password in an "
+    "'Authorization: Basic <base64(username:password)>' header "
     "or 'X-Oxylabs-Username' and 'X-Oxylabs-Password' headers. "
     "Get credentials at https://dashboard.oxylabs.io/"
 )
 SCRAPER_CREDENTIALS_MISSING_STDIO = (
     "Oxylabs Web Scraper API credentials are not provided. "
-    "Set the OXYLABS_USERNAME and OXYLABS_PASSWORD environment variables "
+    "Set the OXYLABS_API_TOKEN environment variable, or the OXYLABS_USERNAME "
+    "and OXYLABS_PASSWORD environment variables, "
     "in the MCP server configuration. "
     "Get credentials at https://dashboard.oxylabs.io/"
+)
+SCRAPER_CREDENTIALS_REJECTED = (
+    "Oxylabs Web Scraper API rejected the credentials (401 Unauthorized). "
+    "Check your API token, or your username and password, "
+    "at https://dashboard.oxylabs.io/"
 )
 AI_STUDIO_API_KEY_MISSING_HTTP = (
     "Oxylabs AI Studio API key is not provided. "
@@ -187,6 +201,10 @@ class _OxylabsClientWrapper:
         await self._ctx.info(f"Create job with params: {json.dumps(payload)}")
 
         response = await self._client.post(settings.OXYLABS_SCRAPER_URL, json=payload)
+        # Error responses can have an empty body (e.g. 401), so check the status first.
+        if response.is_error:
+            response.raise_for_status()
+
         response_json: dict[str, typing.Any] = response.json()
 
         if response.status_code == status.HTTP_201_CREATED:
@@ -217,6 +235,34 @@ def _parse_basic_auth(header_value: str) -> tuple[str | None, str | None]:
         return None, None
 
     return username or None, password or None
+
+
+def _parse_bearer_token(header_value: str) -> str | None:
+    """Parse an 'Authorization: Bearer <token>' header value."""
+    scheme, _, token = header_value.strip().partition(" ")
+    if scheme.lower() != "bearer":
+        return None
+
+    return token.strip() or None
+
+
+def get_oxylabs_api_token() -> str | None:
+    """Extract the Oxylabs Web Scraper API token.
+
+    With the HTTP transport, the token is read from the 'Authorization: Bearer'
+    header first, then the 'X-Oxylabs-Api-Token' header. With the stdio
+    transport, it is read from the environment.
+    """
+    if settings.MCP_TRANSPORT == "streamable-http":
+        request_headers = dict(get_context().request_context.request.headers)  # type: ignore[union-attr]
+
+        if authorization := request_headers.get(AUTHORIZATION_HEADER):
+            if token := _parse_bearer_token(authorization):
+                return token
+
+        return request_headers.get(API_TOKEN_HEADER) or None
+
+    return os.environ.get(API_TOKEN_ENV) or None
 
 
 def get_oxylabs_auth() -> tuple[str | None, str | None]:
@@ -266,14 +312,19 @@ async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
     """Async context manager for Oxylabs client that is used in MCP tools."""
     headers = _get_default_headers()
 
-    username, password = get_oxylabs_auth()
+    # An API token takes priority over username and password when both are set.
+    auth: BasicAuth | None = None
+    if api_token := get_oxylabs_api_token():
+        headers["Authorization"] = f"Bearer {api_token}"
+    else:
+        username, password = get_oxylabs_auth()
 
-    if not username or not password:
-        if settings.MCP_TRANSPORT == "streamable-http":
-            raise ValueError(SCRAPER_CREDENTIALS_MISSING_HTTP)
-        raise ValueError(SCRAPER_CREDENTIALS_MISSING_STDIO)
+        if not username or not password:
+            if settings.MCP_TRANSPORT == "streamable-http":
+                raise ValueError(SCRAPER_CREDENTIALS_MISSING_HTTP)
+            raise ValueError(SCRAPER_CREDENTIALS_MISSING_STDIO)
 
-    auth = BasicAuth(username=username, password=password)
+        auth = BasicAuth(username=username, password=password)
 
     async with AsyncClient(
         timeout=Timeout(settings.OXYLABS_REQUEST_TIMEOUT_S),
@@ -284,6 +335,8 @@ async def oxylabs_client() -> AsyncIterator[_OxylabsClientWrapper]:
         try:
             yield _OxylabsClientWrapper(client)
         except HTTPStatusError as e:
+            if e.response.status_code == status.HTTP_401_UNAUTHORIZED:
+                raise MCPServerError(SCRAPER_CREDENTIALS_REJECTED) from None
             raise MCPServerError(
                 f"HTTP error during POST request: {e.response.status_code} - {e.response.text}"
             ) from None
