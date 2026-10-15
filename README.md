@@ -32,6 +32,7 @@ The Oxylabs MCP server provides a bridge between AI models and the web. It enabl
 
 It is built on the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), the open standard for connecting AI assistants to external tools and data.
 
+mcp-name: io.oxylabs/oxylabs-mcp
 
 ## 🛠️ MCP Tools
 
@@ -362,7 +363,6 @@ enabling companies worldwide to unlock data-driven insights.
 </sub>
 </div>
 
-mcp-name: io.oxylabs/oxylabs-mcp
 
 ## Solutions made based on this MCP:
 [Michelin Detour](https://michelindetour.com/)
