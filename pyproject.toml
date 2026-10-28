@@ -1,6 +1,6 @@
 [project]
 name = "oxylabs-mcp"
-version = "0.10.0"
+version = "0.10.1"
 description = "Oxylabs MCP server"
 authors = [
     {name="Augis Braziunas", email="augis.braziunas@oxylabs.io"},
@@ -20,11 +20,12 @@ license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
 dependencies = [
-    "fastmcp>=3.2.4",
+    "fastmcp>=3.2.4,<4",
     "httpx>=0.28.1",
     "lxml>=6.1.0",
     "lxml-html-clean>=0.4.4",
     "markdownify==1.2.2",
+    "mcp>=1.29.0,<2",
     "oxylabs-ai-studio>=0.2.20",
     "pydantic>=2.13.3",
     "pydantic-settings>=2.14.0",

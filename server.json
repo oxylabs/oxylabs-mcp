@@ -7,7 +7,7 @@
     "source": "github"
   },
   "websiteUrl": "https://oxylabs.io",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "remotes": [
     {
       "type": "streamable-http",
@@ -32,7 +32,7 @@
     {
       "registryType": "pypi",
       "identifier": "oxylabs-mcp",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "transport": {
         "type": "stdio"
       },
