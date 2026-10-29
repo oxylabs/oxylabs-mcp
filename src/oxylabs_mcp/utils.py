@@ -171,22 +171,34 @@ def _get_request_context(ctx: Context) -> RequestContext | None:  # type: ignore
         return None
 
 
+def _normalize_client_name(value: object, max_length: int = 64) -> str | None:
+    """Turn the MCP client's self-reported name into one token for the `x-oxylabs-sdk` header.
+
+    The name is untrusted input on its way into a header value: control characters would
+    let it split or inject headers, non-ASCII would make httpx refuse to encode the header,
+    and an unbounded name could push the request past an upstream header limit.
+    """
+    if not isinstance(value, str):
+        return None
+    cleaned = "".join(char if char.isascii() and char.isprintable() else " " for char in value)
+    return "-".join(cleaned.lower().split())[:max_length].rstrip("-") or None
+
+
+def _get_client_name() -> str | None:
+    try:
+        params = get_context().request_context.session.client_params  # type: ignore[union-attr]
+        return _normalize_client_name(params.clientInfo.name)  # type: ignore[union-attr]
+    except Exception:  # noqa: BLE001  # telemetry must never be the reason a call fails
+        return None
+
+
 def _get_default_headers() -> dict[str, str]:
-    headers = {}
-    if request_ctx := get_context().request_context:
-        if client_params := request_ctx.session.client_params:
-            client = f"oxylabs-mcp-{client_params.clientInfo.name}"
-        else:
-            client = "oxylabs-mcp"
-    else:
-        client = "oxylabs-mcp"
+    product = f"{settings.OXYLABS_SDK_NAME}/{version('oxylabs-mcp')}"
+    if client := _get_client_name():
+        product = f"{product} {client}"
 
     bits, _ = architecture()
-    sdk_type = f"{client}/{version('oxylabs-mcp')} ({python_version()}; {bits})"
-
-    headers["x-oxylabs-sdk"] = sdk_type
-
-    return headers
+    return {"x-oxylabs-sdk": f"{product} ({python_version()}; {bits})"}
 
 
 class _OxylabsClientWrapper:
