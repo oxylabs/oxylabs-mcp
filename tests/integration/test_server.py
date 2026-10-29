@@ -63,10 +63,9 @@ async def test_default_headers_are_set(
     assert "x-oxylabs-sdk" in oxylabs_client.context_manager_call_kwargs["headers"]
 
     oxylabs_sdk_header = oxylabs_client.context_manager_call_kwargs["headers"]["x-oxylabs-sdk"]
-    client_info, _ = oxylabs_sdk_header.split(maxsplit=1)
 
-    client_info_pattern = re.compile(r"oxylabs-mcp-fake_cursor/(\d+)\.(\d+)\.(\d+)$")
-    assert re.match(client_info_pattern, client_info)
+    sdk_header_pattern = re.compile(r"oxylabs-mcp/\d+\.\d+\.\d+ fake_cursor \(.+\)")
+    assert sdk_header_pattern.fullmatch(oxylabs_sdk_header)
 
 
 @pytest.mark.asyncio

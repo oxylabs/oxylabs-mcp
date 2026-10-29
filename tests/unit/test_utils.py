@@ -1,9 +1,12 @@
-from unittest.mock import patch
+import re
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from oxylabs_mcp.config import settings
 from oxylabs_mcp.utils import (
+    _get_default_headers,
+    _normalize_client_name,
     extract_links_with_text,
     get_oxylabs_api_token,
     get_oxylabs_auth,
@@ -87,3 +90,61 @@ def test_extract_links_with_text(html_input: str, expected_output: str):
 
         links = extract_links_with_text(input_html)
         assert "\n".join(links) == expected_output
+
+
+# Same pattern the API uses to parse the header (apiritif pkg/sdk/middleware.go).
+API_SDK_HEADER = re.compile(r"([a-z-]+)/(\d+\.\d+\.\d+)(?: ([^()]+?))? \(.*\)")
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        pytest.param("claude-ai", "claude-ai", id="already-normalized"),
+        pytest.param("Visual Studio Code", "visual-studio-code", id="spaces-and-case"),
+        pytest.param("Claude\r\nCode", "claude-code", id="header-injection"),
+        pytest.param("Cursor™", "cursor", id="non-ascii"),
+        pytest.param("クライ", None, id="only-non-ascii"),
+        pytest.param("  \t ", None, id="blank"),
+        pytest.param(None, None, id="missing"),
+        pytest.param("a" * 100, "a" * 64, id="too-long"),
+    ],
+)
+def test_normalize_client_name(name, expected):
+    assert _normalize_client_name(name) == expected
+
+
+@pytest.mark.parametrize(
+    ("client_name", "sdk_name", "expected"),
+    [
+        pytest.param(
+            "Visual Studio Code",
+            "oxylabs-mcp",
+            ("oxylabs-mcp", "visual-studio-code"),
+            id="local-with-client",
+        ),
+        pytest.param(
+            None, "oxylabs-mcp-remote", ("oxylabs-mcp-remote", None), id="stateless-remote"
+        ),
+    ],
+)
+def test_default_headers_match_api_format(client_name, sdk_name, expected):
+    context = MagicMock()
+    context.request_context.session.client_params.clientInfo.name = client_name
+
+    with (
+        patch("oxylabs_mcp.utils.get_context", return_value=context),
+        patch.object(settings, "OXYLABS_SDK_NAME", sdk_name),
+    ):
+        header = _get_default_headers()["x-oxylabs-sdk"]
+
+    match = API_SDK_HEADER.fullmatch(header)
+    assert match
+    assert (match[1], match[3]) == expected
+
+
+def test_default_headers_without_request_context():
+    with patch("oxylabs_mcp.utils.get_context", side_effect=RuntimeError("no context")):
+        header = _get_default_headers()["x-oxylabs-sdk"]
+
+    assert header.startswith("oxylabs-mcp/")
+    assert API_SDK_HEADER.fullmatch(header)
