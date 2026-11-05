@@ -25,6 +25,12 @@
 </div>
 
 ---
+## Disclaimer
+This repository is no longer supported and being worked on. Kindly check our latest MCP repositories:
+
+[Web API MCP](https://github.com/oxylabs/web-api-mcp)
+
+[Agent Browser MCP](https://github.com/oxylabs/oxylabs-agent-browser-mcp)
 
 ## 📖 Overview
 
