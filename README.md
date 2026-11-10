@@ -25,6 +25,9 @@
 </div>
 
 ---
+## Disclaimer
+This repository is still fully supported, but if you are using Oxylabs Web API please refer to Web API MCP repository:
+[Web API MCP](https://github.com/oxylabs/web-api-mcp)
 
 ## 📖 Overview
 
