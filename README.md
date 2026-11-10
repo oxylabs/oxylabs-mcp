@@ -26,9 +26,9 @@
 
 ---
 ## Disclaimer
-This repository is no longer supported and being worked on. Kindly check our latest MCP repositories:
+This repository is still fully supported, but if you are using Oxylabs Web API please refer to Web API MCP repository
 [Web API MCP](https://github.com/oxylabs/web-api-mcp)
-[Agent Browser MCP](https://github.com/oxylabs/oxylabs-agent-browser-mcp)
+
 
 ## 📖 Overview
 
