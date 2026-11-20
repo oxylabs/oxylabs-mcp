@@ -32,7 +32,14 @@ AI_TOOLS = [
 mcp = FastMCP("ai_studio")
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="AI crawler",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def ai_crawler(
     url: Annotated[str, Field(description="The URL from which crawling will be started.")],
     user_prompt: Annotated[
@@ -104,7 +111,14 @@ async def ai_crawler(
     return json.dumps({"data": result.data})
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="AI scraper",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def ai_scraper(
     url: Annotated[str, Field(description="The URL to scrape")],
     output_format: Annotated[
@@ -163,7 +177,14 @@ async def ai_scraper(
     return json.dumps({"data": result.data})
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="AI browser agent",
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def ai_browser_agent(
     url: Annotated[str, Field(description="The URL to start the browser agent navigation from.")],
     task_prompt: Annotated[str, Field(description="What browser agent should do.")],
@@ -216,7 +237,14 @@ async def ai_browser_agent(
     return json.dumps({"data": data})
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="AI search",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def ai_search(
     query: Annotated[str, Field(description="The query to search for.")],
     limit: Annotated[int, Field(description="Maximum number of results to return.", le=50)] = 10,
@@ -261,7 +289,14 @@ async def ai_search(
     return json.dumps({"data": data})
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="Generate schema",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=False,
+    ),
+)
 async def generate_schema(
     user_prompt: str,
     app_name: Literal["ai_crawler", "ai_scraper", "browser_agent"],
@@ -282,7 +317,14 @@ async def generate_schema(
     return json.dumps({"data": schema})
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="AI map",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def ai_map(
     url: Annotated[str, Field(description="The URL from which URLs mapping will be started.")],
     search_keywords: Annotated[
