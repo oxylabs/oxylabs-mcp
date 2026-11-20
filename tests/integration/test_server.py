@@ -164,6 +164,24 @@ async def test_list_tools(mcp: FastMCP, transport: str):
         settings.MCP_TRANSPORT = "stdio"
 
 
+async def test_tools_have_titles_and_behaviour_hints(mcp: FastMCP):
+    async with Client(mcp) as client:
+        tools = await client.list_tools()
+
+    for tool in tools:
+        assert tool.title, tool.name
+        assert tool.annotations is not None, tool.name
+        assert tool.annotations.readOnlyHint is not None, tool.name
+        assert tool.annotations.destructiveHint is False, tool.name
+        assert tool.annotations.openWorldHint is not None, tool.name
+
+    by_name = {tool.name: tool.annotations for tool in tools}
+    # The browser agent can click links and fill in forms, so it is not read-only.
+    assert by_name["ai_browser_agent"].readOnlyHint is False
+    # generate_schema only asks AI Studio for a schema and does not touch the web.
+    assert by_name["generate_schema"].openWorldHint is False
+
+
 @pytest.mark.parametrize(
     ("headers", "expected"),
     [

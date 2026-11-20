@@ -21,7 +21,14 @@ SCRAPER_TOOLS = [
 mcp = FastMCP("scraper")
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="Universal scraper",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def universal_scraper(
     url: url_params.URL_PARAM,
     render: url_params.RENDER_PARAM = None,
@@ -52,7 +59,14 @@ async def universal_scraper(
         return await e.process()
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="Google search scraper",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def google_search_scraper(
     query: url_params.GOOGLE_QUERY_PARAM,
     parse: url_params.PARSE_PARAM = True,  # noqa: FBT002
@@ -107,7 +121,14 @@ async def google_search_scraper(
         return await e.process()
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="Amazon search scraper",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def amazon_search_scraper(
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     category_id: url_params.CATEGORY_ID_CONTEXT_PARAM = None,
@@ -167,7 +188,14 @@ async def amazon_search_scraper(
         return await e.process()
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
+@mcp.tool(
+    title="Amazon product scraper",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=True,
+    ),
+)
 async def amazon_product_scraper(
     query: url_params.AMAZON_SEARCH_QUERY_PARAM,
     autoselect_variant: url_params.AUTOSELECT_VARIANT_CONTEXT_PARAM = False,  # noqa: FBT002
